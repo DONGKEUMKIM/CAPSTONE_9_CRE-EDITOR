@@ -9,12 +9,24 @@
     android:orientation="vertical"
     tools:context=".TestDetection">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="캡쳐" />
+    <TextView
+        android:id="@+id/countdownview"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="60"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/countView"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="0"
+        android:textSize="24sp" />
+
 
     <org.opencv.android.JavaCameraView
         android:layout_width="match_parent"
@@ -22,4 +34,5 @@
         opencv:camera_id="any"
         android:visibility="gone"
         android:id="@+id/activity_surface_view" />
+
 </LinearLayout>
