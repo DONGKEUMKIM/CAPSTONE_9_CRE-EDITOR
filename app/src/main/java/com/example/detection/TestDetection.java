@@ -367,48 +367,48 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     + " " + String.valueOf(matResult.cols())+ " " + String.valueOf(matResult.rows()));
 
 
-//            ///////////////////////////eyeROI 를 bitmap으로 변환/////////////////////////////
-//            Bitmap bmp = null;
-//            try {
-//                //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
-//                Imgproc.cvtColor(eyeROI, eyeROI, Imgproc.COLOR_GRAY2RGBA, 4);
-//                bmp = Bitmap.createBitmap(eyeROI.cols(), eyeROI.rows(), Bitmap.Config.ARGB_8888);
-//                Utils.matToBitmap(eyeROI, bmp);
-//            }
-//            catch (CvException e){Log.d("Exception",e.getMessage());}
-//
-//            /////////////////////////bitmap을 input배열로 변환/////////////////////////
-//            /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
-//            int batchNum = 0;
-//            float[][][][] input = new float[1][64][64][3];
-//            for (int x = 0; x < 64; x++) {
-//                for (int y = 0; y < 64; y++) {
-//                    int pixel = bmp.getPixel(x, y);
-//                    // Normalize channel values to [-1.0, 1.0]. This requirement varies by
-//                    // model. For example, some models might require values to be normalized
-//                    // to the range [0.0, 1.0] instead.
-//                    input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
-//                    input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
-//                    input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
-//                }
-//            }
+            ///////////////////////////eyeROI 를 bitmap으로 변환/////////////////////////////
+            Bitmap bmp = null;
+            try {
+                //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
+                Imgproc.cvtColor(eyeROI, eyeROI, Imgproc.COLOR_GRAY2RGBA, 4);
+                bmp = Bitmap.createBitmap(eyeROI.cols(), eyeROI.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(eyeROI, bmp);
+            }
+            catch (CvException e){Log.d("Exception",e.getMessage());}
 
-//            //////////////////////////모델 로드 후 실행////////////////////////////////////
-//            File modelFile = new File("/scr/main/assets/open_close.tflite");
-//            Interpreter tf_lite = new Interpreter(modelFile);
-//
-//            float[][] output = new float[1][1];
-//            tf_lite.run(input, output);
-//
-//            /////////////////output 값에 따라 결정/////////////////////////////////
-//            if(output[0][0]>=0.5){
-////                textView.setText(output[0][0]+"open");
-//                Log.d("Eye", "open");
-//            }
-//            else {
-////                textView.setText(output[0][0]+"close");
-//                Log.d("Eye", "close");
-//            }
+            /////////////////////////bitmap을 input배열로 변환/////////////////////////
+            /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
+            int batchNum = 0;
+            float[][][][] input = new float[1][64][64][3];
+            for (int x = 0; x < 64; x++) {
+                for (int y = 0; y < 64; y++) {
+                    int pixel = bmp.getPixel(x, y);
+                    // Normalize channel values to [-1.0, 1.0]. This requirement varies by
+                    // model. For example, some models might require values to be normalized
+                    // to the range [0.0, 1.0] instead.
+                    input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
+                    input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
+                    input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
+                }
+            }
+
+            //////////////////////////모델 로드 후 실행////////////////////////////////////
+            File modelFile = new File("/scr/main/assets/open_close.tflite");
+            Interpreter tf_lite = new Interpreter(modelFile);
+
+            float[][] output = new float[1][1];
+            tf_lite.run(input, output);
+
+            /////////////////output 값에 따라 결정/////////////////////////////////
+            if(output[0][0]>=0.5){
+//                textView.setText(output[0][0]+"open");
+                Log.d("Eye", "open");
+            }
+            else {
+//                textView.setText(output[0][0]+"close");
+                Log.d("Eye", "close");
+            }
 
 
 
