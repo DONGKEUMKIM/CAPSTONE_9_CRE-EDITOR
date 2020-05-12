@@ -448,6 +448,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             if(StateOfDetectingHighDowsiness == HIGH_DETECTREADY)
             {
                 StateOfDetectingHighDowsiness = HIGH_DETECTING;
+                StateOfDetectingLowDowsiness = LOW_COUNTING;
                 DetectHighdrowsinessThread  detectThread = new DetectHighdrowsinessThread();
                 detectThread.start();
                 System.out.println("디텍트스레드가 시작되었습니다.");
@@ -467,6 +468,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 {
                     System.out.println("방송 송출");
                     StateOfDetectingHighDowsiness = HIGH_WAKE_UP;
+                    StateOfDetectingLowDowsiness = LOW_COUNTING;
                     //알람 리시버에게 알람수행을 위한 메시지 송신
 
                     registerReceiver(alarmReceiver, intentFilter);
@@ -512,7 +514,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 if(openOrClose == true)
                 {
                 //상태 변경 DETECTING -> COUNTING
-
+                detectingCount = 0;
                 StateOfDetectingLowDowsiness = LOW_COUNTING;
                 }
 
@@ -717,6 +719,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             if(StateOfDetectingHighDowsiness == HIGH_COUNTING
                     && sumofWhitePixels < countofPixels / 5)
             {
+                StateOfDetectingLowDowsiness = LOW_COUNTING;
                 StateOfDetectingHighDowsiness = HIGH_DETECTREADY;
             }
             else if(StateOfDetectingHighDowsiness == HIGH_WAKE_UP
@@ -726,6 +729,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 //다시 얼굴이 검출 됐을 경우 원래 상태로 복귀
 
                 //리시버에게 알람을 종료하라는 메시지 송신
+
                 registerReceiver(alarmReceiver, intentFilter);
                 Intent sendIntent = new Intent(ALARMEND);
                 sendBroadcast(sendIntent);
@@ -734,6 +738,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 //intentFilter.addAction(ALARMEND);
                 //registerReceiver(alarmReceiver,intentFilter);
 
+                StateOfDetectingLowDowsiness = LOW_COUNTING;
                 StateOfDetectingHighDowsiness = HIGH_COUNTING;
                 detectingCount = 0;
                 countView.setText("0");
@@ -802,7 +807,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     public class DetectLowdrowsinessThread extends Thread{
         public void run(){
-            while(detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_COUNTING){
+            while(detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_DETECTING){
                 Message message = mHandler.obtainMessage();
                 detectingCount++;
                 message.arg1 = detectingCount;
