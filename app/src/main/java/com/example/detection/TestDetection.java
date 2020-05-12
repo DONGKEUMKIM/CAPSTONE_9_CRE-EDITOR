@@ -95,6 +95,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private Mat matBinary;
     private Mat eyeROI;                             //눈이미지
     private int[] faceArray;                        //얼굴 바운더리를 int배열형태로 저장
+    private boolean openOrClose;                        // 눈 뜨고있으면 true 감으면 false
     private MatCirCularQueue frameBuffer;                   //프레임을 담을 버퍼큐
 
     //높은 졸음 판별 상태
@@ -125,6 +126,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     //UI
     TextView countView;
     TextView countdownView;
+    TextView opencloseView;
     //쓰레드 핸들러
     Handler mHandler = null;
     Handler mcountHandler = null;
@@ -282,6 +284,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         //UI처리
         countView = (TextView)findViewById(R.id.countView);
         countdownView = (TextView)findViewById(R.id.countdownview);
+        opencloseView = findViewById(R.id.open_close);
 
         //알람을 위한 처리
         alarmReceiver = new AlarmReceiver();
@@ -411,6 +414,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             }
             catch (CvException e){Log.d("Exception",e.getMessage());}
 
+
+            opencloseView.setText("null?");
             if(bmp != null)
             {
                 Bitmap resizedBmp = Bitmap.createScaledBitmap(bmp, 64, 64, true);
@@ -436,14 +441,15 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 float[][] output = new float[1][1];
                 tf_lite.run(input, output);
 
+                opencloseView.setText("what?");
                 /////////////////output 값에 따라 결정/////////////////////////////////
                 if(output[0][0]>=0.5){
-                    //textView.setText(output[0][0]+"open");
-                    Log.d("Eye", "open");
+                    opencloseView.setText("open");
+                    openOrClose = true;
                 }
                 else {
-                    //textView.setText(output[0][0]+"close");
-                    Log.d("Eye", "close");
+                    opencloseView.setText("close");
+                    openOrClose = false;
                 }
 
             }
@@ -500,7 +506,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             //학습된 모델로 감은눈인지 뜬 눈인지 실시간 판별
             //판별후 나온 결과를 boolean 값으로 리턴 (뜬 눈 = true , 감은 눈 = false)
             //주석 지울것
-            /*if(판별 리턴값 == false && StateOfDetectingLowDowsiness == LOW_COUNTING)
+            if(openOrClose == false && StateOfDetectingLowDowsiness == LOW_COUNTING)
             {
                 //눈 상태가 감은 눈일 경우
                 //상태 변경 COUNTING -> DETECTREADY
@@ -514,7 +520,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                 //눈이 감긴걸로 판별이 되면
                 //카운트를 증가 시켜주는 스레드가 시작 (10초 동안 지속)
-                DetectLowdrowsinessThread  detectrowThread = new DetectLowrowsinessThread();
+                DetectLowdrowsinessThread  detectrowThread = new DetectLowdrowsinessThread();
                 detectrowThread.start();
                 System.out.println("디텍트스레드가 시작되었습니다.");
                 //카운트다운 스레드 시작 (10초)
@@ -523,7 +529,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             else if(StateOfDetectingLowDowsiness == LOW_DETECTING)
             {
                 //다시 뜬 눈으로 감지 될 경우
-                if(판별 리턴값 == true)
+                if(openOrClose == true)
                 {
                 //상태 변경 DETECTING -> COUNTING
                 StateOfDetectingLowDowsiness = LOW_COUNTING;
@@ -564,7 +570,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     detectingCount = 0;
                     countView.setText("0");
                  }
-            */
+
 
 
             //판별 후 메모리 해제 필요
@@ -575,7 +581,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             e.printStackTrace();
         }
         releaseWriteLock();
-        return matBinary;
+        return matResult;
+//        return matBinary;
     }
 
 

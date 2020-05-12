@@ -265,8 +265,8 @@ Java_com_example_detection_TestDetection_makeFaceMaskImage(JNIEnv *env, jobject 
 
     cvtColor(img_input, img_result, COLOR_BGR2HSV);
 
-    cv::Scalar low(0 , 30, 30);
-    cv::Scalar high(30, 255, 255);
+    cv::Scalar low(50 , 30, 0);
+    cv::Scalar high(150, 255, 255);
 
     inRange(img_result,low, high, img_result);
 
