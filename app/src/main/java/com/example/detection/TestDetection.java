@@ -28,6 +28,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.opencv.core.Size;
 import org.tensorflow.lite.Interpreter;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -399,7 +401,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     + " " + String.valueOf(matResult.cols())+ " " + String.valueOf(matResult.rows()));
 
             //eyedrawnessTherad eyeThread = new eyedrawnessTherad();
-            //eyeThread.start();
+            //            //eyeThread.start();
 
             Bitmap bmp = null;
             try {
@@ -412,15 +414,16 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
             if(bmp != null)
             {
+                Bitmap resizedBmp = Bitmap.createScaledBitmap(bmp, 64, 64, true);
                 /////////////////////////bitmap을 input배열로 변환/////////////////////////
                 /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
                 int batchNum = 0;
-                int width = bmp.getWidth();
-                int height = bmp.getHeight();
+                int width = resizedBmp.getWidth();
+                int height = resizedBmp.getHeight();
                 float[][][][] input = new float[1][width][height][3];
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
-                        int pixel = bmp.getPixel(x, y);
+                        int pixel = resizedBmp.getPixel(x, y);
                         // Normalize channel values to [-1.0, 1.0]. This requirement varies by
                         // model. For example, some models might require values to be normalized
                         // to the range [0.0, 1.0] instead.
@@ -669,7 +672,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         if(bmp != null)
         {
             /////////////////////////bitmap을 input배열로 변환/////////////////////////
-            /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
+            //            /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
             int batchNum = 0;
             int width = bmp.getWidth();
             int height = bmp.getHeight();
