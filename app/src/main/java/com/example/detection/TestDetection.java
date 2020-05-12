@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -47,9 +48,13 @@ import org.tensorflow.lite.Interpreter;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -85,6 +90,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private static final String TAG = "opencv";
     private Mat matInput;
     private Mat matResult;
+    private Mat matBinary;
     private Mat eyeROI;                             //눈이미지
     private int[] faceArray;                        //얼굴 바운더리를 int배열형태로 저장
     private MatCirCularQueue frameBuffer;                   //프레임을 담을 버퍼큐
@@ -104,7 +110,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private final static int LOW_WAKE_UP = 4;
     int StateOfDetectingLowDowsiness= LOW_COUNTING;
 
-    int cameraviewcount = 10;                       //60초 단위 촬영을 위한 카운트
+    int cameraviewcount = 100;                       //60초 단위 촬영을 위한 카운트
     int detectingCount = 0;                         //높은졸음이 감지됐을때 시작되는 카운트
 
     //알람을 위한 브로드캐스트 리시버
@@ -123,6 +129,9 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     Handler mcountHandler = null;
     private CameraBridgeViewBase mOpenCvCameraView;
 
+
+    //머신러닝 모델 파일 및 인터프리터
+    Interpreter tf_lite;
     /*
     native 함수
      */
@@ -164,6 +173,27 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         System.loadLibrary("opencv_java4");
         //System.loadLibrary("dlib");
         System.loadLibrary("native-lib");
+    }
+
+    private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
+            throws IOException {
+        AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
+
+    private void loadModel(String filename)
+    {
+        AssetManager assetManager = this.getAssets();
+        try {
+            tf_lite = new Interpreter(loadModelFile(assetManager, filename));
+
+        } catch (Exception e) {
+            Log.d(TAG, "copyFile :: 파일 복사 중 예외 발생 "+e.toString() );
+        }
     }
 
     private void copyFile(String filename) {
@@ -294,6 +324,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             }
         };
 
+        /////////////////////////////////모델 로드//////////////////////////////////////
+        loadModel("open_close.tflite");
     }
 
     @Override
@@ -329,7 +361,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     public void onCameraViewStarted(int width, int height) {
         //카메라 촬영이 시작되었을때
         //60초 카운트 시작
-        cameraviewcount = 10;
+        cameraviewcount = 100;
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
     }
@@ -338,7 +370,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     public void onCameraViewStopped() {
         //카메라 촬영이 정지되었을때
         //60초 카운트 시작
-        cameraviewcount = 10;
+        cameraviewcount = 100;
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
     }
@@ -366,8 +398,9 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     String.valueOf(faceArray[2]) + " " + String.valueOf(faceArray[3])
                     + " " + String.valueOf(matResult.cols())+ " " + String.valueOf(matResult.rows()));
 
+            //eyedrawnessTherad eyeThread = new eyedrawnessTherad();
+            //eyeThread.start();
 
-            ///////////////////////////eyeROI 를 bitmap으로 변환/////////////////////////////
             Bitmap bmp = null;
             try {
                 //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
@@ -377,46 +410,49 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             }
             catch (CvException e){Log.d("Exception",e.getMessage());}
 
-            /////////////////////////bitmap을 input배열로 변환/////////////////////////
-            /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
-//            int batchNum = 0;
-//            float[][][][] input = new float[1][30][30][3];
-//            for (int x = 0; x < 30; x++) {
-//                for (int y = 0; y < 30; y++) {
-//                    int pixel = bmp.getPixel(x, y);
-//                    // Normalize channel values to [-1.0, 1.0]. This requirement varies by
-//                    // model. For example, some models might require values to be normalized
-//                    // to the range [0.0, 1.0] instead.
-//                    input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
-//                    input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
-//                    input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
-//                }
-//            }
-//
-//            //////////////////////////모델 로드 후 실행////////////////////////////////////
-//            File modelFile = new File("/scr/main/assets/open_close.tflite");
-//            Interpreter tf_lite = new Interpreter(modelFile);
-//
-//            float[][] output = new float[1][1];
-//            tf_lite.run(input, output);
-//
-//            /////////////////output 값에 따라 결정/////////////////////////////////
-//            if(output[0][0]>=0.5){
-////                textView.setText(output[0][0]+"open");
-//                Log.d("Eye", "open");
-//            }
-//            else {
-////                textView.setText(output[0][0]+"close");
-//                Log.d("Eye", "close");
-//            }
+            if(bmp != null)
+            {
+                /////////////////////////bitmap을 input배열로 변환/////////////////////////
+                /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
+                int batchNum = 0;
+                int width = bmp.getWidth();
+                int height = bmp.getHeight();
+                float[][][][] input = new float[1][width][height][3];
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        int pixel = bmp.getPixel(x, y);
+                        // Normalize channel values to [-1.0, 1.0]. This requirement varies by
+                        // model. For example, some models might require values to be normalized
+                        // to the range [0.0, 1.0] instead.
+                        input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
+                        input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
+                        input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
+                    }
+                }
 
 
+                float[][] output = new float[1][1];
+                tf_lite.run(input, output);
+
+                /////////////////output 값에 따라 결정/////////////////////////////////
+                if(output[0][0]>=0.5){
+                    //textView.setText(output[0][0]+"open");
+                    Log.d("Eye", "open");
+                }
+                else {
+                    //textView.setText(output[0][0]+"close");
+                    Log.d("Eye", "close");
+                }
+
+            }
 
             /////////////////////////////큰 졸음 판별 단계////////////////////////////////////////////
             //얼굴 부분 색상 검출 및 프레임 바이너리화
-            makeFaceMaskImage(matResult.getNativeObjAddr(), matResult.getNativeObjAddr(), faceArray);
+            if(matBinary == null)
+                matBinary = new Mat(matResult.rows(),matResult.cols(),matResult.type());
+            makeFaceMaskImage(matResult.getNativeObjAddr(), matBinary.getNativeObjAddr(), faceArray);
             //프레임버퍼에 프레임 저장
-            frameBuffer.Enqueue(matResult);
+            frameBuffer.Enqueue(matBinary);
             //픽셀카운팅 및 졸음 판별
             CountingThread countingThread = new CountingThread();
             countingThread.start();
@@ -611,6 +647,61 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             }
         });
         builder.create().show();
+    }
+
+    public class eyedrawnessTherad extends Thread{
+        @Override
+        public void run() {
+            howEyedrawness();
+        }
+    }
+
+    private synchronized void howEyedrawness(){
+        Bitmap bmp = null;
+        try {
+            //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
+            Imgproc.cvtColor(eyeROI, eyeROI, Imgproc.COLOR_GRAY2RGBA, 4);
+            bmp = Bitmap.createBitmap(eyeROI.cols(), eyeROI.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(eyeROI, bmp);
+        }
+        catch (CvException e){Log.d("Exception",e.getMessage());}
+
+        if(bmp != null)
+        {
+            /////////////////////////bitmap을 input배열로 변환/////////////////////////
+            /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
+            int batchNum = 0;
+            int width = bmp.getWidth();
+            int height = bmp.getHeight();
+            float[][][][] input = new float[1][width][height][3];
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    int pixel = bmp.getPixel(x, y);
+                    // Normalize channel values to [-1.0, 1.0]. This requirement varies by
+                    // model. For example, some models might require values to be normalized
+                    // to the range [0.0, 1.0] instead.
+                    input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
+                    input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
+                    input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
+                }
+            }
+
+
+            float[][] output = new float[1][1];
+            tf_lite.run(input, output);
+
+            /////////////////output 값에 따라 결정/////////////////////////////////
+            if(output[0][0]>=0.5){
+                //textView.setText(output[0][0]+"open");
+                Log.d("Eye", "open");
+            }
+            else {
+                //textView.setText(output[0][0]+"close");
+                Log.d("Eye", "close");
+            }
+
+        }
+
     }
 
     public class CountingThread extends Thread{
