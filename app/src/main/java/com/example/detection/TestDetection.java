@@ -86,6 +86,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private static final String HSTATE = "높은졸음감지 상태";
     private static final String CONFIRMALARM = "알람 확인";
     private static final String FACERECT = "얼굴 바운더리";
+    private static final String LSTATE = "낮은졸음감지 상태";
+
 
     int frameCount = 0;
     public static final int SKIP_FRAME = 3;
@@ -320,9 +322,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 else if(msg.arg1 == 0 && cameraActivitystate == CAMERA_STOPPED)
                 {
                     cameraActivitystate = CAMERA_ACTIVITING;
-
                     onResume();
-
                     //onCameraViewStarted(mOpenCvCameraView.getWidth() , mOpenCvCameraView.getHeight());
                 }
             }
@@ -415,7 +415,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             catch (CvException e){Log.d("Exception",e.getMessage());}
 
 
-            opencloseView.setText("null?");
             if(bmp != null)
             {
                 Bitmap resizedBmp = Bitmap.createScaledBitmap(bmp, 64, 64, true);
@@ -520,8 +519,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                 //눈이 감긴걸로 판별이 되면
                 //카운트를 증가 시켜주는 스레드가 시작 (10초 동안 지속)
-                DetectLowdrowsinessThread  detectrowThread = new DetectLowdrowsinessThread();
-                detectrowThread.start();
+                DetectLowdrowsinessThread  deteclowThread = new DetectLowdrowsinessThread();
+                deteclowThread.start();
                 System.out.println("디텍트스레드가 시작되었습니다.");
                 //카운트다운 스레드 시작 (10초)
                 //10초 카운트 스레드 종료 후 알람 이벤트 발생
@@ -558,25 +557,21 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     //다시 뜬 눈으로 검출 됐을 경우 원래 상태로 복귀
 
                     //리시버에게 알람을 종료하라는 메시지 송신
-                    registerReceiver(alarmReceiver, intentFilter);
-                    Intent sendIntent = new Intent(ALARMEND);
-                    sendBroadcast(sendIntent);
+                    if(openOrClose == true)
+                    {
 
-                    //intentFilter = new IntentFilter();
-                    //intentFilter.addAction(ALARMEND);
-                    //registerReceiver(alarmReceiver,intentFilter);
-
-                    StateOfDetectingLowDowsiness = LOW_COUNTING;
-                    detectingCount = 0;
-                    countView.setText("0");
+                        StateOfDetectingLowDowsiness = LOW_COUNTING;
+                        detectingCount = 0;
+                        countView.setText("0");
+                        registerReceiver(alarmReceiver, intentFilter);
+                        Intent sendIntent = new Intent(ALARMEND);
+                        sendBroadcast(sendIntent);
+                    }
                  }
 
 
-
-            //판별 후 메모리 해제 필요
-
             Log.d("HSTATE", String.valueOf(StateOfDetectingHighDowsiness));
-
+            Log.d("LSTATE", String.valueOf(StateOfDetectingLowDowsiness));
         } catch(InterruptedException e){
             e.printStackTrace();
         }
@@ -825,7 +820,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     public class DetectLowdrowsinessThread extends Thread{
         public void run(){
-            while(detectingCount < 10 && StateOfDetectingHighDowsiness == LOW_COUNTING){
+            while(detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_COUNTING){
                 Message message = mHandler.obtainMessage();
                 detectingCount++;
                 message.arg1 = detectingCount;

@@ -41,7 +41,7 @@
         android:text="random"
         android:textSize="24sp" />
 
-    </LinearLayout>
+
 
     <org.opencv.android.JavaCameraView
         android:layout_width="match_parent"
