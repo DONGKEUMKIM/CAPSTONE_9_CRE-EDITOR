@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.4.1)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-set(pathPROJECT C:/Users/DONGGEUMKIM/Detection)
+set(pathPROJECT H:/Android_Java_Examples/CAPSTONE_9_CRE-EDITOR)
 
 #DLIB
 #set(DLIB_PATH ${pathPROJECT}/dlib-native)
