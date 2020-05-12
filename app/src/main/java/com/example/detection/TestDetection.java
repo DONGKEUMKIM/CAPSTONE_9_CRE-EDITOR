@@ -493,7 +493,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 StateOfDetectingLowDowsiness = LOW_DETECTREADY;
             }
 
-            if(StateOfDetectingHighDowsiness == LOW_DETECTREADY)
+            if(StateOfDetectingLowDowsiness == LOW_DETECTREADY)
             {
                 //상태변경 DETECTREADY -> DETECTING
                 StateOfDetectingLowDowsiness = LOW_DETECTING;
@@ -512,7 +512,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 if(openOrClose == true)
                 {
                 //상태 변경 DETECTING -> COUNTING
-                StateOfDetectingLowDowsiness = LOW_COUNTING;
+                    StateOfDetectingLowDowsiness = LOW_COUNTING;
+                    detectingCount = 0;
                 }
 
                 if(detectingCount == 10)
@@ -540,7 +541,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     //리시버에게 알람을 종료하라는 메시지 송신
                     if(openOrClose == true)
                     {
-
                         StateOfDetectingLowDowsiness = LOW_COUNTING;
                         detectingCount = 0;
                         countView.setText("0");
@@ -801,7 +801,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     public class DetectLowdrowsinessThread extends Thread{
         public void run(){
-            while(detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_COUNTING){
+            while(detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_DETECTING){
                 Message message = mHandler.obtainMessage();
                 detectingCount++;
                 message.arg1 = detectingCount;
