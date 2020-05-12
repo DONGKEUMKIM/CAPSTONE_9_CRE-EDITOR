@@ -14,9 +14,9 @@ using namespace cv;
 float resize_img(Mat img_src, Mat &img_resize, int resize_width);
 
 float resize_img(Mat img_src, Mat &img_resize, int resize_width){
-    float scale = resize_width / (float)img_src.cols ;  // 320/640
+    float scale = resize_width / (float)img_src.cols ;
     if (img_src.cols > resize_width) {
-        int new_height = cvRound(img_src.rows * scale);     //240
+        int new_height = cvRound(img_src.rows * scale);
         resize(img_src, img_resize, Size(resize_width, new_height));
     }
     else {
@@ -181,7 +181,7 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
         arr[0] = real_facesize_x;
         arr[1] = real_facesize_y;
         arr[2] = real_facesize_width;
-        arr[3] = real_facesize_height;
+        arr[3] = real_facesize_width;
         jintArray ret = env->NewIntArray(4);
         env->SetIntArrayRegion(face_arr,0,4,arr);
 
@@ -213,9 +213,9 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
             Rect righteye_area(real_facesize_x+ righteyes[0].x,real_facesize_y + righteyes[0].y, righteyes[0].width, righteyes[0].width);
             if((real_facesize_y + righteyes[0].y) < ySizeforCompare)
             {
-                //cv::rectangle(img_result, righteye_area, Scalar(255,0,0), 15, 8, 0);
-                eye_ROI = img_gray ( righteye_area ) ;
+                cv::rectangle(img_result, righteye_area, Scalar(255,0,0), 15, 8, 0);
             }
+            eye_ROI = img_gray(righteye_area);
         }
 
         /*
@@ -265,8 +265,8 @@ Java_com_example_detection_TestDetection_makeFaceMaskImage(JNIEnv *env, jobject 
 
     cvtColor(img_input, img_result, COLOR_BGR2HSV);
 
-    cv::Scalar low(0 , 30, 30);
-    cv::Scalar high(30, 255, 255);
+    cv::Scalar low(50 , 30, 0);
+    cv::Scalar high(150, 255, 255);
 
     inRange(img_result,low, high, img_result);
 
@@ -305,7 +305,7 @@ Java_com_example_detection_TestDetection_CountWhitePixelsInFaceBoundary(JNIEnv *
             g = pixel[x][1];
             b = pixel[x][0];
 
-            if(r == 0 && g == 0 && b == 0)
+            if(r == 255 && g == 255 && b == 255)
                 count++;
         }
     }
@@ -323,28 +323,41 @@ Java_com_example_detection_TestDetection_CountWhitePixelsInOneRow(JNIEnv *env, j
     int count = 0;
     uchar r,g,b;
 
-    int yStart = index_of_start;//faceArray[1] + index_of_start;                 //y값의 시작점
-    int ySize = index_of_end;//yStart + index_of_end;                    //y값의 끝점
     int xStart = faceArray[0];
     int xSize = xStart + faceArray[2];
 
-    for(int y = yStart; y < ySize; ++y){
+    for(int y = index_of_start; y < index_of_end; ++y){
         //y번째 줄에서 첫 번째 픽셀에 대한 포인터
-        //Vec3b* pixel = matInput.ptr<Vec3b>(y);
+        Vec3b* pixel = matInput.ptr<Vec3b>(y);
         for(int x = xStart; x < xSize; ++x){
-            Vec3b &intensity = matInput.at<Vec3b>(y, x);
-            r = intensity.val[2];
-            g = intensity.val[1];
-            b = intensity.val[0];
-            /*
             //픽셀에서 값 가져오기
             r = pixel[x][2];
             g = pixel[x][1];
             b = pixel[x][0];
-            */
+
             if(r == 255 && g == 255 && b == 255)
                 count++;
         }
     }
     return count;
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_detection_TestDetection_LandmarkDetection(JNIEnv *env, jobject thiz,
+                                                           jlong mat_addr_input,
+                                                           jlong mat_addr_result) {
+
+    Mat &Image = *(Mat *)mat_addr_input;
+    Mat &dst = *(Mat *)mat_addr_result;
+
+    //facedetectionDlib(Image, dst);
+
+    // TODO: implement LandmarkDetection()
+}extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_detection_TestDetection_LoadModel(JNIEnv *env, jobject thiz) {
+
+    //detector = get_frontal_face_detector();
+
+    //dat 파일 로드
+    //deserialize("/storage/emulated/0/shape_predictor_68_face_landmarks.dat") >> pose_model;
 }
