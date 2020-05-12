@@ -558,6 +558,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         builder.create().show();
     }
 
+    //button clicked
+    public void onClick(View view) {
+        finish();
+    }
+
     public class CountingThread extends Thread{
         public void run(){
             countUsingWhitePixel();
