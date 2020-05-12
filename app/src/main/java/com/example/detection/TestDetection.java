@@ -121,7 +121,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     //Intent sendIntent;
 
     AlarmSoundService mAlarmsoundservice;
-    MediaPlayer mMediaplayer;
 
     //UI
     TextView countView;
@@ -576,7 +575,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             e.printStackTrace();
         }
         releaseWriteLock();
-        return matResult;
+        return matBinary;
     }
 
 
@@ -869,42 +868,13 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 System.out.println("방송을 받았습니다.");
                 Intent mServiceintent = new Intent (context, AlarmSoundService.class);
                 context.stopService(mServiceintent);
+
+                unregisterReceiver(alarmReceiver);
             }
             //unregisterReceiver(alarmReceiver);
         }
     }
 
-    public class AlarmSoundService extends Service{
-        @Nullable
-        @Override
-        public IBinder onBind(Intent intent) {
-            return null;
-        }
-
-        public AlarmSoundService()
-        {
-
-        }
-
-        @Override
-        public int onStartCommand(Intent intent, int flags, int startId) {
-
-            Toast.makeText(this, "알람이 울립니다.", Toast.LENGTH_SHORT).show();
-            //return super.onStartCommand(intent, flags, startId);
-            mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound);
-            mMediaplayer.start();
-
-            return START_NOT_STICKY;
-        }
-
-        @Override
-        public void onDestroy() {
-            unregisterReceiver(alarmReceiver);
-            mMediaplayer.stop();
-            mMediaplayer.release();
-            super.onDestroy();
-        }
-    }
 }
 
 

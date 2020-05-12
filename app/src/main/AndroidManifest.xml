@@ -37,6 +37,7 @@
             android:configChanges="keyboardHidden|orientation">
 
         </activity>
+        <service android:name=".AlarmSoundService"></service>
     </application>
 
 </manifest>

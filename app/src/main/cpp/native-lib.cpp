@@ -215,6 +215,7 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
             {
                 cv::rectangle(img_result, righteye_area, Scalar(255,0,0), 15, 8, 0);
             }
+            eye_ROI = img_gray(righteye_area);
         }
 
         /*
