@@ -310,7 +310,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         };
 
         /////////////////////////////////모델 로드//////////////////////////////////////
-        loadModel("open_close.tflite");
+        loadModel("open_close_v2.tflite");
     }
 
     @Override
@@ -424,11 +424,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 opencloseView.setText("what?");
                 /////////////////output 값에 따라 결정/////////////////////////////////
                 if(output[0][0]>=0.5){
-                    opencloseView.setText("open");
+                    opencloseView.setText(output[0][0]+"");
                     openOrClose = true;
                 }
                 else {
-                    opencloseView.setText("close");
+                    opencloseView.setText(output[0][0]+"");
                     openOrClose = false;
                 }
 
