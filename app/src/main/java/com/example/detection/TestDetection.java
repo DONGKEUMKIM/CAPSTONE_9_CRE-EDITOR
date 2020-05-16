@@ -310,7 +310,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         };
 
         /////////////////////////////////모델 로드//////////////////////////////////////
-        loadModel("open_close_v2.tflite");
+        loadModel("my_open_close.tflite");
     }
 
     @Override
