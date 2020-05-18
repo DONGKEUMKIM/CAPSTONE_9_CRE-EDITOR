@@ -18,8 +18,12 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.detection.fragment.ContentFragment;
+import com.example.detection.fragment.calendarFragment.CompactCalendarTab;
+import com.example.detection.fragment.timeLineFragment.TimelineFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +42,39 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private int res = R.drawable.content_music;
     private LinearLayout linearLayout;
 
+    private int fragment_main = R.layout.fragment_main;
+    private int fragment_calendar = R.layout.fragment_calendar;
+    private int fragment_timeline = R.layout.fragment_timeline;
+
+    private FragmentManager fragmentManager;
+    //private ContentFragment content_frag;
+    private CompactCalendarTab calendar_frag;
+    private TimelineFragment timeline_frag;
+
+
+    private FragmentTransaction transaction;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_music);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, contentFragment)
-                .commit();
+
+        fragmentManager = getSupportFragmentManager();
+        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_dashboard);
+        calendar_frag = new CompactCalendarTab();
+        timeline_frag = new TimelineFragment();
+
+        transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_frame, contentFragment).commitAllowingStateLoss();
+
+        //ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_music);
+        //getSupportFragmentManager().beginTransaction()
+        //        .replace(R.id.content_frame, contentFragment)
+        //        .commit();
+
+
+
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
 
@@ -153,9 +181,13 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
     private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition,String contentName) {
         if(contentName.equals("Watch")) {
-            this.res = R.drawable.content_music;
+            this.res = R.drawable.content_dashboard;
+        }else if(contentName.equals("Timeline")){
+            this.res = R.drawable.content_timeline;
+        }else if(contentName.equals("Calendar")){
+            this.res = R.drawable.content_calendar;
         }else {
-            this.res = this.res == R.drawable.content_music ? R.drawable.content_films : R.drawable.content_music;
+            this.res = this.res == R.drawable.content_music ? R.drawable.content_dashboard : R.drawable.content_music;
         }
 
 
@@ -168,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         findViewById(R.id.content_overlay).setBackground(new BitmapDrawable(getResources(), screenShotable.getBitmap()));
         animator.start();
+
         ContentFragment contentFragment = ContentFragment.newInstance(this.res);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, contentFragment).commit();
         return contentFragment;
@@ -175,12 +208,24 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
     @Override
     public ScreenShotable onSwitch(Resourceble slideMenuItem, ScreenShotable screenShotable, int position) {
+        transaction = fragmentManager.beginTransaction();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+
         if (ContentFragment.CLOSE.equals(slideMenuItem.getName())) {
             return screenShotable;
         }
         if (ContentFragment.Watch.equals(slideMenuItem.getName())){
-            Intent intent = new Intent(getApplicationContext(), TestDetection.class);
+            Intent intent = new Intent(getApplicationContext(),TestDetection.class);
             startActivity(intent);
+        }
+        if (ContentFragment.Timeline.equals(slideMenuItem.getName())){
+
+            transaction.replace(R.id.frameLayout,timeline_frag).commitAllowingStateLoss();
+        }
+        if(ContentFragment.Calendar.equals(slideMenuItem.getName())){
+            transaction.replace(R.id.frameLayout,calendar_frag).commitAllowingStateLoss();
+
         }
         return replaceFragment(screenShotable, position,slideMenuItem.getName());
     }
@@ -202,4 +247,11 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     public void addViewToContainer(View view) {
         linearLayout.addView(view);
     }
+
+
+    //week view Listener
+
+
+
+
 }

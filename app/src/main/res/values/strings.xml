@@ -3,4 +3,8 @@
     <string name="drawer_close">close drawer</string>
     <string name="drawer_open">open drawer</string>
     <string name="action_settings">Settings</string>
+    <string name="action_today">Today</string>
+    <string name="action_day_view">Day view</string>
+    <string name="action_three_day_view">3 day view</string>
+    <string name="action_week_view">Week view</string>
 </resources>

@@ -34,10 +34,13 @@
             </intent-filter>
         </activity>
 
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
         </activity>
+
+
 
         <activity android:name=".TestDetection"
             android:screenOrientation="landscape"
@@ -45,7 +48,7 @@
             tools:ignore="LockedOrientationActivity">
 
         </activity>
-        <service android:name=".AlarmSoundService"></service>
+
     </application>
 
 </manifest>
