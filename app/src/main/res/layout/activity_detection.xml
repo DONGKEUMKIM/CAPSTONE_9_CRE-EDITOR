@@ -21,43 +21,119 @@
     android:visibility="gone"
     android:id="@+id/activity_surface_view"/>
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        opencv:srcCompat="@drawable/face" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_gravity="top"
         android:background="@drawable/background_transparent"
-        android:gravity="center"
+        android:gravity="top"
         android:orientation="vertical"
         opencv:layout_constraintBottom_toBottomOf="parent"
         opencv:layout_constraintStart_toStartOf="parent"
         opencv:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/countdownview"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="60"
-            android:textSize="24sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <TextView
+                android:id="@+id/COUNTDOWNTEXT"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="남은 시간 : "
+                android:textSize="24sp" />
 
-        <TextView
-            android:id="@+id/countView"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="0"
-            android:textSize="24sp" />
-        <TextView
-            android:id="@+id/open_close"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="random"
-            android:textSize="24sp" />
+            <TextView
+                android:id="@+id/COUNTDOWNNUM"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="60"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/HIGHSLEEPTEXT"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="HIGH COUNT : "
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/HIGHSLEEPNUM"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/LOWSLEEPTEXT"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="LOW COUNT : "
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/LOWSLEEPNUM"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/OPEN_CLOSE_TEXT"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="눈 판별 : "
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/open_close"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="random"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 
@@ -82,6 +158,8 @@
             android:onClick="onClick"
             android:text=""
             opencv:icon="@drawable/close_icon" />
+
+
 
     </LinearLayout>
 

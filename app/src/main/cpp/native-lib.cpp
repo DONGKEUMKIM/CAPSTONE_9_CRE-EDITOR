@@ -127,7 +127,7 @@ Java_com_example_detection_TestDetection_detect(JNIEnv *env, jobject thiz,
         }
     }
 }extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobject thiz,
                                                               jlong cascade_classifier_face,
                                                               jlong cascade_classifier_eye,
@@ -135,6 +135,9 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
                                                               jlong mat_addr_input,
                                                               jlong mat_addr_result, jlong eye_roi,
                                                               jintArray faceArray) {
+
+    int returnValue = 0;                    // 얼굴이 검출되면 1 , 검출되지 않으면 0
+
     Mat &img_input = *(Mat *) mat_addr_input;
     Mat &img_result = *(Mat *) mat_addr_result;
 
@@ -161,6 +164,11 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
     __android_log_print(ANDROID_LOG_DEBUG, (char *) "native-lib :: ",
                         (char *) "face %d found ", faces.size());
 
+
+    if(faces.size() != 0)
+    {
+        returnValue = 1;
+    }
     for (int i = 0; i < faces.size(); i++) {
         int real_facesize_x = faces[i].x / resizeRatio;
         int real_facesize_y = faces[i].y / resizeRatio;
@@ -250,33 +258,50 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
         }
          */
     }
+    return returnValue;
 }extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_detection_TestDetection_makeFaceMaskImage(JNIEnv *env, jobject thiz,
                                                            jlong mat_addr_input,
                                                            jlong mat_addr_result,
-                                                           jintArray face_Array) {
+                                                           jintArray face_Array,
+                                                           jintArray hsv_array) {
     Mat &img_input = *(Mat *) mat_addr_input;
     Mat &img_result = *(Mat *) mat_addr_result;
 
     jint *faceArray = env->GetIntArrayElements(face_Array, NULL);
 
+    jint *hsvArray = env->GetIntArrayElements(hsv_array, NULL);
+
     Rect faceRect(faceArray[0],faceArray[1],faceArray[2],faceArray[3]);
 
-    cvtColor(img_input, img_result, COLOR_BGR2HSV);
 
-    cv::Scalar low(50 , 30, 0);
-    cv::Scalar high(150, 255, 255);
+    cvtColor(img_input, img_result, COLOR_BGR2HSV);
+    //cvtColor(img_input, matBinary2, COLOR_BGR2HSV);
+
+    cv::Scalar low(hsvArray[0] - 20 , 30, 0);
+    cv::Scalar high(hsvArray[0] + 20 , 255  , 255);
 
     inRange(img_result,low, high, img_result);
+    /*
+    cv::Scalar low1(150 , 30, 30);
+    cv::Scalar high1(180, 255, 255);
 
+    inRange(matBinary1,low, high, matBinary1);
+    inRange(matBinary2,low1, high1, matBinary2);
 
+    matBinary1 |= matBinary2;
+
+    matBinary1.copyTo(img_result);
+
+    */
     Mat kernal = getStructuringElement(MORPH_ELLIPSE, Size(5,5));
     morphologyEx(img_result , img_result, MORPH_CLOSE, kernal);
 
     //얼굴 바운더리를 표시하고 싶을 경우
     //해당 주석을 지울것
     //cv::rectangle(img_result, faceRect, Scalar(255,0,0), 15, 8, 0 );
+
 }extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_detection_TestDetection_CountWhitePixelsInFaceBoundary(JNIEnv *env, jobject thiz,
@@ -360,4 +385,49 @@ Java_com_example_detection_TestDetection_LoadModel(JNIEnv *env, jobject thiz) {
 
     //dat 파일 로드
     //deserialize("/storage/emulated/0/shape_predictor_68_face_landmarks.dat") >> pose_model;
+}extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_detection_TestDetection_getHfromInputImg(JNIEnv *env, jobject thiz,
+                                                          jlong mat_addr_input,
+                                                          jintArray face_array) {
+
+    Mat &matInput = *(Mat *)mat_addr_input;
+    Mat hsvImg;
+    jint *faceArray = env->GetIntArrayElements(face_array, NULL);
+
+    cvtColor(matInput, hsvImg, COLOR_BGR2HSV);
+
+    int xPoint = faceArray[0] + faceArray[2]/2;
+    int yPoint = faceArray[1] + faceArray[3]/2;
+
+    int hue = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[0];
+
+    return hue;
+    // TODO: implement getHfromInputImg()
+}extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_detection_TestDetection_getHSVfromImg(JNIEnv *env, jobject thiz,
+                                                       jlong mat_addr_input, jintArray face_array, jintArray array) {
+
+
+    Mat &matInput = *(Mat *)mat_addr_input;
+    Mat hsvImg;
+
+    jint *faceArray = env->GetIntArrayElements(face_array, NULL);
+    jintArray huearray = (jintArray )env->NewGlobalRef((jobject) array);
+
+    cvtColor(matInput, hsvImg, COLOR_BGR2HSV);
+
+    int xPoint = faceArray[0] + faceArray[2]/2;
+    int yPoint = faceArray[1] + faceArray[3]/2;
+
+    int arr[3]={0,0,0};
+
+    arr[0] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[0];
+    arr[1] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[1];
+    arr[2] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[2];
+
+    env->SetIntArrayRegion(huearray,0,3,arr);
+
+    return xPoint;
 }

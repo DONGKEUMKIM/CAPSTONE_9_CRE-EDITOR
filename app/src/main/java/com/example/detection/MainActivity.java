@@ -90,6 +90,11 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         setActionBar();
         createMenuList();
         viewAnimator = new ViewAnimator<>(this, list, contentFragment, drawerLayout, this);
+
+        //List<SubjectData> subjectresults = SQLiteManager.sqLiteManager.selectsubjectAll();
+        //List<TestTimeData> s = SQLiteManager.sqLiteManager.selecttesttimeAll();
+
+        int kkk = 0;
     }
 
     private void createMenuList() {

@@ -8,9 +8,14 @@ import android.os.Bundle;
  */
 public class SplashActivity extends Activity {
 
+    SQLiteManager sqLiteManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sqLiteManager = SQLiteManager.getInstance(this);
+        //sqLiteManager.init();
 
         try {
             Thread.sleep(3000); //milli-sec
