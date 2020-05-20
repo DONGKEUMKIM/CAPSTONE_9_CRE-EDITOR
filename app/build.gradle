@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "29.0.3"
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.example.detection"
@@ -30,17 +30,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
             version "3.10.2"
         }
-    }
-
-    aaptOptions {
-        noCompress "tflite"
-        noCompress "lite"
     }
 }
 
@@ -52,7 +51,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'org.tensorflow:tensorflow-lite:+'
     implementation project(path: ':opencv')
 
 
@@ -62,4 +60,17 @@ dependencies {
     implementation 'com.github.yalantis:Side-Menu.Android:1.0.2'
     implementation 'com.google.android.material:material:1.2.0-alpha03'
     implementation 'com.github.navasmdc:MaterialDesign:1.5@aar'
+    //implementation 'me.nlmartian.silkcal:library:0.1.1'
+    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
+    //implementation 'com.github.alamkanak:android-week-view:1.2.6'
+    // https://mvnrepository.com/artifact/org.webjars/material-design-icons
+
+
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    //implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+    implementation 'com.github.vipulasri:timelineview:1.1.4'
+
+    implementation 'com.github.qapqap:TimelineView:v1.6'
+
+
 }
