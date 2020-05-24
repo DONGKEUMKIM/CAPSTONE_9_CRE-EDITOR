@@ -83,13 +83,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
+        <Button
+            android:id="@+id/add_schedule_calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add new"
+            />
     </LinearLayout>
 
     <ListView
         android:id="@+id/bookings_listview"
         android:layout_below="@+id/calendar_control_buttons_2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+
+        >
     </ListView>
 
 </RelativeLayout>

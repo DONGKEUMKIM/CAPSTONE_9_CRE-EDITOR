@@ -4,14 +4,15 @@ import java.io.Serializable;
 
 //////////////////////////////////스케쥴///////////////////////////////////////
 public class ScheduleData implements Serializable {
+    private static final long serialVersionUID = 1;
     private String id;                          //id
     private int subject_ID;                     //과목 코드
     private String date;                        //날짜
     private int duringtime;                     //공부 시간
 
 
-    ScheduleData(){}
-    ScheduleData(String id , int subject_ID , String date, int duringtime){
+
+    public ScheduleData(String id , int subject_ID , String date, int duringtime){
         this.id = id;
         this.subject_ID = subject_ID;
         this.date = date;

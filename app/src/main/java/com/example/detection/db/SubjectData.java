@@ -4,12 +4,13 @@ import java.io.Serializable;
 
 //////////////////////////////////과목 정보/////////////////////////////////////
 public class SubjectData implements Serializable {
+    private static final long serialVersionUID = 2;
     private int id;                         //id (과목코드)
     private String name;                    //과목 이름
     private int priority;                   //우선 순위
 
-    public SubjectData(){}
-    SubjectData(int id , String name, int priority){
+
+    public SubjectData(int id , String name, int priority){
 
         this.id = id;
         this.name = name;

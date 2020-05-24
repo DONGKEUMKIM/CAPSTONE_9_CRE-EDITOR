@@ -4,14 +4,15 @@ import java.io.Serializable;
 
 //////////////////////////////////시험 시간/////////////////////////////////////
 public class TestTimeData implements Serializable{
+    private static final long serialVersionUID = 3;
     private String id;                      //id
     private int subject_ID;                 //과목 코드
     private String date;                    //날짜
     private int duringtime;                 //시험 시간
 
 
-    public TestTimeData(){}
-    TestTimeData(String id , int subject_ID , String date, int duringtime){
+
+    public TestTimeData(String id , int subject_ID , String date, int duringtime){
         this.id = id;
         this.subject_ID = subject_ID;
         this.date = date;

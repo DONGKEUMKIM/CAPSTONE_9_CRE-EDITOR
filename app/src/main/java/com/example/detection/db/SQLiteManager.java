@@ -56,7 +56,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return sqLiteManager;
     }
 
-    private SQLiteManager(Context context) {
+    public SQLiteManager(Context context) {
         super(context, DATABASE_NAME, null, DB_VERSION);
         db = this.getWritableDatabase();
     }
@@ -256,7 +256,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     //Subject의 이름으로 부터 해당 SubjectData 조회
     public SubjectData selectSubjectDataFormSubjectname(String subjectname)
     {
-        SubjectData dataResult = new SubjectData();
+        SubjectData dataResult = new SubjectData(0,"",0);
         String sql = "select * from "+SUBJECT_TABLE_NAME+" where " + SUBJECT_NAME + " = \'" + subjectname+"\' ;";
         Cursor results = db.rawQuery(sql,null);
         if(results.moveToFirst()){
@@ -271,7 +271,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     //Subject의 ID값으로 부터 해당 SubjectData 조회
     public SubjectData selectSubjectDataFormSubjectID(int subjecID)
     {
-        SubjectData dataResult = new SubjectData();
+        SubjectData dataResult = new SubjectData(0,"",0);
         String sql = "select * from "+SUBJECT_TABLE_NAME+" where " + SUBJECT_ID + " = \'" + subjecID+"\' ;";
         Cursor results = db.rawQuery(sql,null);
         if(results.moveToFirst()){
@@ -315,7 +315,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     //시험시간의 과목ID로 부터 해당 TestTimeData 조회
     public TestTimeData selectTestTimeDataFormSubjectID(int subjectID)
     {
-        TestTimeData dataResult = new TestTimeData();
+        TestTimeData dataResult = new TestTimeData("",0,"",0);
         String sql = "select * from "+TESTTIME_TABLE_NAME+" where " + TESTTIME_SUBJECT_ID + " = \'" + subjectID+"\' ;";
         Cursor results = db.rawQuery(sql,null);
         if(results.moveToFirst()){

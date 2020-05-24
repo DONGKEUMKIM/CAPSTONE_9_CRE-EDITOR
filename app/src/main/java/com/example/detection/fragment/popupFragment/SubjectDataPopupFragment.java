@@ -41,8 +41,8 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
         cancelButton = (Button)findViewById(R.id.input_data_cancel_button);
         testTimeSetButton = (Button)findViewById(R.id.testTimeSet);
         seekBar = (SeekBar)findViewById(R.id.input_data_priority);
-        subjectData = new SubjectData();
-        testTimeData = new TestTimeData();
+        subjectData = new SubjectData(0,"",0);
+        testTimeData = new TestTimeData("",0,"",0);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -100,11 +100,14 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
 
         return new BitmapDrawable(getResources(), bitmap);
     }
-    private void okButtonClicked(){};
-    private void cancelButtonClicked(){};
+    private void okButtonClicked(){
+
+        finish();
+    };
+    private void cancelButtonClicked(){finish();};
     private void testTimeSetButtonClicked(View view){
         Intent intent = new Intent(this, testTimeInsertPopupFragment.class);
-        intent.putExtra("idArray",idArray);
+        intent.putStringArrayListExtra("idArray",idArray);
         startActivityForResult(intent,0);
     }
 
@@ -116,7 +119,7 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
         else{
             if(resultCode==1)
                 return;
-            testTimeData = (TestTimeData)data.getSerializableExtra("testTime");
+            testTimeData = (TestTimeData)data.getExtras().getSerializable("testTime");
         }
     }
 }
