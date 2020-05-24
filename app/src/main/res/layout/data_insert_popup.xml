@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation = "vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation = "horizontal"
+        android:background="@color/colorPrimary"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:text="Insert Subject Data"
+            android:textColor="#fff"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding = "20dp"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:textSize="15sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:layout_marginBottom="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name "
+                android:paddingEnd="2dp" />
+
+            <EditText
+                android:id="@+id/insert_data_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha="0.8"
+                android:ems="10"
+                android:inputType="text"
+                android:text="name"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:showDividers="middle|beginning|end">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:gravity="center"
+                android:paddingRight="2dp"
+                android:text="Priority "
+                android:textColor="#000000"
+                android:textSize="15sp" />
+
+            <SeekBar
+                android:id="@+id/input_data_priority"
+                android:layout_width="210dp"
+                android:layout_height="30dp"
+                android:max="20"
+                android:progress="0"
+                android:scrollbarSize="10dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity = "center"
+            >
+
+            <TextView
+                android:textSize="15sp"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:layout_marginBottom="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Test Time "
+                android:paddingEnd="2dp" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="20dp"
+                android:text = "set test time"
+                android:id="@+id/testTimeSet"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            >
+
+            <Button
+                android:id="@+id/input_data_okButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
+                android:layout_marginRight="20dp"
+                android:text="Insert"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/input_data_cancel_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
+                android:text="Cancel"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

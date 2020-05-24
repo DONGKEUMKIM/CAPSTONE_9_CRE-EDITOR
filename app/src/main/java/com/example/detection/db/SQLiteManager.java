@@ -1,97 +1,19 @@
-package com.example.detection;
+package com.example.detection.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-//////////////////////////////////과목 정보/////////////////////////////////////
-class SubjectData{
-    private int id;                         //id (과목코드)
-    private String name;                    //과목 이름
-    private int priority;                   //우선 순위
-
-    SubjectData(){}
-    SubjectData(int id , String name, int priority){
-
-        this.id = id;
-        this.name = name;
-        this.priority = priority;
-    }
-
-    public int getID(){return this.id;}
-    public String getName(){return this.name;}
-    public int getPriority(){return this.priority;}
-
-    public void setID(int id){this.id = id;}
-    public void setName(String name){this.name = name;}
-    public void setPriority(int priority){this.priority = priority;}
-
-}
 ///////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////시험 시간/////////////////////////////////////
-class TestTimeData{
-    private String id;                      //id
-    private int subject_ID;                 //과목 코드
-    private String date;                    //날짜
-    private int duringtime;                 //시험 시간
-
-
-    TestTimeData(){}
-    TestTimeData(String id , int subject_ID , String date, int duringtime){
-        this.id = id;
-        this.subject_ID = subject_ID;
-        this.date = date;
-        this.duringtime = duringtime;
-    }
-
-    public String getID(){return id;}
-    public int getSubject_ID(){return subject_ID;}
-    public String getDate(){return this.date;}
-    public int getDuringtime(){return this.duringtime;}
-
-    public void setId(String id){this.id = id;}
-    public void setSubject_ID(int subject_ID){this.subject_ID = subject_ID;}
-    public void setdate(String date){this.date = date;}
-    public void setDuringtime(int duringtime){this.duringtime = duringtime;}
-}
-
 ///////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////스케쥴///////////////////////////////////////
-class ScheduleData{
-    private String id;                          //id
-    private int subject_ID;                     //과목 코드
-    private String date;                        //날짜
-    private int duringtime;                     //공부 시간
-
-
-    ScheduleData(){}
-    ScheduleData(String id , int subject_ID , String date, int duringtime){
-        this.id = id;
-        this.subject_ID = subject_ID;
-        this.date = date;
-        this.duringtime = duringtime;
-    }
-
-    public String getID(){return id;}
-    public int getSubject_ID(){return subject_ID;}
-    public String getDate(){return this.date;}
-    public int getDuringtime(){return this.duringtime;}
-
-    public void setId(String id){this.id = id;}
-    public void setSubject_ID(int subject_ID){this.subject_ID = subject_ID;}
-    public void setdate(String date){this.date = date;}
-    public void setDuringtime(int duringtime){this.duringtime = duringtime;}
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 

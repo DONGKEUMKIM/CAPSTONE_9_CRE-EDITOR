@@ -21,7 +21,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.detection.fragment.ContentFragment;
 import com.example.detection.fragment.calendarFragment.CompactCalendarTab;
 import com.example.detection.fragment.timeLineFragment.TimelineFragment;
 

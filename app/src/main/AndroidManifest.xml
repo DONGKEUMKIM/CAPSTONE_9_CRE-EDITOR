@@ -49,6 +49,11 @@
 
         </activity>
 
+        <activity android:name=".fragment.popupFragment.testTimeInsertPopupFragment"
+            android:screenOrientation="fullSensor"/>
+        <activity android:name=".fragment.popupFragment.SubjectDataPopupFragment"
+            android:screenOrientation="fullSensor"/>
+
     </application>
 
 </manifest>
