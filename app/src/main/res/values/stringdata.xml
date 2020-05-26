@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name = "WISESAING">
+        <item>10분 더 공부하면 배우자 얼굴이 바뀐다</item>
+        <item>지금 이 순간에도 적들의 책장은 넘어가고 있다</item>
+        <item>행복은 성적순이 아니지만 성공은 성적 순이다</item>
+        <item>최선은 나를 절대 배반하지 않는다</item>
+        <item>닭 대가리 보다는 소꼬리가 낫다</item>
+        <item>10분뒤와 10년후를 동시에 생각하라</item>
+        <item>신은 잊어라, 그는 영원히 방관자일 뿐이다</item>
+        <item>지금 흘린 침은 내일 흘릴 눈물이 된다</item>
+        <item>눈이 감기는가? 그럼 미래를 향한 눈도 감긴다</item>
+        <item>피할수 없다면 즐겨라</item>
+        <item>남보다 더 일찍 더 부지런히 노력해야 성공을 맛 볼수 있다</item>
+        <item>죽어라 열심히 공부해도 죽지는 않는다</item>
+        <item>승리는 가장 끈기있는 사람에게로 돌아간다</item>
+        <item>가장 위대한 일은 남들이 자고 있을때 이루어진다</item>
+        <item>포기하지 마라. 저 모퉁이만 돌면 희망이란 녀석이 기다리고 있을지도 모른다.</item>
+        <item>공부할 때 고통은 잠시뿐 이지만 못배운 고통은 평생이다</item>
+        <item>실패는 용서해도 포기는 용서 못한다</item>
+        <item>개같이 공부해서 정승같이 놀자</item>
+        <item>No pains No gains</item>
+        <item>공부를 하려고 하지 말고 공부를 이겨버려라</item>
+        <item>고생 없이 얻을 수 있는 진실로 귀중한 것은 하나도 없다</item>
+        <item>공부할 때의 어려움은 잠깐이지만, 성공한 후의 즐거움은 일평생이다</item>
+        <item>마음먹은 일은 일단 시작했으면 반드시 끝이라는 결과를 모아야만 한다</item>
+    </string-array>
+
+    <string-array name = "GOODSAING">
+        <item>훌륭합니다</item>
+        <item>이대로 쭉 달려보세요</item>
+        <item>참 잘했어요</item>
+    </string-array>
+
+    <string-array name = "BANDSAING">
+        <item>당신은 실패했습니다</item>
+        <item>당신의 성적이 F를 향해가고 있습니다</item>
+        <item>정신차리세요</item>
+    </string-array>
+
+</resources>

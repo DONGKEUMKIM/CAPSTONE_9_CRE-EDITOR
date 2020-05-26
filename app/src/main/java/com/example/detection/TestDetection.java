@@ -19,6 +19,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -98,7 +99,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private final static int LOW_NOTACT = 5;
     int StateOfDetectingLowDowsiness= LOW_COUNTING;
 
-    int cameraviewcount = 60;                       //60초 단위 촬영을 위한 카운트
+    int cameraviewcount = 15;                       //60초 단위 촬영을 위한 카운트
 
     int high_detectingCount = 0;                            //높은졸음이 감지됐을때 시작되는 카운트
     int low_detectingCount = 0;                             //낮은졸음이 감지됐을때 시작되는 카운트
@@ -119,6 +120,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     TextView lowcountView;
     TextView countdownView;
     TextView opencloseView;
+
+    ImageView backgroundImageView;
     //쓰레드 핸들러
     Handler mhighcountHandler = null;
     Handler mlowcountHandler = null;
@@ -285,6 +288,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         countdownView = (TextView)findViewById(R.id.COUNTDOWNNUM);
         opencloseView = findViewById(R.id.open_close);
 
+        backgroundImageView = (ImageView)(findViewById(R.id.backgroundimg));
         //알람을 위한 처리
         alarmReceiver = new AlarmReceiver();
         intentFilter = new IntentFilter();
@@ -374,7 +378,13 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     public void onCameraViewStarted(int width, int height) {
         //카메라 촬영이 시작되었을때
         //60초 카운트 시작
-        cameraviewcount = 150;
+        if(backgroundImageView != null)
+        {
+            //카메라 촬영 시작시
+            //이미지는 얼굴 프레임 이미지
+            backgroundImageView.setImageResource(R.drawable.face);
+        }
+        cameraviewcount = 15;
 
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
@@ -384,7 +394,15 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     public void onCameraViewStopped() {
         //카메라 촬영이 정지되었을때
         //60초 카운트 시작
-        cameraviewcount = 150;
+
+        if(backgroundImageView != null)
+        {
+            //카메라 촬영 휴식시
+            //이미지는 휴식구간 이미지
+            backgroundImageView.setImageResource(R.drawable.breakimg);
+        }
+
+        cameraviewcount = 15;
 
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();

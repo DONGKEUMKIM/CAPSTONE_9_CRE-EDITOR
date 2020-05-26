@@ -1,5 +1,7 @@
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -39,7 +41,45 @@
             android:layout_height="match_parent"
             android:layout_marginTop="80dp">
 
+
         </FrameLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rela_layout"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
+            android:layout_gravity="bottom|right">
+
+            <ImageView
+                android:id="@+id/speaking_Img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/speakingimg"
+                />
+
+            <TextView
+                android:id="@+id/speaking_Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignBottom="@id/speaking_Img"
+                android:layout_alignLeft="@id/speaking_Img"
+                android:layout_alignRight="@id/speaking_Img"
+                android:layout_alignTop="@id/speaking_Img"
+
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="50dp"
+                android:layout_marginRight="110dp"
+                android:layout_marginLeft="20dp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:text="TextView" />
+        </RelativeLayout>>
+
 
     </io.codetail.widget.RevealFrameLayout>
 
@@ -57,6 +97,11 @@
             android:layout_height="wrap_content"
             android:divider="@android:color/transparent"
             android:background="@android:color/transparent">
+
         </LinearLayout>
     </ScrollView>
+
+
+
+
 </androidx.drawerlayout.widget.DrawerLayout>
