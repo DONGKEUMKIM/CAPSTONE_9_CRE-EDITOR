@@ -477,7 +477,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                 opencloseView.setText("what?");
                 /////////////////output 값에 따라 결정/////////////////////////////////
-                if(output[0][0]>=0.5){
+                if(output[0][0]>=0.7){
                     opencloseView.setText(output[0][0]+"");
                     openOrClose = true;
                 }

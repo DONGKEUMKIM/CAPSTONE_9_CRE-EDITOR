@@ -6,8 +6,8 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="21"
-8-->C:\Users\DONGGEUMKIM\Detection\opencv\java\AndroidManifest.xml
+8-->H:\Android_Java_Examples\CAPSTONE_9_CRE-EDITOR\opencv\java\AndroidManifest.xml
 9        android:targetSdkVersion="26" />
-9-->C:\Users\DONGGEUMKIM\Detection\opencv\java\AndroidManifest.xml
+9-->H:\Android_Java_Examples\CAPSTONE_9_CRE-EDITOR\opencv\java\AndroidManifest.xml
 10
 11</manifest>
