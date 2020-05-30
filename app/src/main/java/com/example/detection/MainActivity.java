@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.ViewDebug;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -28,11 +27,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.detection.db.SQLiteManager;
 import com.example.detection.fragment.ContentFragment;
 import com.example.detection.fragment.calendarFragment.CompactCalendarTab;
+import com.example.detection.fragment.popupFragment.ScheduleDataPopupFragment;
+import com.example.detection.fragment.popupFragment.SubjectDataPopupFragment;
+import com.example.detection.fragment.subjectListFragment.SubjectListFragment;
 import com.example.detection.fragment.timeLineFragment.TimelineFragment;
-
-import org.opencv.android.LoaderCallbackInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,17 +56,18 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private int fragment_main = R.layout.fragment_main;
     private int fragment_calendar = R.layout.fragment_calendar;
     private int fragment_timeline = R.layout.fragment_timeline;
+    private int fragment_subject = R.layout.fragment_subject;
 
     private FragmentManager fragmentManager;
     //private ContentFragment content_frag;
     private CompactCalendarTab calendar_frag;
     private TimelineFragment timeline_frag;
-
+    private SubjectListFragment subject_frag;
 
     private FragmentTransaction transaction;
+    private ArrayList<String> idArray = new ArrayList<>();
+    private SQLiteManager dbManager;
 
-
-    /////////////////////////////Speaking Layout////////////////////////////////////////
     private RelativeLayout speaking_layout;                         //이미지 레이아웃
     private TextView speakingtextView;                              //스피킹 텍스트뷰
     Handler imgCntHandler = null;
@@ -76,23 +78,27 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     String[] goodSayingArray;
     String[] badSayingArray;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         fragmentManager = getSupportFragmentManager();
         ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_dashboard);
         calendar_frag = new CompactCalendarTab();
         timeline_frag = new TimelineFragment();
+        subject_frag = new SubjectListFragment();
 
         transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.content_frame, contentFragment).commitAllowingStateLoss();
-
+        dbManager = new SQLiteManager(this);
+        idArray.addAll(dbManager.selectAllSubjectName());
         //ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_music);
         //getSupportFragmentManager().beginTransaction()
         //        .replace(R.id.content_frame, contentFragment)
         //        .commit();
+
+
 
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -130,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         speaking_layout = findViewById(R.id.rela_layout);
         speakingtextView = (TextView) findViewById(R.id.speaking_Text);
-        final Animation animTransRight = AnimationUtils.loadAnimation(this,R.anim.anim_translate_right);
+        final Animation animTransRight = AnimationUtils.loadAnimation(this, R.anim.anim_translate_right);
 
         imgCntHandler = new Handler()
         {
@@ -163,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         speakingtextView.setText(SetSpeakingtextView(2));
         //speakingImgThread = new SpeakingImgVisibleThread();
         //speakingImgThread.run();
+
     }
 
     private void createMenuList() {
@@ -170,16 +177,16 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         list.add(menuItem0);
         SlideMenuItem menuItem = new SlideMenuItem(ContentFragment.Dashboard, R.drawable.dashboard_icon);
         list.add(menuItem);
-        SlideMenuItem menuItem2 = new SlideMenuItem(ContentFragment.Calendar, R.drawable.calendar_icon);
-        list.add(menuItem2);
+        //SlideMenuItem menuItem2 = new SlideMenuItem(ContentFragment.Calendar, R.drawable.calendar_icon);
+        //list.add(menuItem2);
         SlideMenuItem menuItem3 = new SlideMenuItem(ContentFragment.Watch, R.drawable.watch_icon);
         list.add(menuItem3);
         SlideMenuItem menuItem4 = new SlideMenuItem(ContentFragment.Scores, R.drawable.scores_icon);
         list.add(menuItem4);
         SlideMenuItem menuItem5 = new SlideMenuItem(ContentFragment.Timeline, R.drawable.timeline_icon);
         list.add(menuItem5);
-        //SlideMenuItem menuItem6 = new SlideMenuItem(ContentFragment.Search, R.drawable.search_icon);
-        //list.add(menuItem6);
+        SlideMenuItem menuItem6 = new SlideMenuItem(ContentFragment.Subjects, R.drawable.search_icon);
+        list.add(menuItem6);
         SlideMenuItem menuItem7 = new SlideMenuItem(ContentFragment.Setting, R.drawable.settings_icon);
         list.add(menuItem7);
     }
@@ -252,15 +259,15 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         return super.onOptionsItemSelected(item);
     }
 
-    private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition,String contentName) {
+    private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String contentName) {
         if(contentName.equals("Watch")) {
-            this.res = R.drawable.content_dashboard;
+            //this.res = R.drawable.content_dashboard;
         }else if(contentName.equals("Timeline")){
             this.res = R.drawable.content_timeline;
-        }else if(contentName.equals("Calendar")){
+        }else if(contentName.equals("Dashboard")){
             this.res = R.drawable.content_calendar;
         }else {
-            this.res = this.res == R.drawable.content_music ? R.drawable.content_dashboard : R.drawable.content_music;
+            this.res = this.res == R.drawable.content_music ? R.drawable.content_calendar : R.drawable.content_music;
         }
 
 
@@ -276,7 +283,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         ContentFragment contentFragment = ContentFragment.newInstance(this.res);
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, contentFragment).commit();
-
         return contentFragment;
     }
 
@@ -290,16 +296,19 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             return screenShotable;
         }
         if (ContentFragment.Watch.equals(slideMenuItem.getName())){
-            Intent intent = new Intent(getApplicationContext(),TestDetection.class);
+            Intent intent = new Intent(getApplicationContext(), TestDetection.class);
             startActivity(intent);
         }
         if (ContentFragment.Timeline.equals(slideMenuItem.getName())){
 
             transaction.replace(R.id.frameLayout,timeline_frag).commitAllowingStateLoss();
         }
-        if(ContentFragment.Calendar.equals(slideMenuItem.getName())){
+        if(ContentFragment.Dashboard.equals(slideMenuItem.getName())){
             transaction.replace(R.id.frameLayout,calendar_frag).commitAllowingStateLoss();
 
+        }
+        if(ContentFragment.Subjects.equals(slideMenuItem.getName())){
+            transaction.replace(R.id.frameLayout,subject_frag).commitAllowingStateLoss();
         }
         return replaceFragment(screenShotable, position,slideMenuItem.getName());
     }
@@ -327,16 +336,53 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
 
 
+    public ArrayList<String> getIdArray(){
+        return idArray;
+    }
+    public void addNewSchedule(){
+        Intent intent = new Intent(this, ScheduleDataPopupFragment.class);
+        intent.putStringArrayListExtra("idArray",idArray);
+        startActivityForResult(intent, 1);
+    }
+    public void addNewSubject(){
+        Intent intent = new Intent(this, SubjectDataPopupFragment.class);
+        intent.putStringArrayListExtra("idArray",idArray);
+        startActivityForResult(intent,2);
+    }
 
-    public class SpeakingImgVisibleThread extends Thread{
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case 1:
+                if(resultCode==1)
+                    return;
+                else{
+                    System.out.println("okClicked");
+                    break;
+                }
+            case 2:
+                if(resultCode==1)
+                    return;
+                else{
+                    System.out.println("okClicked2");
+                    break;
+                }
+        }
+    }
+
+
+
+    public class SpeakingImgVisibleThread extends Thread {
 
         public boolean isrun = true;
 
-        public void run(){
-            while(ImgCnt > 0 && isrun){
+        public void run() {
+            while (ImgCnt > 0 && isrun) {
                 Message message = imgCntHandler.obtainMessage();
                 ImgCnt--;
-                if(ImgCnt == 0)
+                if (ImgCnt == 0)
                     isrun = false;
                 message.arg1 = ImgCnt;
                 imgCntHandler.sendMessage(message);
@@ -350,7 +396,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             System.out.println("이미지비지블 스레드가 종료되었습니다.");
         }
     }
-
     public String SetSpeakingtextView(int num)
     {
         Random rnd = new Random();
@@ -358,25 +403,24 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         switch(num)
         {
             case 1:
-                {
-                    //명언
-                    int randomValue = rnd.nextInt(wiseSayingArray.length);
-                    str = wiseSayingArray[randomValue];
-                } break;
+            {
+                //명언
+                int randomValue = rnd.nextInt(wiseSayingArray.length);
+                str = wiseSayingArray[randomValue];
+            } break;
             case 2:
-                {
-                    int randomValue = rnd.nextInt(goodSayingArray.length);
-                    str = goodSayingArray[randomValue];
-                    //좋은말
-                }break;
+            {
+                int randomValue = rnd.nextInt(goodSayingArray.length);
+                str = goodSayingArray[randomValue];
+                //좋은말
+            }break;
             case 3:
-                {
-                    int randomValue = rnd.nextInt(badSayingArray.length);
-                    str = badSayingArray[randomValue];
-                    //나쁜말
-                }break;
-            }
-            return str;
+            {
+                int randomValue = rnd.nextInt(badSayingArray.length);
+                str = badSayingArray[randomValue];
+                //나쁜말
+            }break;
+        }
+        return str;
     }
 }
-
