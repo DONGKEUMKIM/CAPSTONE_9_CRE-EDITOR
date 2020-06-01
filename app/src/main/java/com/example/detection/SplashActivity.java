@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.example.detection.db.SQLiteManager;
+
 /**
  * splash activity
  */
@@ -19,9 +21,9 @@ public class SplashActivity extends Activity {
         sqLiteManager = SQLiteManager.getInstance(this);
         //sqLiteManager.init();
 
-        Handler hd = new Handler();
-        hd.postDelayed(new splashhandler(), 3000);
-        /*
+        //Handler hd = new Handler();
+        //hd.postDelayed(new splashhandler(), 3000);
+
         try {
             Thread.sleep(3000); //milli-sec
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
@@ -29,7 +31,7 @@ public class SplashActivity extends Activity {
         } catch (Exception e) {
 
         }
-        */
+
     }
 
     private class splashhandler implements Runnable{

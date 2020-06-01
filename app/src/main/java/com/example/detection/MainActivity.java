@@ -70,9 +70,10 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
     private RelativeLayout speaking_layout;                         //이미지 레이아웃
     private TextView speakingtextView;                              //스피킹 텍스트뷰
+
+    Animation animTransRight;
     Handler imgCntHandler = null;
     private int ImgCnt = 10;
-    SpeakingImgVisibleThread speakingImgThread;
 
     String[] wiseSayingArray;
     String[] goodSayingArray;
@@ -136,25 +137,29 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         speaking_layout = findViewById(R.id.rela_layout);
         speakingtextView = (TextView) findViewById(R.id.speaking_Text);
-        final Animation animTransRight = AnimationUtils.loadAnimation(this, R.anim.anim_translate_right);
+        animTransRight = AnimationUtils.loadAnimation(this, R.anim.anim_translate_right);
 
-        imgCntHandler = new Handler()
-        {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
+    }
 
-                if(msg.arg1 == 0 )
+    private Handler imgVisibleCountHandler = new Handler();
+    private Runnable imgVisibleCountRunnable = new Runnable() {
+        @Override
+        public void run() {
+            ImgCnt--;
+            if(ImgCnt > 0)
+            {
+                imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
+            }
+            else
+            {
+                if(imgVisibleCountHandler != null)
                 {
                     speaking_layout.startAnimation(animTransRight);
-                    speaking_layout.setVisibility(View.INVISIBLE);
+                    imgVisibleCountHandler.removeCallbacks(imgVisibleCountRunnable);
                 }
             }
-        };
-
-        //애니메이션 시작
-        //speaking_layout.startAnimation(animTransRight);
-    }
+        }
+    };
 
     @Override
     protected void onStart() {
@@ -167,9 +172,8 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         speaking_layout.setVisibility(View.VISIBLE);
         speakingtextView.setText(SetSpeakingtextView(2));
-        //speakingImgThread = new SpeakingImgVisibleThread();
-        //speakingImgThread.run();
 
+        imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
     }
 
     private void createMenuList() {
@@ -373,29 +377,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     }
 
 
-
-    public class SpeakingImgVisibleThread extends Thread {
-
-        public boolean isrun = true;
-
-        public void run() {
-            while (ImgCnt > 0 && isrun) {
-                Message message = imgCntHandler.obtainMessage();
-                ImgCnt--;
-                if (ImgCnt == 0)
-                    isrun = false;
-                message.arg1 = ImgCnt;
-                imgCntHandler.sendMessage(message);
-                try {
-                    System.out.println(String.valueOf(ImgCnt));
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            System.out.println("이미지비지블 스레드가 종료되었습니다.");
-        }
-    }
     public String SetSpeakingtextView(int num)
     {
         Random rnd = new Random();
