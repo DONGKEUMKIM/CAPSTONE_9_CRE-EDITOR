@@ -107,9 +107,9 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private final static int LOW_NOTACT = 5;
     int StateOfDetectingLowDowsiness= REST;
 
-    int settingcount = 15;
+    int settingcount = 2;
 
-    int cameraviewcount = 20;                       //60초 단위 촬영을 위한 카운트
+    int cameraviewcount = 200;                       //60초 단위 촬영을 위한 카운트
 
     int high_detectingCount = 0;                            //높은졸음이 감지됐을때 시작되는 카운트
     int low_detectingCount = 0;                             //낮은졸음이 감지됐을때 시작되는 카운트
@@ -415,7 +415,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         };
 
         /////////////////////////////////모델 로드//////////////////////////////////////
-        loadModel("open_close_v2.tflite");
+        loadModel("open_close.tflite");
     }
 
     @Override
@@ -457,7 +457,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.face);
         }
 
-        cameraviewcount = 20;
+        cameraviewcount = 200;
 
         if(StateOfSetting == SETTING_ON)
         {
@@ -491,7 +491,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.breakimg);
         }
 
-        cameraviewcount = 20;
+        cameraviewcount = 200;
 
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
@@ -594,11 +594,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     opencloseView.setText("what?");
                     /////////////////output 값에 따라 결정/////////////////////////////////
                     if(output[0][0]>=0.5){
-                        opencloseView.setText(output[0][0]+"");
+                        opencloseView.setText(output[0][0]+"open");
                         openOrClose = true;
                     }
                     else {
-                        opencloseView.setText(output[0][0]+"");
+                        opencloseView.setText(output[0][0]+"close");
                         openOrClose = false;
                     }
 
@@ -739,7 +739,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             return matBinary;
         }
         else
-           return matBinary;
+           return matResult;
     }
 
 
@@ -825,6 +825,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private synchronized void countuplowdetectingcount(){
         low_detectingCount++;
     }
+
     private synchronized void howEyedrawness(){
         Bitmap bmp = null;
         try {
@@ -868,9 +869,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 //textView.setText(output[0][0]+"close");
                 Log.d("Eye", "close");
             }
-
         }
-
     }
 
     public class CountingThread extends Thread{
@@ -898,12 +897,12 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         //검출된 얼굴의 픽셀값이 전체 픽셀의 1/5 이하일때
         //높은 졸음 판별 시작
         if(StateOfDetectingHighDowsiness == HIGH_COUNTING
-                && sumofWhitePixels < countofPixels / 4)
+                && sumofWhitePixels < countofPixels / 10)
         {
             StateOfDetectingHighDowsiness = HIGH_DETECTREADY;
         }
         else if(StateOfDetectingHighDowsiness == HIGH_WAKE_UP
-                && sumofWhitePixels > countofPixels / 4)
+                && sumofWhitePixels > countofPixels / 10)
         {
             //높은 졸음 감지중
             //다시 얼굴이 검출 됐을 경우 원래 상태로 복귀

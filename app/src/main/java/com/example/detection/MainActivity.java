@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         speaking_layout.setVisibility(View.VISIBLE);
         speakingtextView.setText(SetSpeakingtextView(1));
         imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
+        ImgCnt = 4;
     }
 
     private void createMenuList() {
