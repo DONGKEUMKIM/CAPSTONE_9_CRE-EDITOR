@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -14,9 +15,12 @@ import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -270,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         } else if (contentName.equals("Dashboard")) {
             this.res = R.drawable.content_dashboard;
         } else if (contentName.equals("Scores")) {
-            this.res = R.drawable.content_scores;
+//            this.res = R.drawable.content_scores;
         }else if(contentName.equals("Subjects")){
             this.res = R.drawable.content_subject;
         }
@@ -304,8 +308,11 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             Intent intent = new Intent(getApplicationContext(), TestDetection.class);
             startActivity(intent);
         }
+        if (ContentFragment.Scores.equals(slideMenuItem.getName())) {
+            Intent intent = new Intent(getApplicationContext(), LimitAppsActivity.class);
+            startActivity(intent);
+        }
         if (ContentFragment.Timeline.equals(slideMenuItem.getName())) {
-
             transaction.replace(R.id.frameLayout, timeline_frag).commitAllowingStateLoss();
         }
         if (ContentFragment.Dashboard.equals(slideMenuItem.getName())) {

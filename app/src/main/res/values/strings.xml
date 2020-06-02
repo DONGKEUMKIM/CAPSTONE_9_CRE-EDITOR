@@ -7,4 +7,5 @@
     <string name="action_day_view">Day view</string>
     <string name="action_three_day_view">3 day view</string>
     <string name="action_week_view">Week view</string>
+    <string name="accessibility_service_description">접근성 권한을 필요로 합니다.</string>
 </resources>

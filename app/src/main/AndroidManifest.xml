@@ -48,6 +48,12 @@
 
         </activity>
 
+        <activity android:name=".LimitAppsActivity"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize">
+
+        </activity>
+
         <activity android:name=".fragment.popupFragment.testTimeInsertPopupFragment"
             android:screenOrientation="fullSensor"
             android:theme="@style/popupTheme"
@@ -60,6 +66,17 @@
             android:theme="@style/popupTheme"/>
         <service android:name=".AlarmSoundService"></service>
 
+        <service
+            android:name=".LimitService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
     </application>
 
 </manifest>
