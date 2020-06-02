@@ -154,7 +154,9 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             }
             else
             { if(imgVisibleCountHandler != null)
-            {imgVisibleCountHandler.removeCallbacks(imgVisibleCountRunnable);
+            {
+                speakingtextView.startAnimation(animTransRight);
+                imgVisibleCountHandler.removeCallbacks(imgVisibleCountRunnable);
             }
             }
         }
@@ -167,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     @Override
     protected void onResume() {
         super.onResume();
-
         speaking_layout.setVisibility(View.VISIBLE);
         speakingtextView.setText(SetSpeakingtextView(2));
         imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
