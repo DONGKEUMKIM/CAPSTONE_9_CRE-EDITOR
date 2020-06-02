@@ -316,7 +316,7 @@ public class CompactCalendarTab extends Fragment {
             setToMidnight(currentCalender);
             long timeInMillis = currentCalender.getTimeInMillis();
 
-            List<Event> events = getEvents(filteredData, timeInMillis, i);
+            List<Event> events = getEvents(filteredData, timeInMillis, i+1);
 
             compactCalendarView.addEvents(events);
         }

@@ -52,7 +52,7 @@ public class ScheduleDataPopupFragment extends AppCompatActivity {
         numberPicker.setWrapSelectorWheel(true);
         //numberPicker.setValue(1);
 
-        String initDate = Integer.toString(datePicker.getYear())+"/"+Integer.toString(datePicker.getMonth())+"/"+Integer.toString(datePicker.getDayOfMonth());
+        String initDate = Integer.toString(datePicker.getYear())+"/"+Integer.toString(datePicker.getMonth()+1)+"/"+Integer.toString(datePicker.getDayOfMonth());
         scheduleData = new ScheduleData(scheduleID, 0, initDate, 1);
         spinner_name.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -80,7 +80,7 @@ public class ScheduleDataPopupFragment extends AppCompatActivity {
         datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
-                scheduleData.setdate(i + "/" + i1 + "/" + i2);
+                scheduleData.setdate(i + "/" + (i1) + "/" + i2);
             }
         });
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {

@@ -46,7 +46,7 @@ public class testTimeInsertPopupFragment extends AppCompatActivity {
         numberPicker.setMinValue(1);
         numberPicker.setValue(1);
         //numberPicker.setWrapSelectorWheel(false);
-        testTimeData.setdate(datePicker.getYear() + "/" + datePicker.getMonth() + "/" + datePicker.getDayOfMonth());
+        testTimeData.setdate(datePicker.getYear() + "/" + datePicker.getMonth()+1 + "/" + datePicker.getDayOfMonth());
         testTimeData.setDuringtime(0);
         okButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -63,7 +63,7 @@ public class testTimeInsertPopupFragment extends AppCompatActivity {
         datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
-                testTimeData.setdate(i + "/" + i1 + "/" + i2);
+                testTimeData.setdate(i + "/" + (i1) + "/" + i2);
             }
         });
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
