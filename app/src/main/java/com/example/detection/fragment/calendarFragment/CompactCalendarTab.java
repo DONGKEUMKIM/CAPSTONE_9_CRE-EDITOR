@@ -333,7 +333,7 @@ public class CompactCalendarTab extends Fragment {
         List<Event> eventArray = new ArrayList<Event>();
         for(int i=0;i<scheduleData.size();i++){
             if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[2])==day){
-                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() + scheduleData.get(i).getDuringtime()+" Hours"));
+                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() +"for"+ scheduleData.get(i).getDuringtime()+" Hours"));
             }
         }
         return eventArray;

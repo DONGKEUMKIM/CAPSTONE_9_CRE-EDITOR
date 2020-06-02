@@ -80,7 +80,7 @@ public class ScheduleDataPopupFragment extends AppCompatActivity {
         datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
-                scheduleData.setdate(i + "/" + (i1) + "/" + i2);
+                scheduleData.setdate(i + "/" + (i1+1) + "/" + i2);
             }
         });
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
