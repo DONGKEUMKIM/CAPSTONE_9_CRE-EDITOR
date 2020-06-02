@@ -739,7 +739,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             return matBinary;
         }
         else
-           return matResult;
+           return matBinary;
     }
 
 
@@ -898,12 +898,12 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         //검출된 얼굴의 픽셀값이 전체 픽셀의 1/5 이하일때
         //높은 졸음 판별 시작
         if(StateOfDetectingHighDowsiness == HIGH_COUNTING
-                && sumofWhitePixels < countofPixels / 2)
+                && sumofWhitePixels < countofPixels / 4)
         {
             StateOfDetectingHighDowsiness = HIGH_DETECTREADY;
         }
         else if(StateOfDetectingHighDowsiness == HIGH_WAKE_UP
-                && sumofWhitePixels > countofPixels / 2)
+                && sumofWhitePixels > countofPixels / 4)
         {
             //높은 졸음 감지중
             //다시 얼굴이 검출 됐을 경우 원래 상태로 복귀

@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
 
     Handler imgCntHandler = null;
-    private int ImgCnt = 10;
+    private int ImgCnt = 4;
 
 
     String[] wiseSayingArray;
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             else
             { if(imgVisibleCountHandler != null)
             {
-                speakingtextView.startAnimation(animTransRight);
+                speaking_layout.startAnimation(animTransRight);
                 imgVisibleCountHandler.removeCallbacks(imgVisibleCountRunnable);
             }
             }
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     protected void onResume() {
         super.onResume();
         speaking_layout.setVisibility(View.VISIBLE);
-        speakingtextView.setText(SetSpeakingtextView(2));
+        speakingtextView.setText(SetSpeakingtextView(1));
         imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
     }
 
