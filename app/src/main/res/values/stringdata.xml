@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name = "WISESAING">
+    <string-array name="WISESAING">
         <item>10분 더 공부하면 배우자 얼굴이 바뀐다</item>
         <item>지금 이 순간에도 적들의 책장은 넘어가고 있다</item>
         <item>행복은 성적순이 아니지만 성공은 성적 순이다</item>
@@ -26,13 +26,13 @@
         <item>마음먹은 일은 일단 시작했으면 반드시 끝이라는 결과를 모아야만 한다</item>
     </string-array>
 
-    <string-array name = "GOODSAING">
+    <string-array name="GOODSAING">
         <item>훌륭합니다</item>
         <item>이대로 쭉 달려보세요</item>
         <item>참 잘했어요</item>
     </string-array>
 
-    <string-array name = "BANDSAING">
+    <string-array name="BANDSAING">
         <item>당신은 실패했습니다</item>
         <item>당신의 성적이 F를 향해가고 있습니다</item>
         <item>정신차리세요</item>

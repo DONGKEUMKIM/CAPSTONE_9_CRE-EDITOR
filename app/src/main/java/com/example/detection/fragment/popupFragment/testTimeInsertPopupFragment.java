@@ -26,26 +26,27 @@ public class testTimeInsertPopupFragment extends AppCompatActivity {
     private Button okButton, cancelButton;
     private ArrayList<String> subjectNameList;
     private Intent intent;
-    TestTimeData testTimeData = new TestTimeData("",0,"",0);
+    TestTimeData testTimeData;
     ArrayAdapter arrayAdapter;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstance) {
-        intent = getIntent();
         super.onCreate(savedInstance);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        intent = getIntent();
+        testTimeData = (TestTimeData) intent.getSerializableExtra("ttd");
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.testtime_insert_popup);
-
-        datePicker = (DatePicker)findViewById(R.id.testtime_datePicker);
-        numberPicker = (NumberPicker)findViewById(R.id.testtime_duringTimePicker);
-        okButton = (Button)findViewById(R.id.testtime_okButton);
-        cancelButton = (Button)findViewById(R.id.testtime_cancel_button);
+        datePicker = (DatePicker) findViewById(R.id.testtime_datePicker);
+        numberPicker = (NumberPicker) findViewById(R.id.testtime_duringTimePicker);
+        okButton = (Button) findViewById(R.id.testtime_okButton);
+        cancelButton = (Button) findViewById(R.id.testtime_cancel_button);
         //TODO
         numberPicker.setMaxValue(12);
         numberPicker.setMinValue(1);
         numberPicker.setValue(1);
-        numberPicker.setWrapSelectorWheel(false);
-        testTimeData.setdate(datePicker.getYear()+"/"+datePicker.getMonth()+"/"+datePicker.getDayOfMonth());
+        //numberPicker.setWrapSelectorWheel(false);
+        testTimeData.setdate(datePicker.getYear() + "/" + datePicker.getMonth() + "/" + datePicker.getDayOfMonth());
         testTimeData.setDuringtime(0);
         okButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -62,7 +63,7 @@ public class testTimeInsertPopupFragment extends AppCompatActivity {
         datePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
-                testTimeData.setdate(i+"/"+i1+"/"+i2);
+                testTimeData.setdate(i + "/" + i1 + "/" + i2);
             }
         });
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -75,17 +76,23 @@ public class testTimeInsertPopupFragment extends AppCompatActivity {
 
     }
 
-    private void setSubjectNameList(){
+    private void setSubjectNameList() {
 
     }
-    private void okButtonClicked(){
 
-        intent.putExtra("testTime",testTimeData);
-        setResult(0,intent);
+    private void okButtonClicked() {
+
+        intent.putExtra("testTime", testTimeData);
+        setResult(0, intent);
         finish();
-    };
-    private void cancelButtonClicked(){
+    }
+
+    ;
+
+    private void cancelButtonClicked() {
         setResult(1);
         finish();
-    };
+    }
+
+    ;
 }

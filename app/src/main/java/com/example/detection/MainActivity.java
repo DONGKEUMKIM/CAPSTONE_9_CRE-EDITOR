@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +27,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.detection.db.SQLiteManager;
+import com.example.detection.db.ScheduleData;
+import com.example.detection.db.SubjectData;
+import com.example.detection.db.TestTimeData;
 import com.example.detection.fragment.ContentFragment;
 import com.example.detection.fragment.calendarFragment.CompactCalendarTab;
 import com.example.detection.fragment.popupFragment.ScheduleDataPopupFragment;
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private ActionBarDrawerToggle drawerToggle;
     private List<SlideMenuItem> list = new ArrayList<>();
     private ViewAnimator viewAnimator;
-    private int res = R.drawable.content_music;
+    private int res = R.drawable.content_welcome;
     private LinearLayout linearLayout;
 
     private int fragment_main = R.layout.fragment_main;
@@ -72,8 +74,11 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private TextView speakingtextView;                              //스피킹 텍스트뷰
 
     Animation animTransRight;
+
+
     Handler imgCntHandler = null;
     private int ImgCnt = 10;
+
 
     String[] wiseSayingArray;
     String[] goodSayingArray;
@@ -85,20 +90,19 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_dashboard);
+        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_welcome);
         calendar_frag = new CompactCalendarTab();
         timeline_frag = new TimelineFragment();
         subject_frag = new SubjectListFragment();
 
         transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.content_frame, contentFragment).commitAllowingStateLoss();
-        dbManager = new SQLiteManager(this);
+        dbManager = SQLiteManager.sqLiteManager;
         idArray.addAll(dbManager.selectAllSubjectName());
         //ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_music);
         //getSupportFragmentManager().beginTransaction()
         //        .replace(R.id.content_frame, contentFragment)
         //        .commit();
-
 
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -132,15 +136,13 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         //스레드 동작 필요
 
         wiseSayingArray = getResources().getStringArray(R.array.WISESAING);
-        goodSayingArray= getResources().getStringArray(R.array.GOODSAING);
-        badSayingArray= getResources().getStringArray(R.array.BANDSAING);
+        goodSayingArray = getResources().getStringArray(R.array.GOODSAING);
+        badSayingArray = getResources().getStringArray(R.array.BANDSAING);
 
         speaking_layout = findViewById(R.id.rela_layout);
         speakingtextView = (TextView) findViewById(R.id.speaking_Text);
         animTransRight = AnimationUtils.loadAnimation(this, R.anim.anim_translate_right);
-
     }
-
     private Handler imgVisibleCountHandler = new Handler();
     private Runnable imgVisibleCountRunnable = new Runnable() {
         @Override
@@ -151,16 +153,12 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                 imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
             }
             else
-            {
-                if(imgVisibleCountHandler != null)
-                {
-                    speaking_layout.startAnimation(animTransRight);
-                    imgVisibleCountHandler.removeCallbacks(imgVisibleCountRunnable);
-                }
+            { if(imgVisibleCountHandler != null)
+            {imgVisibleCountHandler.removeCallbacks(imgVisibleCountRunnable);
+            }
             }
         }
     };
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -172,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         speaking_layout.setVisibility(View.VISIBLE);
         speakingtextView.setText(SetSpeakingtextView(2));
-
         imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
     }
 
@@ -264,14 +261,16 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     }
 
     private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String contentName) {
-        if(contentName.equals("Watch")) {
+        if (contentName.equals("Watch")) {
             //this.res = R.drawable.content_dashboard;
-        }else if(contentName.equals("Timeline")){
+        } else if (contentName.equals("Timeline")) {
             this.res = R.drawable.content_timeline;
-        }else if(contentName.equals("Dashboard")){
-            this.res = R.drawable.content_calendar;
-        }else {
-            this.res = this.res == R.drawable.content_music ? R.drawable.content_calendar : R.drawable.content_music;
+        } else if (contentName.equals("Dashboard")) {
+            this.res = R.drawable.content_dashboard;
+        } else if (contentName.equals("Scores")) {
+            this.res = R.drawable.content_scores;
+        }else if(contentName.equals("Subjects")){
+            this.res = R.drawable.content_subject;
         }
 
 
@@ -299,22 +298,22 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         if (ContentFragment.CLOSE.equals(slideMenuItem.getName())) {
             return screenShotable;
         }
-        if (ContentFragment.Watch.equals(slideMenuItem.getName())){
+        if (ContentFragment.Watch.equals(slideMenuItem.getName())) {
             Intent intent = new Intent(getApplicationContext(), TestDetection.class);
             startActivity(intent);
         }
-        if (ContentFragment.Timeline.equals(slideMenuItem.getName())){
+        if (ContentFragment.Timeline.equals(slideMenuItem.getName())) {
 
-            transaction.replace(R.id.frameLayout,timeline_frag).commitAllowingStateLoss();
+            transaction.replace(R.id.frameLayout, timeline_frag).commitAllowingStateLoss();
         }
-        if(ContentFragment.Dashboard.equals(slideMenuItem.getName())){
-            transaction.replace(R.id.frameLayout,calendar_frag).commitAllowingStateLoss();
+        if (ContentFragment.Dashboard.equals(slideMenuItem.getName())) {
+            transaction.replace(R.id.frameLayout, calendar_frag).commitAllowingStateLoss();
 
         }
-        if(ContentFragment.Subjects.equals(slideMenuItem.getName())){
-            transaction.replace(R.id.frameLayout,subject_frag).commitAllowingStateLoss();
+        if (ContentFragment.Subjects.equals(slideMenuItem.getName())) {
+            transaction.replace(R.id.frameLayout, subject_frag).commitAllowingStateLoss();
         }
-        return replaceFragment(screenShotable, position,slideMenuItem.getName());
+        return replaceFragment(screenShotable, position, slideMenuItem.getName());
     }
 
     @Override
@@ -339,68 +338,83 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     //week view Listener
 
 
+    public SQLiteManager getDbManager() {
+        return dbManager;
+    }
 
-    public ArrayList<String> getIdArray(){
+    public ArrayList<String> getIdArray() {
         return idArray;
     }
-    public void addNewSchedule(){
+    public List<SubjectData> getSubjectDataArray(){return dbManager.selectsubjectAll();}
+    public List<TestTimeData> getTestTimeDataArray(){return dbManager.selecttesttimeAll();}
+    public TestTimeData getTestTimeData(int subjID){return dbManager.selectTestTimeDataFormSubjectID(subjID);}
+    public SubjectData getSubjectData(int subjID){return dbManager.selectSubjectDataFormSubjectID(subjID);}
+    public void addNewSchedule() {
         Intent intent = new Intent(this, ScheduleDataPopupFragment.class);
-        intent.putStringArrayListExtra("idArray",idArray);
+        intent.putStringArrayListExtra("idArray", idArray);
+        intent.putExtra("scheduleid",dbManager.generateRandomID());
         startActivityForResult(intent, 1);
     }
-    public void addNewSubject(){
+
+    public void addNewSubject() {
         Intent intent = new Intent(this, SubjectDataPopupFragment.class);
-        intent.putStringArrayListExtra("idArray",idArray);
-        startActivityForResult(intent,2);
+        intent.putStringArrayListExtra("idArray", idArray);
+        dbManager.setCurrentSubjectNumber();
+        intent.putExtra("id", dbManager.getCurrentSubjectNumber() + 1);
+        intent.putExtra("testtimeid", dbManager.generateRandomID());
+        startActivityForResult(intent, 2);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode){
+        switch (requestCode) {
             case 1:
-                if(resultCode==1)
+                if (resultCode == 1)
                     return;
-                else{
-                    System.out.println("okClicked");
+                else {
+                    //System.out.println("okClicked");
+                    ScheduleData addScheduleData = (ScheduleData) data.getExtras().getSerializable("schedule");
+                    dbManager.insertScheduleData(addScheduleData);
                     break;
                 }
             case 2:
-                if(resultCode==1)
+                if (resultCode == 1)
                     return;
-                else{
-                    System.out.println("okClicked2");
+                else {
+                    //System.out.println("okClicked2");
+                    SubjectData addSubData = (SubjectData) data.getExtras().getSerializable("subject");
+                    TestTimeData testTimeData = (TestTimeData) data.getExtras().getSerializable("testtime");
+                    dbManager.insertSubjectData(addSubData);
+                    dbManager.insertTestTimeData(testTimeData);
                     break;
                 }
         }
     }
 
-
-    public String SetSpeakingtextView(int num)
-    {
+    public String SetSpeakingtextView(int num) {
         Random rnd = new Random();
         String str = null;
-        switch(num)
-        {
-            case 1:
-            {
+        switch (num) {
+            case 1: {
                 //명언
                 int randomValue = rnd.nextInt(wiseSayingArray.length);
                 str = wiseSayingArray[randomValue];
-            } break;
-            case 2:
-            {
+            }
+            break;
+            case 2: {
                 int randomValue = rnd.nextInt(goodSayingArray.length);
                 str = goodSayingArray[randomValue];
                 //좋은말
-            }break;
-            case 3:
-            {
+            }
+            break;
+            case 3: {
                 int randomValue = rnd.nextInt(badSayingArray.length);
                 str = badSayingArray[randomValue];
                 //나쁜말
-            }break;
+            }
+            break;
         }
         return str;
     }

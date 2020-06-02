@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +23,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public static SQLiteManager sqLiteManager = null;
     public static final String DATABASE_NAME = "subjectInfo.db";
     public static final int DB_VERSION = 1;
-
+    private static final String[] RANDOMSTRING = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+    private int currentSubjectNumber;
+    private int currentScheduleNumber;
     private SQLiteDatabase db;
 
     //Subject table
@@ -48,8 +51,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
     //////////////////////////////싱글톤 패턴////////////////////////////////////
     //SQLiteManager.sqLiteManager 로 접근
 
-    public static SQLiteManager getInstance(Context context){
-        if(sqLiteManager == null){
+    public static SQLiteManager getInstance(Context context) {
+        if (sqLiteManager == null) {
             sqLiteManager = new SQLiteManager(context);
         }
 
@@ -59,7 +62,20 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public SQLiteManager(Context context) {
         super(context, DATABASE_NAME, null, DB_VERSION);
         db = this.getWritableDatabase();
+        //setCurrentSubjectNumber();
     }
+
+    public int getCurrentSubjectNumber() {
+        return currentSubjectNumber;
+    }
+
+    public void setCurrentSubjectNumber() {
+        if(this.selectsubjectAll().size()==0)
+            this.currentSubjectNumber=0;
+        else
+            this.currentSubjectNumber = this.selectsubjectAll().get(selectsubjectAll().size() - 1).getID();
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -92,8 +108,10 @@ public class SQLiteManager extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    /**DB 초기화*/
-    public boolean init(){
+    /**
+     * DB 초기화
+     */
+    public boolean init() {
         //초기화가 필요 할 경우
         //해당 부분에 코딩
 
@@ -101,7 +119,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         ////////////////////////////DB 테스트////////////////////////////
         //DB에 데이터를 추가 할경우 참고 할것!!
 
-        if(sqLiteManager != null){
+        if (sqLiteManager != null) {
             //과목 정보 추가
             //과목 코드와 과목명은 입력받도록 해야함
             //id(과목코드)값은 int형태의 num -> 순서대로 둘어가도록 로직을 짜야함
@@ -113,7 +131,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
         //시험시간 정보는 과목정보가 존재하는 경우에 추가 할수 있도록 로직을 짜야함
         //시험시간데이터에 과목 코드가 필요 함으로..
-        if(sqLiteManager != null){
+        if (sqLiteManager != null) {
 
             String id;
             String date;
@@ -147,12 +165,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
             duringtime = 2;             //시험시간은 입력받아야함 (테스트용으로 2시간으로 입력)
 
-            if(subject_id == -1)
-            {
+            if (subject_id == -1) {
                 System.out.println("잘못된 과목코드 입니다.");
             }
 
-            if(SQLiteManager.sqLiteManager.insertTestTimeData((new TestTimeData(id,subject_id,date,duringtime)))){
+            if (SQLiteManager.sqLiteManager.insertTestTimeData((new TestTimeData(id, subject_id, date, duringtime)))) {
                 System.out.println("시험시간 정보 데이터가 추가되었습니다.");
             }
 
@@ -160,23 +177,44 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return true;
     }
 
-    /**데이터 Insert**/
+    private static String getRandomName(int bound) {
+
+        String returnString = "";
+        for (int i = 0; i < bound; i++) {
+            Random rand = new Random();
+            int res = rand.nextInt(RANDOMSTRING.length);
+            returnString += RANDOMSTRING[res];
+        }
+        return returnString;
+    }
+
+    public String generateRandomID() {
+        Random rand = new Random();
+        Date currentDate = new Date(System.currentTimeMillis());                    //현재 시간
+        SimpleDateFormat time = new SimpleDateFormat("hhmmss");
+        String id = Integer.toString(rand.nextInt(9999)) + getRandomName(6) + Integer.toString(rand.nextInt(9999)) + time.format(currentDate);
+        return id;
+    }
+
+    /**
+     * 데이터 Insert
+     **/
     //Subject Data insert
-    public boolean insertSubjectData(SubjectData data){
+    public boolean insertSubjectData(SubjectData data) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(SUBJECT_ID, data.getID());
         contentValues.put(SUBJECT_NAME, data.getName());
         contentValues.put(SUBJECT_PRIORITY, data.getPriority());
         long result = db.insert(SUBJECT_TABLE_NAME, null, contentValues);
 
-        if(result == -1)
+        if (result == -1)
             return false;
         else
             return true;
     }
 
     //Testtime Data insert
-    public boolean insertTestTimeData(TestTimeData data){
+    public boolean insertTestTimeData(TestTimeData data) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TESTTIME_ID, data.getID());
         contentValues.put(TESTTIME_SUBJECT_ID, data.getSubject_ID());
@@ -184,30 +222,32 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(TESTTIME_DURINGTIME, data.getDuringtime());
         long result = db.insert(TESTTIME_TABLE_NAME, null, contentValues);
 
-        if(result == -1)
+        if (result == -1)
             return false;
         else
             return true;
     }
 
-    /**데이터 Delete**/
+    /**
+     * 데이터 Delete
+     **/
     //과목 데이터 전부 삭제
-    public void deleteSubjectTableALL(){
+    public void deleteSubjectTableALL() {
         db.execSQL("delete from " + SUBJECT_TABLE_NAME);
     }
 
     //시험시간 데이터 전부 삭제
-    public void deleteTestTimeTableALL(){
+    public void deleteTestTimeTableALL() {
         db.execSQL("delete from " + TESTTIME_TABLE_NAME);
     }
 
     //스케줄 데이터 전부 삭제
-    public void deleteScheduleTableALL(){
+    public void deleteScheduleTableALL() {
         db.execSQL("delete from " + SCHEDULE_TABLE_NAME);
     }
 
     //Schedule Data insert
-    public boolean insertScheduleData(ScheduleData data){
+    public boolean insertScheduleData(ScheduleData data) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(SCHEDULE_ID, data.getID());
         contentValues.put(SCHEDULE_SUBJECT_ID, data.getSubject_ID());
@@ -215,51 +255,50 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(SCHEDULE_DURINGTIME, data.getDuringtime());
         long result = db.insert(SCHEDULE_TABLE_NAME, null, contentValues);
 
-        if(result == -1)
+        if (result == -1)
             return false;
         else
             return true;
     }
 
     // Subject 전체 조회
-    public List<SubjectData> selectsubjectAll(){
+    public List<SubjectData> selectsubjectAll() {
         List<SubjectData> dataResultList = new ArrayList<SubjectData>();
-        String sql = "select * from "+SUBJECT_TABLE_NAME+" ORDER BY "+SUBJECT_ID+" ASC;";
+        String sql = "select * from " + SUBJECT_TABLE_NAME + " ORDER BY " + SUBJECT_ID + " ASC;";
         Cursor results = db.rawQuery(sql, null);
 
-        if(results.moveToFirst()){
-            do{
+        if (results.moveToFirst()) {
+            do {
                 SubjectData subjectData
                         = new SubjectData(results.getInt(0), results.getString(1), // ID, Name
                         results.getInt(2)); //Priority
                 dataResultList.add(subjectData);
-            }while(results.moveToNext());
+            } while (results.moveToNext());
         }
         return dataResultList;
     }
 
     //Subject의 전체 이름 조회
-    public ArrayList<String> selectAllSubjectName(){
+    public ArrayList<String> selectAllSubjectName() {
         ArrayList<String> dataResultList = new ArrayList<String>();
-        String sql = "select "+SUBJECT_NAME+" from "+SUBJECT_TABLE_NAME+" ORDER BY "+SUBJECT_ID+" DESC;";
+        String sql = "select " + SUBJECT_NAME + " from " + SUBJECT_TABLE_NAME + " ORDER BY " + SUBJECT_ID + " DESC;";
         Cursor results = db.rawQuery(sql, null);
 
-        if(results.moveToFirst()){
-            do{
+        if (results.moveToFirst()) {
+            do {
                 String subjectData = results.getString(results.getColumnIndex(SUBJECT_NAME));
                 dataResultList.add(subjectData);
-            }while(results.moveToNext());
+            } while (results.moveToNext());
         }
         return dataResultList;
     }
 
     //Subject의 이름으로 부터 해당 SubjectData 조회
-    public SubjectData selectSubjectDataFormSubjectname(String subjectname)
-    {
-        SubjectData dataResult = new SubjectData(0,"",0);
-        String sql = "select * from "+SUBJECT_TABLE_NAME+" where " + SUBJECT_NAME + " = \'" + subjectname+"\' ;";
-        Cursor results = db.rawQuery(sql,null);
-        if(results.moveToFirst()){
+    public SubjectData selectSubjectDataFormSubjectname(String subjectname) {
+        SubjectData dataResult = new SubjectData(0, "", 0);
+        String sql = "select * from " + SUBJECT_TABLE_NAME + " where " + SUBJECT_NAME + " = \'" + subjectname + "\' ;";
+        Cursor results = db.rawQuery(sql, null);
+        if (results.moveToFirst()) {
             SubjectData subjectData
                     = new SubjectData(results.getInt(0), results.getString(1), // ID, Name
                     results.getInt(2));     // Priority
@@ -269,12 +308,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     //Subject의 ID값으로 부터 해당 SubjectData 조회
-    public SubjectData selectSubjectDataFormSubjectID(int subjecID)
-    {
-        SubjectData dataResult = new SubjectData(0,"",0);
-        String sql = "select * from "+SUBJECT_TABLE_NAME+" where " + SUBJECT_ID + " = \'" + subjecID+"\' ;";
-        Cursor results = db.rawQuery(sql,null);
-        if(results.moveToFirst()){
+    public SubjectData selectSubjectDataFormSubjectID(int subjecID) {
+        SubjectData dataResult = new SubjectData(0, "", 0);
+        String sql = "select * from " + SUBJECT_TABLE_NAME + " where " + SUBJECT_ID + " = \'" + subjecID + "\' ;";
+        Cursor results = db.rawQuery(sql, null);
+        if (results.moveToFirst()) {
             SubjectData subjectData
                     = new SubjectData(results.getInt(0), results.getString(1), // ID, Name
                     results.getInt(2));     // Priority
@@ -284,63 +322,62 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     //Subject의 이름으로 부터 id조회
-    public int selectSubjectIdFromName(String subjectName){
+    public int selectSubjectIdFromName(String subjectName) {
         int dataResult = -1;
-        String sql = "select " + SUBJECT_ID + " from " + SUBJECT_TABLE_NAME+" where " + SUBJECT_NAME + " = \'" + subjectName+"\' ;";
-        Cursor result = db.rawQuery(sql,null);
-        if(result.moveToFirst()){
+        String sql = "select " + SUBJECT_ID + " from " + SUBJECT_TABLE_NAME + " where " + SUBJECT_NAME + " = \'" + subjectName + "\' ;";
+        Cursor result = db.rawQuery(sql, null);
+        if (result.moveToFirst()) {
             dataResult = result.getInt(0);
         }
         return dataResult;
     }
 
     // TestTime 전체 조회
-    public List<TestTimeData> selecttesttimeAll(){
+    public List<TestTimeData> selecttesttimeAll() {
         List<TestTimeData> dataResultList = new ArrayList<TestTimeData>();
-        String sql = "select * from "+TESTTIME_TABLE_NAME+" ORDER BY "+TESTTIME_ID+" ASC;";
+        String sql = "select * from " + TESTTIME_TABLE_NAME + " ORDER BY " + TESTTIME_ID + " ASC;";
         Cursor results = db.rawQuery(sql, null);
 
-        if(results.moveToFirst()){
-            do{
+        if (results.moveToFirst()) {
+            do {
                 TestTimeData testtimeData
                         = new TestTimeData(results.getString(0), results.getInt(1), // ID, SubjectID
                         results.getString(2), results.getInt(3)); //Date , DuringTime
                 dataResultList.add(testtimeData);
 
-            }while(results.moveToNext());
+            } while (results.moveToNext());
         }
         return dataResultList;
     }
 
     //시험시간의 과목ID로 부터 해당 TestTimeData 조회
-    public TestTimeData selectTestTimeDataFormSubjectID(int subjectID)
-    {
-        TestTimeData dataResult = new TestTimeData("",0,"",0);
-        String sql = "select * from "+TESTTIME_TABLE_NAME+" where " + TESTTIME_SUBJECT_ID + " = \'" + subjectID+"\' ;";
-        Cursor results = db.rawQuery(sql,null);
-        if(results.moveToFirst()){
+    public TestTimeData selectTestTimeDataFormSubjectID(int subjectID) {
+        TestTimeData dataResult = new TestTimeData("", 0, "", 0);
+        String sql = "select * from " + TESTTIME_TABLE_NAME + " where " + TESTTIME_SUBJECT_ID + " = \'" + subjectID + "\' ;";
+        Cursor results = db.rawQuery(sql, null);
+        if (results.moveToFirst()) {
             TestTimeData testtimeData
                     = new TestTimeData(results.getString(0), results.getInt(1), // ID, SubjectID
-                    results.getString(2),results.getInt(3));     //date , DuringTime
+                    results.getString(2), results.getInt(3));     //date , DuringTime
             dataResult = testtimeData;
         }
         return dataResult;
     }
 
     // Schedule 전체 조회
-    public List<ScheduleData> selectscheduleAll(){
+    public List<ScheduleData> selectscheduleAll() {
         List<ScheduleData> dataResultList = new ArrayList<ScheduleData>();
-        String sql = "select * from "+SCHEDULE_TABLE_NAME+" ORDER BY "+SCHEDULE_ID+" ASC;";
+        String sql = "select * from " + SCHEDULE_TABLE_NAME + " ORDER BY " + SCHEDULE_ID + " ASC;";
         Cursor results = db.rawQuery(sql, null);
 
-        if(results.moveToFirst()){
-            do{
+        if (results.moveToFirst()) {
+            do {
                 ScheduleData scheduleData
                         = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
                         results.getString(2), results.getInt(3)); //Date , DuringTime
                 dataResultList.add(scheduleData);
 
-            }while(results.moveToNext());
+            } while (results.moveToNext());
         }
         return dataResultList;
     }
@@ -348,20 +385,19 @@ public class SQLiteManager extends SQLiteOpenHelper {
     //스케줄의 과목ID로 부터 해당 ScheduleData 조회
     //과목ID 에 등록된 스케줄이 여러개 일수 있기때문에
     //리스트로 리턴
-    public List<ScheduleData> selectScheduleDataFormSubjectID(int subjectID)
-    {
+    public List<ScheduleData> selectScheduleDataFormSubjectID(int subjectID) {
         List<ScheduleData> dataResultList = new ArrayList<ScheduleData>();
-        String sql = "select * from "+SCHEDULE_TABLE_NAME+" where " + SCHEDULE_SUBJECT_ID + " = \'" + subjectID+"\' ;";
-        Cursor results = db.rawQuery(sql,null);
+        String sql = "select * from " + SCHEDULE_TABLE_NAME + " where " + SCHEDULE_SUBJECT_ID + " = \'" + subjectID + "\' ;";
+        Cursor results = db.rawQuery(sql, null);
 
-        if(results.moveToFirst()){
-            do{
+        if (results.moveToFirst()) {
+            do {
                 ScheduleData scheduleData
                         = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
                         results.getString(2), results.getInt(3)); //Date , DuringTime
                 dataResultList.add(scheduleData);
 
-            }while(results.moveToNext());
+            } while (results.moveToNext());
         }
         return dataResultList;
     }

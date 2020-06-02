@@ -7,8 +7,9 @@ public class MatCirCularQueue {
     final int ArraySize = 200;
     int front = 0, rear = 0;
     Mat[] arr = new Mat[ArraySize];
-    public void Enqueue(Mat data){
-        if((rear + 1) % ArraySize ==  front % ArraySize){
+
+    public void Enqueue(Mat data) {
+        if ((rear + 1) % ArraySize == front % ArraySize) {
             // full
             this.Dequeue();
         }
@@ -16,12 +17,12 @@ public class MatCirCularQueue {
         arr[rear] = data;
 
     }
-    public Mat Dequeue(){
-        if(front == rear){
+
+    public Mat Dequeue() {
+        if (front == rear) {
             //empty
             return null;
-        }
-        else{
+        } else {
             front = (front + 1) % ArraySize;
             return arr[front];
         }

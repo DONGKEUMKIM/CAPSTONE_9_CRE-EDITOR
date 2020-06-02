@@ -1,7 +1,5 @@
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -24,7 +22,7 @@
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -59,7 +57,7 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/speakingimg"
-                />
+                android:contentDescription="TODO" />
 
             <TextView
                 android:id="@+id/speaking_Text"
@@ -78,7 +76,7 @@
                 android:textAlignment="center"
                 android:gravity="center"
                 android:text="TextView" />
-        </RelativeLayout>>
+        </RelativeLayout>
 
 
     </io.codetail.widget.RevealFrameLayout>
@@ -100,8 +98,6 @@
 
         </LinearLayout>
     </ScrollView>
-
-
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,14 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:id="@+id/main_content"
-    >
+    android:id="@+id/main_content">
 
 
-    <com.github.sundeepk.compactcalendarview.CompactCalendarView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/compactcalendar_view"
         android:layout_width="fill_parent"
         android:layout_height="250dp"
@@ -21,8 +18,7 @@
         app:compactCalendarCurrentDayIndicatorStyle="fill_large_indicator"
         app:compactCalendarEventIndicatorStyle="small_indicator"
         app:compactCalendarOtherMonthDaysTextColor="#534c4c"
-        app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="true"
-        />
+        app:compactCalendarShouldSelectFirstDayOfMonthOnScroll="true" />
 
     <Button
         android:layout_below="@+id/compactcalendar_view"
@@ -30,7 +26,7 @@
         android:id="@+id/prev_button"
         android:text="Scroll Left"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 
     <Button
@@ -39,7 +35,7 @@
         android:id="@+id/next_button"
         android:text="Scroll Right"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -74,21 +70,19 @@
             android:id="@+id/slide_calendar"
             android:text="Slide animation"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/show_with_animation_calendar"
             android:text="Expose animation"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/add_schedule_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="add new"
-            />
+            android:text="add new" />
     </LinearLayout>
 
     <ListView
@@ -97,7 +91,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        >
-    </ListView>
+        ></ListView>
 
 </RelativeLayout>
