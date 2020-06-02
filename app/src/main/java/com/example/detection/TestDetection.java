@@ -16,10 +16,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -134,6 +136,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     TextView settingcountView;
 
     ImageView backgroundImageView;
+
+    Button backBtn;
     //쓰레드 핸들러
     Handler mhighcountHandler = null;
     Handler mlowcountHandler = null;
@@ -306,6 +310,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         settingtextView = (TextView)findViewById(R.id.SETTING);
         settingcountView = (TextView)findViewById(R.id.setting_count);
 
+        backBtn = (Button)findViewById(R.id.backbtn);
 
         backgroundImageView = (ImageView)(findViewById(R.id.backgroundimg));
         //알람을 위한 처리
@@ -318,6 +323,15 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
 
         //mcountdownthread = new countdownThread();
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplication(),MainActivity.class);
+                startActivity(intent);
+                TestDetection.this.finish();
+            }
+        });
 
         //UI처리 쓰레드 핸들러
         mhighcountHandler = new Handler(){

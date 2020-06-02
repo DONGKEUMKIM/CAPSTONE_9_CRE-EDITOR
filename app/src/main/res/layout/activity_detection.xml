@@ -183,13 +183,12 @@
         opencv:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/backbtn"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:layout_marginEnd="20dp"
             android:gravity="center"
-            android:onClick="onClick"
             android:text=""
             opencv:icon="@drawable/close_icon" />
 
