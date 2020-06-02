@@ -27,6 +27,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -386,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                     //System.out.println("okClicked");
                     ScheduleData addScheduleData = (ScheduleData) data.getExtras().getSerializable("schedule");
                     dbManager.insertScheduleData(addScheduleData);
+                    refresh();
                     break;
                 }
             case 2:
@@ -397,9 +399,15 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                     TestTimeData testTimeData = (TestTimeData) data.getExtras().getSerializable("testtime");
                     dbManager.insertSubjectData(addSubData);
                     dbManager.insertTestTimeData(testTimeData);
+                    refresh();
                     break;
                 }
         }
+    }
+    public void refresh(){
+        transaction = fragmentManager.beginTransaction();
+        Fragment currentFrag = fragmentManager.findFragmentById(R.id.frameLayout);
+        transaction.detach(currentFrag).attach(currentFrag).commitAllowingStateLoss();
     }
 
     public String SetSpeakingtextView(int num) {
