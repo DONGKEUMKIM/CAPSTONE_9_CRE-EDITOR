@@ -15,3 +15,5 @@
 /.idea/misc.xml
 /opencv/build/
 CMakeList.txt
+
+.idea/.name
