@@ -190,10 +190,11 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
         arr[1] = real_facesize_y;
         arr[2] = real_facesize_width;
         arr[3] = real_facesize_width;
-        jintArray ret = env->NewIntArray(4);
+
+        //jintArray ret = env->NewIntArray(4);
         env->SetIntArrayRegion(face_arr,0,4,arr);
 
-        cv::rectangle(img_result, face_area, Scalar(255,0,0), 15, 8, 0);
+        //cv::rectangle(img_result, face_area, Scalar(255,0,0), 15, 8, 0);
 
         std::vector<Rect> eyes;
         std::vector<Rect> righteyes;
@@ -258,6 +259,12 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
         }
          */
     }
+
+    jint *face_Array = env->GetIntArrayElements(face_arr, NULL);
+
+    Rect face_area(face_Array[0], face_Array[1], face_Array[2],face_Array[3]);
+    cv::rectangle(img_result, face_area, Scalar(255,0,0), 15, 8, 0);
+
     return returnValue;
 }extern "C"
 JNIEXPORT void JNICALL
@@ -279,10 +286,31 @@ Java_com_example_detection_TestDetection_makeFaceMaskImage(JNIEnv *env, jobject 
     cvtColor(img_input, img_result, COLOR_BGR2HSV);
     //cvtColor(img_input, matBinary2, COLOR_BGR2HSV);
 
-    cv::Scalar low(hsvArray[0] - 20 , 30, 0);
-    cv::Scalar high(hsvArray[0] + 20 , 255  , 255);
-
-    inRange(img_result,low, high, img_result);
+    if(hsvArray[0] - 15 > 0) {
+        cv::Scalar low(hsvArray[0] - 10, 30, 30);
+        if(hsvArray[0] + 15 > 179)
+        {
+            cv::Scalar high(179 , 255  , 255);
+            inRange(img_result,low, high, img_result);
+        } else
+        {
+            cv::Scalar high(hsvArray[0] + 10 , 255  , 255);
+            inRange(img_result,low, high, img_result);
+        }
+    }
+    else if(hsvArray[0] - 15 <= 0)
+    {
+        cv::Scalar low(0, 30, 30);
+        if(hsvArray[0] + 15 > 179)
+        {
+            cv::Scalar high(179 , 255  , 255);
+            inRange(img_result,low, high, img_result);
+        } else
+        {
+            cv::Scalar high(hsvArray[0] + 15 , 255  , 255);
+            inRange(img_result,low, high, img_result);
+        }
+    }
     /*
     cv::Scalar low1(150 , 30, 30);
     cv::Scalar high1(180, 255, 255);
@@ -414,20 +442,27 @@ Java_com_example_detection_TestDetection_getHSVfromImg(JNIEnv *env, jobject thiz
     Mat hsvImg;
 
     jint *faceArray = env->GetIntArrayElements(face_array, NULL);
+
     jintArray huearray = (jintArray )env->NewGlobalRef((jobject) array);
 
     cvtColor(matInput, hsvImg, COLOR_BGR2HSV);
 
-    int xPoint = faceArray[0] + faceArray[2]/2;
+    int xPoint = faceArray[0] + faceArray[2]/1.5;
     int yPoint = faceArray[1] + faceArray[3]/2;
+
+    Point eye_center( xPoint, yPoint );
+    int radius = cvRound( 30 );
+    circle( matInput, eye_center, radius, Scalar( 255, 0, 0 ), 15, 8, 0 );
 
     int arr[3]={0,0,0};
 
-    arr[0] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[0];
-    arr[1] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[1];
-    arr[2] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[2];
-
-    env->SetIntArrayRegion(huearray,0,3,arr);
+    if((int)hsvImg.at<Vec3b>(yPoint, xPoint)[0] != 0)
+    {
+        arr[0] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[0];
+        arr[1] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[1];
+        arr[2] = (int)hsvImg.at<Vec3b>(yPoint, xPoint)[2];
+        env->SetIntArrayRegion(huearray,0,3,arr);
+    }
 
     return xPoint;
 }

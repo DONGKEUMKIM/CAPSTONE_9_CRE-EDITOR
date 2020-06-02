@@ -19,13 +19,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.detection.MainActivity;
 import com.example.detection.R;
+import com.example.detection.db.SQLiteManager;
+import com.example.detection.db.ScheduleData;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -45,7 +47,7 @@ public class CompactCalendarTab extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mainTabView = inflater.inflate(R.layout.fragment_calendar,container,false);
+        View mainTabView = inflater.inflate(R.layout.fragment_calendar, container, false);
         final List<String> mutableBookings = new ArrayList<>();
 
         final ListView bookingsListView = mainTabView.findViewById(R.id.bookings_listview);
@@ -55,7 +57,7 @@ public class CompactCalendarTab extends Fragment {
         final Button showCalendarWithAnimationBut = mainTabView.findViewById(R.id.show_with_animation_calendar);
         final Button setLocaleBut = mainTabView.findViewById(R.id.set_locale);
         final Button removeAllEventsBut = mainTabView.findViewById(R.id.remove_all_events);
-
+        final Button addNewScheduleBut = mainTabView.findViewById(R.id.add_schedule_calendar);
         final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mutableBookings);
         bookingsListView.setAdapter(adapter);
         compactCalendarView = mainTabView.findViewById(R.id.compactcalendar_view);
@@ -69,8 +71,13 @@ public class CompactCalendarTab extends Fragment {
         compactCalendarView.setIsRtl(false);
         compactCalendarView.displayOtherMonthDays(false);
         //compactCalendarView.setIsRtl(true);
-        loadEvents();
-        loadEventsForYear(2017);
+        //loadEvents();
+        //loadEventsForYear(2017);
+
+        for(int i=2000;i<2050;i++){
+            loadEventsForYear(i);
+        }
+
         compactCalendarView.invalidate();
 
         logEventsByMonth(compactCalendarView);
@@ -128,7 +135,12 @@ public class CompactCalendarTab extends Fragment {
                 compactCalendarView.scrollRight();
             }
         });
-
+        addNewScheduleBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addNewSchedule();
+            }
+        });
         final View.OnClickListener showCalendarOnClickLis = getCalendarShowLis();
         slideCalendarBut.setOnClickListener(showCalendarOnClickLis);
 
@@ -148,15 +160,16 @@ public class CompactCalendarTab extends Fragment {
         setLocaleBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Locale locale = Locale.FRANCE;
+                Locale locale = Locale.KOREA;
                 dateFormatForDisplaying = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a", locale);
-                TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+                TimeZone timeZone = TimeZone.getTimeZone("Asia/Seoul");
                 dateFormatForDisplaying.setTimeZone(timeZone);
                 dateFormatForMonth.setTimeZone(timeZone);
                 compactCalendarView.setLocale(timeZone, locale);
                 compactCalendarView.setUseThreeLetterAbbreviation(false);
-                loadEvents();
-                loadEventsForYear(2017);
+                for(int i=2000;i<2050;i++){
+                    loadEventsForYear(i);
+                }
                 logEventsByMonth(compactCalendarView);
 
             }
@@ -244,8 +257,18 @@ public class CompactCalendarTab extends Fragment {
     }
 
     private void loadEventsForYear(int year) {
-        addEvents(Calendar.DECEMBER, year);
+        addEvents(Calendar.JANUARY, year);
+        addEvents(Calendar.FEBRUARY, year);
+        addEvents(Calendar.MARCH, year);
+        addEvents(Calendar.APRIL, year);
+        addEvents(Calendar.MAY, year);
+        addEvents(Calendar.JUNE, year);
+        addEvents(Calendar.JULY, year);
         addEvents(Calendar.AUGUST, year);
+        addEvents(Calendar.SEPTEMBER, year);
+        addEvents(Calendar.OCTOBER, year);
+        addEvents(Calendar.NOVEMBER, year);
+        addEvents(Calendar.DECEMBER, year);
     }
 
     private void logEventsByMonth(CompactCalendarView compactCalendarView) {
@@ -260,11 +283,27 @@ public class CompactCalendarTab extends Fragment {
         Log.d(TAG, "Events for Aug month using default local and timezone: " + compactCalendarView.getEventsForMonth(currentCalender.getTime()));
     }
 
+    private List<ScheduleData> scheduleFilter(int month, int year){
+        SQLiteManager dbManager = SQLiteManager.sqLiteManager;
+        List<ScheduleData> scheduleData = dbManager.selectscheduleAll();
+        List<ScheduleData> returnData = new ArrayList<ScheduleData>();
+        for(int i=0; i<scheduleData.size();i++){
+            if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[0])==year){
+                if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[1])==month){
+                    returnData.add(scheduleData.get(i));
+                }
+            }
+        }
+        return returnData;
+    }
+
     private void addEvents(int month, int year) {
+
+        List<ScheduleData> filteredData = scheduleFilter(month, year);
         currentCalender.setTime(new Date());
         currentCalender.set(Calendar.DAY_OF_MONTH, 1);
         Date firstDayOfMonth = currentCalender.getTime();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < currentCalender.getActualMaximum(Calendar.DATE); i++) {
             currentCalender.setTime(firstDayOfMonth);
             if (month > -1) {
                 currentCalender.set(Calendar.MONTH, month);
@@ -277,25 +316,40 @@ public class CompactCalendarTab extends Fragment {
             setToMidnight(currentCalender);
             long timeInMillis = currentCalender.getTimeInMillis();
 
-            List<Event> events = getEvents(timeInMillis, i);
+            List<Event> events = getEvents(filteredData, timeInMillis, i);
 
             compactCalendarView.addEvents(events);
         }
-    }
 
-    private List<Event> getEvents(long timeInMillis, int day) {
+
+
+
+    }
+    private String getSubjectName(int subjID){
+        SQLiteManager dbManager = SQLiteManager.sqLiteManager;
+        return dbManager.selectSubjectDataFormSubjectID(subjID).getName();
+    }
+    private List<Event> getEvents(List<ScheduleData> scheduleData, long timeInMillis, int day) {
+        List<Event> eventArray = new ArrayList<Event>();
+        for(int i=0;i<scheduleData.size();i++){
+            if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[2])==day){
+                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() + scheduleData.get(i).getDuringtime()+" Hours"));
+            }
+        }
+        return eventArray;
+        /*
         if (day < 2) {
             return Arrays.asList(new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis)));
-        } else if ( day > 2 && day <= 4) {
+        } else if (day > 2 && day <= 4) {
             return Arrays.asList(
                     new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis)),
                     new Event(Color.argb(255, 100, 68, 65), timeInMillis, "Event 2 at " + new Date(timeInMillis)));
         } else {
             return Arrays.asList(
-                    new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis) ),
+                    new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis)),
                     new Event(Color.argb(255, 100, 68, 65), timeInMillis, "Event 2 at " + new Date(timeInMillis)),
                     new Event(Color.argb(255, 70, 68, 65), timeInMillis, "Event 3 at " + new Date(timeInMillis)));
-        }
+        }*/
     }
 
     private void setToMidnight(Calendar calendar) {
@@ -303,5 +357,9 @@ public class CompactCalendarTab extends Fragment {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
+    }
+
+    private void addNewSchedule() {
+        ((MainActivity) getActivity()).addNewSchedule();
     }
 }

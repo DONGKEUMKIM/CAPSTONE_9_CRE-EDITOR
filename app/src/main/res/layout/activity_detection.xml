@@ -50,7 +50,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="남은 시간 : "
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
 
             <TextView
                 android:id="@+id/COUNTDOWNNUM"
@@ -59,7 +60,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="60"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
         </LinearLayout>
 
         <LinearLayout
@@ -73,6 +75,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="HIGH COUNT : "
+                android:textColor="#FF0000"
                 android:textSize="24sp" />
 
             <TextView
@@ -82,7 +85,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="0"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
 
         </LinearLayout>
 
@@ -97,7 +101,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="LOW COUNT : "
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
 
             <TextView
                 android:id="@+id/LOWSLEEPNUM"
@@ -106,7 +111,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="0"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
 
         </LinearLayout>
 
@@ -121,7 +127,8 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="눈 판별 : "
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
 
             <TextView
                 android:id="@+id/open_close"
@@ -130,7 +137,34 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="random"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/SETTING"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="셋팅 중 : "
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
+
+            <TextView
+                android:id="@+id/setting_count"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="10"
+                android:textSize="24sp"
+                android:textColor="#FF0000"/>
 
         </LinearLayout>
 

@@ -6,12 +6,14 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.SeekBar;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,43 +21,70 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.detection.R;
 import com.example.detection.db.SubjectData;
 import com.example.detection.db.TestTimeData;
+import com.rey.material.widget.Slider;
 
 import java.util.ArrayList;
 
 public class SubjectDataPopupFragment extends AppCompatActivity {
 
-    Button okButton, cancelButton,testTimeSetButton;
+    Button okButton, cancelButton, testTimeSetButton;
     //DatePicker datePicker;
-    SeekBar seekBar;
+    Slider seekBar;
     View thumbView;
-    ArrayList idArray;
+    ArrayList<String> idArray;
+    EditText subjectName;
     private SubjectData subjectData;
     private TestTimeData testTimeData;
+    private TextView priortyText;
+    private Intent intent;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.data_insert_popup);
         View thumbView = LayoutInflater.from(SubjectDataPopupFragment.this).inflate(R.layout.seek_bar_thumb, null, false);
-        okButton = (Button)findViewById(R.id.input_data_okButton);
-        cancelButton = (Button)findViewById(R.id.input_data_cancel_button);
-        testTimeSetButton = (Button)findViewById(R.id.testTimeSet);
-        seekBar = (SeekBar)findViewById(R.id.input_data_priority);
-        subjectData = new SubjectData(0,"",0);
-        testTimeData = new TestTimeData("",0,"",0);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        okButton = (Button) findViewById(R.id.input_data_okButton);
+        cancelButton = (Button) findViewById(R.id.input_data_cancel_button);
+        testTimeSetButton = (Button) findViewById(R.id.testTimeSet);
+        seekBar = (Slider) findViewById(R.id.input_data_priority);
+        subjectData = new SubjectData(0, "", 0);
+        testTimeData = new TestTimeData("", 0, "", 0);
+        priortyText = (TextView) findViewById(R.id.input_data_priority_text);
+        subjectName = (EditText) findViewById(R.id.insert_data_name);
+        intent = getIntent();
+        int id = intent.getIntExtra("id", 0);
+        String testTimeID = intent.getStringExtra("testtimeid");
+        subjectData.setID(id);
+        testTimeData.setId(testTimeID);
+        testTimeData.setSubject_ID(id);
+
+
+        subjectName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // You can have your own calculation for progress
-                seekBar.setThumb(getThumb(progress));
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
+
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //subjectData.setName(charSequence.toString());
             }
+
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            public void afterTextChanged(Editable editable) {
+                subjectData.setName(editable.toString());
             }
         });
+
+        seekBar.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
+            @Override
+            public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
+                priortyText.setText(Integer.toString(newValue));
+                subjectData.setPriority(newValue);
+            }
+        });
+
         okButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,15 +106,16 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
 
     }
 
-    @Override public boolean onTouchEvent(MotionEvent event){
-        if(event.getAction()==MotionEvent.ACTION_OUTSIDE){
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
             return false;
         }
         return true;
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         return;
     }
 
@@ -100,26 +130,38 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
 
         return new BitmapDrawable(getResources(), bitmap);
     }
-    private void okButtonClicked(){
 
+    private void okButtonClicked() {
+        intent.putExtra("subject", subjectData);
+        intent.putExtra("testtime", testTimeData);
+        setResult(2, intent);
         finish();
-    };
-    private void cancelButtonClicked(){finish();};
-    private void testTimeSetButtonClicked(View view){
-        Intent intent = new Intent(this, testTimeInsertPopupFragment.class);
-        intent.putStringArrayListExtra("idArray",idArray);
-        startActivityForResult(intent,0);
+    }
+
+    ;
+
+    private void cancelButtonClicked() {
+        setResult(1);
+        finish();
+    }
+
+    ;
+
+    private void testTimeSetButtonClicked(View view) {
+        Intent ttdIntent = new Intent(this, testTimeInsertPopupFragment.class);
+        ttdIntent.putExtra("ttd", testTimeData);
+        startActivityForResult(ttdIntent, 3);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode!=0)
+        if (requestCode != 3)
             return;
-        else{
-            if(resultCode==1)
+        else {
+            if (resultCode == 1)
                 return;
-            testTimeData = (TestTimeData)data.getExtras().getSerializable("testTime");
+            testTimeData = (TestTimeData) data.getExtras().getSerializable("testTime");
         }
     }
 }

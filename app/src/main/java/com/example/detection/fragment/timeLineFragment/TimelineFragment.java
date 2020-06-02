@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.detection.MainActivity;
 import com.example.detection.R;
+import com.example.detection.db.SQLiteManager;
+import com.example.detection.db.ScheduleData;
 
 import org.qap.ctimelineview.TimelineRow;
 import org.qap.ctimelineview.TimelineViewAdapter;
@@ -24,6 +27,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,7 +36,7 @@ public class TimelineFragment extends Fragment {
 
     //Create Timeline Rows List
     private ArrayList<TimelineRow> timelineRowsList = new ArrayList<>();
-    ArrayAdapter<TimelineRow> myAdapter;
+    List<ScheduleData> listScheduleData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,11 +52,32 @@ public class TimelineFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         for (int i = 0; i < 15; i++) {
             //add the new row to the list
-            timelineRowsList.add(createRandomTimelineRow(i));
+            //timelineRowsList.add(createRandomTimelineRow(i));
         }
 
+        SQLiteManager dbManager = SQLiteManager.sqLiteManager;
+        listScheduleData = new ArrayList<ScheduleData>();
+        listScheduleData = dbManager.selectscheduleAll();
+        if(listScheduleData.size()==0){
+            try {
+                timelineRowsList.add(emptyTimelineRow());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            for (int i = 0; i < listScheduleData.size(); i++) {
+                try {
+                    timelineRowsList.add(createTimelineRow(i));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
         //Create the Timeline Adapter
-        myAdapter = new TimelineViewAdapter(this.getActivity(), 0, timelineRowsList,
+        ArrayAdapter<TimelineRow> myAdapter = new TimelineViewAdapter(this.getActivity(), 0, timelineRowsList,
                 //if true, list will be sorted by date
                 true);
 
@@ -60,7 +86,17 @@ public class TimelineFragment extends Fragment {
         ListView myListView = (ListView) v.findViewById(R.id.timeline_listView);
         myListView.setAdapter(myAdapter);
 
+        /*
+        for (int j = 0; j < listScheduleData.size(); j++) {
 
+            try {
+                myAdapter.add(createTimelineRow(j));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        */
         //if you wish to handle list scrolling
         myListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int currentVisibleItemCount;
@@ -91,10 +127,10 @@ public class TimelineFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && this.currentScrollState == SCROLL_STATE_IDLE) {
-
+                    Toast.makeText(getActivity(), "End of Timeline", Toast.LENGTH_SHORT).show();
                     ////on scrolling to end of the list, add new rows
                     for (int i = 0; i < 15; i++) {
-                        myAdapter.add(createRandomTimelineRow(i));
+                        //myAdapter.add(createRandomTimelineRow(i));
                     }
 
                 }
@@ -108,13 +144,51 @@ public class TimelineFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TimelineRow row = timelineRowsList.get(position);
-                Toast.makeText(getActivity(),row.getTitle(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), row.getTitle(), Toast.LENGTH_SHORT).show();
             }
         };
         myListView.setOnItemClickListener(adapterListener);
 
 
+    }
+    private TimelineRow emptyTimelineRow() throws ParseException{
+        TimelineRow myRow = new TimelineRow(0);
+        myRow.setTitle("No Schedule");
+        return  myRow;
+    }
 
+    private TimelineRow createTimelineRow(int id) throws ParseException {
+        //SQLiteManager dbManager = ((MainActivity) getActivity()).getDbManager();
+
+        TimelineRow myRow = new TimelineRow(id);
+        ScheduleData sch = listScheduleData.get(id);
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy/MM/dd");
+        //to set the row Date (optional)
+        myRow.setDate(transFormat.parse(sch.getDate()));
+        //to set the row Title (optional)
+        myRow.setTitle("Subject : " + ((MainActivity) Objects.requireNonNull(getActivity())).getSubjectData(sch.getSubject_ID()).getName());
+        //to set the row Description (optional)
+        myRow.setDescription("Description " + sch.getSubject_ID());
+        //to set the row bitmap image (optional)
+        myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.ic_check_circle_black_24dp));
+        //to set row Below Line Color (optional)
+        myRow.setBellowLineColor(getRandomColor());
+        //to set row Below Line Size in dp (optional)
+        myRow.setBellowLineSize(getRandomNumber(2, 25));
+        //to set row Image Size in dp (optional)
+        myRow.setImageSize(getRandomNumber(25, 40));
+        //to set background color of the row image (optional)
+        myRow.setBackgroundColor(getRandomColor());
+        //to set the Background Size of the row image in dp (optional)
+        myRow.setBackgroundSize(sch.getDuringtime() * 3);
+        //to set row Date text color (optional)
+        myRow.setDateColor(getRandomColor());
+        //to set row Title text color (optional)
+        myRow.setTitleColor(getRandomColor());
+        //to set row Description text color (optional)
+        myRow.setDescriptionColor(getRandomColor());
+
+        return myRow;
     }
 
     //Method to create new Timeline Row

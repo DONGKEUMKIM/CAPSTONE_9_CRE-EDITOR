@@ -26,7 +26,8 @@
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
-            android:screenOrientation="fullSensor">
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,6 +35,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize">
+        </activity>
 
         <activity android:name=".TestDetection"
             android:screenOrientation="landscape"
@@ -52,6 +58,7 @@
         <activity android:name=".fragment.popupFragment.ScheduleDataPopupFragment"
             android:screenOrientation="fullSensor"
             android:theme="@style/popupTheme"/>
+        <service android:name=".AlarmSoundService"></service>
 
     </application>
 

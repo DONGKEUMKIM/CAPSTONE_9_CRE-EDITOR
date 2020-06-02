@@ -1,8 +1,6 @@
 package com.example.detection;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class DateForm {
 
@@ -13,8 +11,8 @@ public class DateForm {
 
     public SimpleDateFormat df_date;
     String date_str;
-    public DateForm()
-    {
+
+    public DateForm() {
         df_date = new SimpleDateFormat("yyyy. MM. dd");
     }
 
