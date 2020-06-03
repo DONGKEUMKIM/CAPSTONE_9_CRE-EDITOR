@@ -107,9 +107,9 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private final static int LOW_NOTACT = 5;
     int StateOfDetectingLowDowsiness= REST;
 
-    int settingcount = 2;
+    int settingcount = 15;
 
-    int cameraviewcount = 200;                       //60초 단위 촬영을 위한 카운트
+    int cameraviewcount = 120;                       //60초 단위 촬영을 위한 카운트
 
     int high_detectingCount = 0;                            //높은졸음이 감지됐을때 시작되는 카운트
     int low_detectingCount = 0;                             //낮은졸음이 감지됐을때 시작되는 카운트
@@ -457,7 +457,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.face);
         }
 
-        cameraviewcount = 200;
+        cameraviewcount = 120;
 
         if(StateOfSetting == SETTING_ON)
         {
@@ -491,7 +491,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.breakimg);
         }
 
-        cameraviewcount = 200;
+        cameraviewcount = 120;
 
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
