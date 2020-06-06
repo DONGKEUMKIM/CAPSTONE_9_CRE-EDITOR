@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -58,7 +59,7 @@ public class CompactCalendarTab extends Fragment {
         final Button setLocaleBut = mainTabView.findViewById(R.id.set_locale);
         final Button removeAllEventsBut = mainTabView.findViewById(R.id.remove_all_events);
         final Button addNewScheduleBut = mainTabView.findViewById(R.id.add_schedule_calendar);
-        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, mutableBookings);
+        final CalendarArrayAdapter adapter = new CalendarArrayAdapter(getContext(), R.layout.calendar_list_view_component, mutableBookings);
         bookingsListView.setAdapter(adapter);
         compactCalendarView = mainTabView.findViewById(R.id.compactcalendar_view);
 
@@ -77,8 +78,16 @@ public class CompactCalendarTab extends Fragment {
         for(int i=2000;i<2050;i++){
             loadEventsForYear(i);
         }
-
         compactCalendarView.invalidate();
+
+        bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //TODO
+                //On Schedule List Item Click Listener
+                //Code the Detection Activity with result
+            }
+        });
 
         logEventsByMonth(compactCalendarView);
 

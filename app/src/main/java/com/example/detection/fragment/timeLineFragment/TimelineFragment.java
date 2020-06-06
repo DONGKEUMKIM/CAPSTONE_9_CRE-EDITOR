@@ -1,7 +1,10 @@
 package com.example.detection.fragment.timeLineFragment;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +80,7 @@ public class TimelineFragment extends Fragment {
 
 
         //Create the Timeline Adapter
-        ArrayAdapter<TimelineRow> myAdapter = new TimelineViewAdapter(this.getActivity(), 0, timelineRowsList,
+        ArrayAdapter<TimelineRow> myAdapter = new TimelineViewAdapter(this.getActivity(), R.layout.ctimeline_row, timelineRowsList,
                 //if true, list will be sorted by date
                 true);
 
@@ -166,9 +169,9 @@ public class TimelineFragment extends Fragment {
         //to set the row Date (optional)
         myRow.setDate(transFormat.parse(sch.getDate()));
         //to set the row Title (optional)
-        myRow.setTitle("Subject : " + ((MainActivity) Objects.requireNonNull(getActivity())).getSubjectData(sch.getSubject_ID()).getName());
+        myRow.setTitle(((MainActivity) Objects.requireNonNull(getActivity())).getSubjectData(sch.getSubject_ID()).getName());
         //to set the row Description (optional)
-        myRow.setDescription("Description " + sch.getSubject_ID());
+        myRow.setDescription(String.valueOf(sch.getDuringtime()));
         //to set the row bitmap image (optional)
         myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.ic_check_circle_black_24dp));
         //to set row Below Line Color (optional)
@@ -182,11 +185,14 @@ public class TimelineFragment extends Fragment {
         //to set the Background Size of the row image in dp (optional)
         myRow.setBackgroundSize(sch.getDuringtime() * 3);
         //to set row Date text color (optional)
-        myRow.setDateColor(getRandomColor());
+        //myRow.setDateColor(getRandomColor());
         //to set row Title text color (optional)
-        myRow.setTitleColor(getRandomColor());
+        //myRow.setTitleColor(getRandomColor());
         //to set row Description text color (optional)
-        myRow.setDescriptionColor(getRandomColor());
+        //myRow.setDescriptionColor(getRandomColor());
+        //Drawable drawable = getResources().getDrawable(R.drawable.time_line_component);
+        //BitmapDrawable bitmapDrawable = (BitmapDrawable)drawable;
+        //myRow.setImage(bitmapDrawable.getBitmap());
 
         return myRow;
     }

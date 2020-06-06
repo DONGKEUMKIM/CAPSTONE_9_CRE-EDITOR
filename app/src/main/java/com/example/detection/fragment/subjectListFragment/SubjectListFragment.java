@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -204,6 +205,16 @@ public class SubjectListFragment extends Fragment {
             holder.setSubjectName.setText(item.getSubjectName());
             holder.setPriority.setText(item.getPriority());
             holder.setTestTime.setText(item.getTestDate());
+            if(position%4==0){
+                holder.imgView.setImageResource(R.drawable.subject_card1);
+            }
+            else if(position%4==1){
+                holder.imgView.setImageResource(R.drawable.subject_card2);
+            }else if(position%4==2){
+                holder.imgView.setImageResource(R.drawable.subject_card3);
+            }else if(position%4==3){
+                holder.imgView.setImageResource(R.drawable.subject_card4);
+            }
 
 
             return convertView;
@@ -213,12 +224,14 @@ public class SubjectListFragment extends Fragment {
             TextView setSubjectName;
             TextView setPriority;
             TextView setTestTime;
+            ImageView imgView;
 
 
             public ViewHolder(View view) {
                 setSubjectName = (TextView) view.findViewById(R.id.set_slc_subjectName);
                 setPriority = (TextView) view.findViewById(R.id.set_slc_priority);
                 setTestTime = (TextView) view.findViewById(R.id.set_slc_testTime);
+                imgView = (ImageView) view.findViewById(R.id.subject_listView_comp_imgview);
 
                 view.setTag(this);
             }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -19,8 +20,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="45dp"
-                android:divider="@null"
-                android:dividerHeight="0dp"/>
+                android:divider="@drawable/background_transparent"
+                android:dividerHeight="20dp"
+                android:layout_marginStart="20dp"
+                >
+
+
+            </com.baoyz.swipemenulistview.SwipeMenuListView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -33,6 +39,8 @@
                     android:text="add subject"
                     android:id="@+id/add_new_subject_subject_list" />
             </LinearLayout>
+
+
         </RelativeLayout>
 
     </LinearLayout>

@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="TODO"
+            android:scaleType="fitStart"
+            android:src="@drawable/insert_test_time_background"/>
+
+
+<LinearLayout
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,15 +25,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/colorPrimary">
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="50sp"
             android:fontFamily="monospace"
             android:gravity="center"
-            android:text="Insert Test Time"
+            android:text=""
             android:textColor="#fff"
             android:textStyle="bold" />
     </LinearLayout>
@@ -25,6 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
         android:gravity="center">
 
         <TextView
@@ -34,7 +52,7 @@
             android:layout_marginBottom="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Date "
+            android:text=""
             android:paddingRight="2dp" />
 
         <DatePicker
@@ -52,6 +70,8 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:orientation="horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
         android:showDividers="middle|beginning|end">
 
         <TextView
@@ -60,13 +80,13 @@
             android:layout_marginBottom="2dp"
             android:gravity="center"
             android:paddingEnd="2dp"
-            android:text="During Time "
+            android:text=""
             android:textColor="#000000"
             android:textSize="15sp" />
 
         <NumberPicker
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:id="@+id/testtime_duringTimePicker" />
     </LinearLayout>
 
@@ -79,23 +99,32 @@
         android:layout_marginTop="20dp">
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/testtime_okButton"
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="100dp"
             android:layout_height="45dp"
             android:layout_marginRight="20dp"
             android:text="Insert"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:background="#FFFFFF"
+            android:textColor="#B9000000"
+            android:backgroundTint="#FFFFFF"
+            />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/testtime_cancel_button"
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="100dp"
             android:layout_height="45dp"
             android:text="Cancel"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:background="#FFFFFF"
+            android:textColor="#B9000000"
+            android:backgroundTint="#FFFFFF"
+            />
 
 
     </LinearLayout>
 </LinearLayout>
-
+    </FrameLayout>
+</LinearLayout>
