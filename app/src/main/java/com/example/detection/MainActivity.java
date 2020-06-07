@@ -374,13 +374,20 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         intent.putExtra("testtimeid", dbManager.generateRandomID());
         startActivityForResult(intent, 2);
     }
+    public void startDetectionFromSchedule(){
+        //TODO
+        //startDetectionFromSchedule Function
+        //
+    }
 
+
+    //MainActivity Control Function
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 1:
+            case 1://result code 1 : getSchedule Data from popup
                 if (resultCode == 1)
                     return;
                 else {
@@ -390,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                     refresh();
                     break;
                 }
-            case 2:
+            case 2://result code 2 : getSubject, testTime Data from popup
                 if (resultCode == 1)
                     return;
                 else {

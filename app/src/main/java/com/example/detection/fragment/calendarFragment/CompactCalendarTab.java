@@ -27,6 +27,8 @@ import com.example.detection.db.ScheduleData;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 
+import org.qap.ctimelineview.TimelineRow;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,6 +88,11 @@ public class CompactCalendarTab extends Fragment {
                 //TODO
                 //On Schedule List Item Click Listener
                 //Code the Detection Activity with result
+
+                //targetString
+                String string = (String)adapterView.getAdapter().getItem(i);
+                //Log.d(TAG, string);
+                ((MainActivity)getActivity()).startDetectionFromSchedule();
             }
         });
 
@@ -342,7 +349,7 @@ public class CompactCalendarTab extends Fragment {
         List<Event> eventArray = new ArrayList<Event>();
         for(int i=0;i<scheduleData.size();i++){
             if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[2])==day){
-                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() +"for"+ scheduleData.get(i).getDuringtime()+" Hours"));
+                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() +" for "+ scheduleData.get(i).getDuringtime()+" Hours"));
             }
         }
         return eventArray;
