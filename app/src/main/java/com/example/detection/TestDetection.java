@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.detection.db.SQLiteManager;
+import com.example.detection.db.ScheduleData;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -115,6 +117,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private boolean islowcountupThreadRun = false;
     private boolean ishighcountupThreadRun = false;
 
+    private boolean allthreadisrunning = true;
+
     int settingcount = 15;
 
     //과목 공부 시간  - 시간 단위
@@ -129,10 +133,15 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     int hsv_array[];
 
+    //CountDownTimer duringTimecdTimer;
+
     //메인으로부터 넘겨 받을 정보
-    private String subjectID;   //선택된 스케줄의의 ID값
+    //private String subjectID;   //선택된 스케줄의의 ID값
     private String subjectSN;  //선택된 과목 이름
+    private String scheduleDate;
     private int subjectDT;     //선택된 공부 시간
+
+    private String conversionDT;
 
 
     //countdownThread  mcountdownthread;
@@ -167,6 +176,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     Handler msettingcountHnadler = null;
 
     private CameraBridgeViewBase mOpenCvCameraView;
+
+    private int drawnessCounter = 0;
 
 
     //머신러닝 모델 파일 및 인터프리터
@@ -345,13 +356,20 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         */
         //subjectID = getIntent().getExtras().getString("");
         subjectSN = getIntent().getExtras().getString("SN");
-        subjectduringtime = getIntent().getExtras().getInt("DT");
+        subjectDT = getIntent().getExtras().getInt("DT");
+        scheduleDate = getIntent().getExtras().getString("DATE");
+
+        conversionDT = convert2conversionDTfromInt(subjectDT);
+
+
+
 
         //일단은 테스트용
-        subjectnameView.setText("캡스톤프로젝트");
+        //subjectnameView.setText("캡스톤프로젝트");
 
-        subjectduringtime = 4;
-        duringtimeView.setText(String.valueOf(subjectduringtime));
+        //subjectduringtime = 4;
+
+        //duringtimeView.setText(String.valueOf(subjectduringtime));
 
 
         backBtn = (Button)findViewById(R.id.backbtn);
@@ -365,6 +383,20 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
         mAlarmsoundservice = new AlarmSoundService();
 
+        /*duringTimecdTimer = new CountDownTimer(30000 , 1000) {
+
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                duringtimeView.setText("공부시간 : " + millisUntilFinished / 1000);
+            }
+
+            @Override
+            public void onFinish() {
+                //학습 종료
+            }
+        };
+        */
 
         //mcountdownthread = new countdownThread();
 
@@ -417,6 +449,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     //60초 카운트가 지났을 때
                     //휴식구간 or 감지구간 선택
 
+                    /*
                     if(subjectduringtime == 0)
                     {
                         //druingtime 이 다 지났을 때 학습종료
@@ -433,7 +466,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     }
                     subjectduringtime--;
                     duringtimeView.setText(String.valueOf(subjectduringtime));
-
+                    */
                     Random rnd = new Random();
                     int randomValue = rnd.nextInt(3);   //0~2 까지의 난수 생성
 
@@ -505,6 +538,10 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     StateOfSetting = SETTING_OFF;
                     settingtextView.setText("셋팅 완료");
 
+                    //카운트 다운 시작
+                    if(conversionDT != null)
+                        countDown("conversionDT");
+
                     //셋팅이 끝났을 때
                     //                    //휴식구간부터 시작
                     StateOfDetectingHighDowsiness = REST;
@@ -567,6 +604,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             //이미지는 얼굴 프레임 이미지
             backgroundImageView.setImageResource(R.drawable.face);
         }
+
+        duringtimeView.setText("공부시간 : " + String.valueOf(subjectDT) + "시간");
 
         cameraviewcount = 15;
 
@@ -757,6 +796,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                         if(high_detectingCount == 10)
                         {
+                            drawnessCounter++;
+
                             System.out.println("방송 송출");
                             StateOfDetectingHighDowsiness = HIGH_WAKE_UP;
                             //알람 리시버에게 알람수행을 위한 메시지 송신
@@ -817,6 +858,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                         if(low_detectingCount == 10)
                         {
+                            drawnessCounter++;
+
                             System.out.println("방송 송출");
                             StateOfDetectingLowDowsiness = LOW_WAKE_UP;
                             //알람 리시버에게 알람수행을 위한 메시지 송신
@@ -892,6 +935,116 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         }
     }
 
+    public void countDown(String time) {
+
+        long conversionTime = 0;
+
+        // 1000 단위가 1초
+        // 60000 단위가 1분
+        // 60000 * 3600 = 1시간
+
+        String getHour = time.substring(0, 2);
+        String getMin = time.substring(2, 4);
+        String getSecond = time.substring(4, 6);
+
+        // "00"이 아니고, 첫번째 자리가 0 이면 제거
+        if (getHour.substring(0, 1) == "0") {
+            getHour = getHour.substring(1, 2);
+        }
+
+        if (getMin.substring(0, 1) == "0") {
+            getMin = getMin.substring(1, 2);
+        }
+
+        if (getSecond.substring(0, 1) == "0") {
+            getSecond = getSecond.substring(1, 2);
+        }
+
+        // 변환시간
+        conversionTime = Long.valueOf(getHour) * 1000 * 3600 + Long.valueOf(getMin) * 60 * 1000 + Long.valueOf(getSecond) * 1000;
+
+        // 첫번쨰 인자 : 원하는 시간 (예를들어 30초면 30 x 1000(주기))
+        // 두번쨰 인자 : 주기( 1000 = 1초)
+        new CountDownTimer(conversionTime, 1000) {
+
+            // 특정 시간마다 뷰 변경
+            public void onTick(long millisUntilFinished) {
+
+                // 시간단위
+                String hour = String.valueOf(millisUntilFinished / (60 * 60 * 1000));
+
+                // 분단위
+                long getMin = millisUntilFinished - (millisUntilFinished / (60 * 60 * 1000)) ;
+                String min = String.valueOf(getMin / (60 * 1000)); // 몫
+
+                // 초단위
+                String second = String.valueOf((getMin % (60 * 1000)) / 1000); // 나머지
+
+                // 밀리세컨드 단위
+                String millis = String.valueOf((getMin % (60 * 1000)) % 1000); // 몫
+
+                // 시간이 한자리면 0을 붙인다
+                if (hour.length() == 1) {
+                    hour = "0" + hour;
+                }
+
+                // 분이 한자리면 0을 붙인다
+                if (min.length() == 1) {
+                    min = "0" + min;
+                }
+
+                // 초가 한자리면 0을 붙인다
+                if (second.length() == 1) {
+                    second = "0" + second;
+                }
+
+                duringtimeView.setText(hour + ":" + min + ":" + second);
+
+            }
+
+            // 제한시간 종료시
+            public void onFinish() {
+                //공부 종료
+                //메인액티비티로 이동
+
+                //모든 스레드를 종료시킬수 있도록
+                //allthreadisrunning 변수를 false로 셋팅
+                allthreadisrunning = false;
+
+                int subjectID = SQLiteManager.sqLiteManager.selectSubjectIdFromName(subjectSN);
+
+                List<ScheduleData> Lists = SQLiteManager.sqLiteManager.selectScheduleDataFormSubjectID(subjectID);
+
+                ScheduleData data = null;
+
+                for(int lSize = 0 ; lSize < Lists.size() ; lSize++)
+                {
+                    if(Lists.get(lSize).getDate() == scheduleDate)
+                    {
+                        data = Lists.get(lSize);
+                    }
+                }
+
+                //이행여부를 1로 바꿔서 DB업데이트
+                SQLiteManager.sqLiteManager.updateScheduleData(new ScheduleData(data.getID(), data.getSubject_ID(), data.getDate(), data.getDuringtime() , 1));
+
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                if(drawnessCounter < 3)
+                {
+                    //졸음 횟수가 3회 미만 일때
+                    //칭찬메세지
+                    intent.putExtra("backfromDetection", 1);
+                }
+                else
+                {
+                    intent.putExtra("backfromDetection", 2);
+                }
+                startActivity(intent);
+                finish();
+            }
+        }.start();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -939,6 +1092,21 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             }
         });
         builder.create().show();
+    }
+
+    public String convert2conversionDTfromInt(int duringtime)
+    {
+        String str = null;
+        if(duringtime > 10)
+        {
+            str = String.valueOf(duringtime) + "0000";
+        }
+        else
+        {
+            str = "0" + String.valueOf(duringtime) + "0000";
+        }
+
+        return str;
     }
 
     public class eyedrawnessTherad extends Thread{
@@ -1095,7 +1263,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     public class DetectHighdrowsinessThread extends Thread{
         public void run(){
-            while(high_detectingCount < 10 && StateOfDetectingHighDowsiness == HIGH_DETECTING){
+            while(high_detectingCount < 10 && StateOfDetectingHighDowsiness == HIGH_DETECTING && allthreadisrunning){
                 Message message = mhighcountHandler.obtainMessage();
                 high_detectingCount++;
                 message.arg1 = high_detectingCount;
@@ -1121,7 +1289,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         boolean isrun = true;
 
         public void run(){
-            while(low_detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_DETECTING && isrun){
+            while(low_detectingCount < 10 && StateOfDetectingLowDowsiness == LOW_DETECTING && isrun && allthreadisrunning){
                 Message message = mlowcountHandler.obtainMessage();
                 countuplowdetectingcount();
                 if(openOrClose == true)
@@ -1150,7 +1318,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         public boolean isrun = true;
 
         public void run(){
-            while(cameraviewcount > 0 && isrun){
+            while(cameraviewcount > 0 && isrun && allthreadisrunning){
                 Message message = mcountHandler.obtainMessage();
                 cameraviewcount--;
                 if(cameraviewcount == 0)
@@ -1160,6 +1328,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    Thread.currentThread( ).interrupt();
                     e.printStackTrace();
                 }
             }
@@ -1172,7 +1341,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         public boolean isrun = true;
 
         public void run(){
-            while(settingcount > 0 && isrun){
+            while(settingcount > 0 && isrun && allthreadisrunning){
                 Message message = msettingcountHnadler.obtainMessage();
                 settingcount--;
                 if(settingcount == 0)

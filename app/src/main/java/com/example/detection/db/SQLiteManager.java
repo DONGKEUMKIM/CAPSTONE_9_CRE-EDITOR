@@ -47,6 +47,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public static final String SCHEDULE_SUBJECT_ID = "SUBJECT_ID";
     public static final String SCHEDULE_DATE = "DATE";
     public static final String SCHEDULE_DURINGTIME = "DURINGTIME";
+    public static final String SCHEDULE_ISDONE = "ISDONE";
 
     //////////////////////////////싱글톤 패턴////////////////////////////////////
     //SQLiteManager.sqLiteManager 로 접근
@@ -96,7 +97,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 + SCHEDULE_ID + " TEXT PRIMARY KEY, "
                 + SCHEDULE_SUBJECT_ID + " INTEGER , "
                 + SCHEDULE_DATE + " TEXT, "
-                + SCHEDULE_DURINGTIME + " INTEGER"
+                + SCHEDULE_DURINGTIME + " INTEGER , "
+                + SCHEDULE_ISDONE + " INTEGER"
                 + ")");
     }
 
@@ -118,7 +120,11 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
         ////////////////////////////DB 테스트////////////////////////////
         //DB에 데이터를 추가 할경우 참고 할것!!
+        deleteSubjectTableALL();
+        deleteTestTimeTableALL();
+        deleteScheduleTableALL();
 
+        /*
         if (sqLiteManager != null) {
             //과목 정보 추가
             //과목 코드와 과목명은 입력받도록 해야함
@@ -173,7 +179,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
                 System.out.println("시험시간 정보 데이터가 추가되었습니다.");
             }
 
+
         }
+        */
         return true;
     }
 
@@ -253,9 +261,28 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(SCHEDULE_SUBJECT_ID, data.getSubject_ID());
         contentValues.put(SCHEDULE_DATE, data.getDate());
         contentValues.put(SCHEDULE_DURINGTIME, data.getDuringtime());
+        contentValues.put(SCHEDULE_ISDONE, data.getIsDone());
         long result = db.insert(SCHEDULE_TABLE_NAME, null, contentValues);
 
         if (result == -1)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * 데이터 업데이트
+     **/
+    //Schedule Data Update
+    public boolean updateScheduleData(ScheduleData data){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(SCHEDULE_ID, data.getID());
+        contentValues.put(SCHEDULE_SUBJECT_ID, data.getSubject_ID());
+        contentValues.put(SCHEDULE_DATE, data.getDate());
+        contentValues.put(SCHEDULE_DURINGTIME, data.getDuringtime());
+        contentValues.put(SCHEDULE_ISDONE, data.getIsDone());
+        long result = db.update(SCHEDULE_TABLE_NAME,contentValues,SCHEDULE_ID + " = " + "\'" + data.getID() + "\'",null);
+        if(result == -1)
             return false;
         else
             return true;
@@ -374,7 +401,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             do {
                 ScheduleData scheduleData
                         = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
-                        results.getString(2), results.getInt(3)); //Date , DuringTime
+                        results.getString(2), results.getInt(3), results.getInt(4)); //Date , DuringTime , IsDone
                 dataResultList.add(scheduleData);
 
             } while (results.moveToNext());
@@ -394,11 +421,58 @@ public class SQLiteManager extends SQLiteOpenHelper {
             do {
                 ScheduleData scheduleData
                         = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
-                        results.getString(2), results.getInt(3)); //Date , DuringTime
+                        results.getString(2), results.getInt(3), results.getInt(4)); //Date , DuringTime
                 dataResultList.add(scheduleData);
 
             } while (results.moveToNext());
         }
         return dataResultList;
     }
+
+    //스케줄의 과목ID와 날짜로 부터 해당 ScheduleData 조회
+    public ScheduleData selectScheduleDataFormSubjectIDandDate(int subjectID , String date) {
+        ScheduleData dataResult = new ScheduleData("", 0, "", 0 , 0);
+
+        String sql = "select * from " + SCHEDULE_TABLE_NAME + " where " + SCHEDULE_SUBJECT_ID + " = \'" + subjectID + " \' and " + SCHEDULE_DATE + " = \' " + date + " \' ;";
+        Cursor results = db.rawQuery(sql, null);
+        if (results.moveToFirst()) {
+            ScheduleData scheduledata
+                    = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
+                    results.getString(2), results.getInt(3) , results.getInt(4));     //date , DuringTime , isDone
+            dataResult = scheduledata;
+        }
+        return dataResult;
+    }
+
+    //스케줄의 과목ID와 날짜로 부터 해당 ScheduleData의 이행여부 조회
+    public int selectScheduleIsDoneFormSubjectIDandDate(int subjectID , String date) {
+        int dataResult = -1;
+        String sql = "select " + SCHEDULE_ISDONE + " from " + SCHEDULE_TABLE_NAME + " where " + SCHEDULE_SUBJECT_ID + " = \'" + subjectID + " \' + and " + SCHEDULE_DATE + " = \' " + date + " \' ;";
+        Cursor result = db.rawQuery(sql, null);
+        if (result.moveToFirst()) {
+            dataResult = result.getInt(0);
+        }
+        return dataResult;
+    }
+
+    //스케줄의 과목ID로 부터 해당 ScheduleData 조회
+    //과목ID 에 등록된 스케줄이 여러개 일수 있기때문에
+    //리스트로 리턴
+    public List<ScheduleData> selectScheduleDataFormDate(String Date) {
+        List<ScheduleData> dataResultList = new ArrayList<ScheduleData>();
+        String sql = "select * from " + SCHEDULE_TABLE_NAME + " where " + SCHEDULE_DATE + " = \'" + Date + "\' ;";
+        Cursor results = db.rawQuery(sql, null);
+
+        if (results.moveToFirst()) {
+            do {
+                ScheduleData scheduleData
+                        = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
+                        results.getString(2), results.getInt(3), results.getInt(4)); //Date , DuringTime
+                dataResultList.add(scheduleData);
+
+            } while (results.moveToNext());
+        }
+        return dataResultList;
+    }
+
 }
