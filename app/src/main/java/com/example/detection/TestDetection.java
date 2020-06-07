@@ -354,8 +354,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         duringtimeView.setText(String.valueOf(subjectduringtime));
 
 
-
-
         backBtn = (Button)findViewById(R.id.backbtn);
 
         backgroundImageView = (ImageView)(findViewById(R.id.backgroundimg));

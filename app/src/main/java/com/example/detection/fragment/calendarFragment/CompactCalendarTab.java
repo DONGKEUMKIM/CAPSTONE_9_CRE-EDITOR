@@ -93,6 +93,7 @@ public class CompactCalendarTab extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                /*
                 //디택션 화면으로 이동
                 //인텐트값 전달
                 //과목이름 , 공부시간
@@ -117,11 +118,19 @@ public class CompactCalendarTab extends Fragment {
                 //TODO
                 //On Schedule List Item Click Listener
                 //Code the Detection Activity with result
+                */
 
                 //targetString
                 String string = (String)adapterView.getAdapter().getItem(i);
                 //Log.d(TAG, string);
-                ((MainActivity)getActivity()).startDetectionFromSchedule();
+
+                //string데이터로부터
+                //과목 이름 string , 공부 시간 int 값 추출 필요
+                //이 부분 코딩해주세요
+                String subjectName = "";  // = ...
+                int duringTime = 0; // = ...
+
+                ((MainActivity)getActivity()).startDetectionFromSchedule(subjectName, duringTime);
             }
         });
 

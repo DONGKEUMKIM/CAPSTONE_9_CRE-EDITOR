@@ -406,10 +406,20 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         intent.putExtra("testtimeid", dbManager.generateRandomID());
         startActivityForResult(intent, 2);
     }
-    public void startDetectionFromSchedule(){
+    public void startDetectionFromSchedule(String subjectName , int duringTime){
         //TODO
         //startDetectionFromSchedule Function
-        //
+
+        String subjectname = subjectName;
+        int duringtime = duringTime;
+
+        Intent intent = new Intent(getApplicationContext(), TestDetection.class);
+
+        intent.putExtra("SN", subjectname);
+        intent.putExtra("DT", duringtime);
+
+        startActivity(intent);
+        finish();
     }
 
 
