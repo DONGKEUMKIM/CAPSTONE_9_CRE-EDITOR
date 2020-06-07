@@ -3,27 +3,34 @@ package com.example.detection;
 import android.graphics.drawable.Drawable;
 
 public class LimitListViewItem {
-    private Drawable iconDrawable ;
-    private String titleStr ;
-    private String descStr ;
+    private Drawable appIconDrawable ;
+    private String appName ;
+    private String appPackageName ;
+    private boolean searched ;
 
-    public void setIcon(Drawable icon) {
-        iconDrawable = icon ;
+    public void setAppIconDrawable(Drawable icon) {
+        appIconDrawable = icon ;
     }
-    public void setTitle(String title) {
-        titleStr = title ;
+    public void setAppName(String title) {
+        appName = title ;
     }
-    public void setDesc(String desc) {
-        descStr = desc ;
+    public void setAppPackageName(String desc) {
+        appPackageName = desc ;
+    }
+    public void setSearched(boolean b) {
+        searched = b ;
     }
 
-    public Drawable getIcon() {
-        return this.iconDrawable ;
+    public Drawable getAppIconDrawable() {
+        return this.appIconDrawable ;
     }
-    public String getTitle() {
-        return this.titleStr ;
+    public String getAppName() {
+        return this.appName ;
     }
-    public String getDesc() {
-        return this.descStr ;
+    public String getAppPackageName() {
+        return this.appPackageName ;
+    }
+    public boolean getSearched() {
+        return this.searched ;
     }
 }

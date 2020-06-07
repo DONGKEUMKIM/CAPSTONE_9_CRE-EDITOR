@@ -5,20 +5,23 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Toast;
 
 public class LimitService extends AccessibilityService {
     private static final String TAG = "AccessibilityService";
 
     @Override
-    public void onAccessibilityEvent(AccessibilityEvent event) {
-        for(int i=0;i<LimitAppsActivity.clicked_packageName_list.size();i++){
-            if(event.getPackageName().equals(LimitAppsActivity.clicked_packageName_list.get(i))) {
-                gotoHome();
+    public void onAccessibilityEvent(AccessibilityEvent event) {        // 켜진 앱이 제한앱이면 gotoHome
+        for(int i=0;i<LimitAppsActivity.listViewItemListCustom.size();i++){
+            if(event.getPackageName().equals(LimitAppsActivity.listViewItemListCustom.get(i).getAppPackageName())) {
+                LimitAppsActivity.currentTime = System.currentTimeMillis();
+                if(LimitAppsActivity.currentTime - LimitAppsActivity.startTime <= LimitAppsActivity.duringTime){
+                    gotoHome();
+                    Toast myToast = Toast.makeText(getApplicationContext(),"사용 제한 입니다.", Toast.LENGTH_SHORT);
+                    myToast.show();
+                }
             }
         }
-//        if(event.getPackageName().equals(packagename)) {
-//            gotoHome();
-//        }
     }
 
     public void onServiceConnected() {

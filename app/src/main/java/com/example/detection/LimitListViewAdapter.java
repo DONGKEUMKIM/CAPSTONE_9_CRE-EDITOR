@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class LimitListViewAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    private ArrayList<LimitListViewItem> listViewItemList = new ArrayList<LimitListViewItem>() ;
+    public ArrayList<LimitListViewItem> listViewItemList = new ArrayList<LimitListViewItem>() ;
 
     // ListViewAdapter의 생성자
     public LimitListViewAdapter() {
@@ -32,13 +32,6 @@ public class LimitListViewAdapter extends BaseAdapter {
         final int pos = position;
         final Context context = parent.getContext();
 
-        for(int i=0;i<LimitAppsActivity.packageName_list.size();i++){
-            for(int j=0;j<LimitAppsActivity.clicked_packageName_list.size();j++){
-                if(LimitAppsActivity.clicked_packageName_list.get(j).equals(LimitAppsActivity.packageName_list.get(i))){
-
-                }
-            }
-        }
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -48,15 +41,13 @@ public class LimitListViewAdapter extends BaseAdapter {
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
         ImageView iconImageView = (ImageView) convertView.findViewById(R.id.imageView1) ;
         TextView titleTextView = (TextView) convertView.findViewById(R.id.textView1) ;
-        TextView descTextView = (TextView) convertView.findViewById(R.id.textView2) ;
 
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
         LimitListViewItem listViewItem = listViewItemList.get(position);
 
         // 아이템 내 각 위젯에 데이터 반영
-        iconImageView.setImageDrawable(listViewItem.getIcon());
-        titleTextView.setText(listViewItem.getTitle());
-        descTextView.setText(listViewItem.getDesc());
+        iconImageView.setImageDrawable(listViewItem.getAppIconDrawable());
+        titleTextView.setText(listViewItem.getAppName());
 
         return convertView;
     }
@@ -74,13 +65,16 @@ public class LimitListViewAdapter extends BaseAdapter {
     }
 
     // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
-    public void addItem(Drawable icon, String title, String desc) {
+    public void addItem(Drawable icon, String title, String desc, boolean b) {
         LimitListViewItem item = new LimitListViewItem();
 
-        item.setIcon(icon);
-        item.setTitle(title);
-        item.setDesc(desc);
+        item.setAppIconDrawable(icon);
+        item.setAppName(title);
+        item.setAppPackageName(desc);
+        item.setSearched(b);
 
         listViewItemList.add(item);
     }
+
+
 }
