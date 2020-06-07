@@ -222,7 +222,7 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
             Rect righteye_area(real_facesize_x+ righteyes[0].x,real_facesize_y + righteyes[0].y, righteyes[0].width, righteyes[0].width);
             if((real_facesize_y + righteyes[0].y) < ySizeforCompare)
             {
-                cv::rectangle(img_result, righteye_area, Scalar(255,0,0), 15, 8, 0);
+                cv::rectangle(img_result, righteye_area, Scalar(255,0,0), 5, 8, 0);
             }
             eye_ROI = img_gray(righteye_area);
         }
@@ -263,7 +263,7 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
     jint *face_Array = env->GetIntArrayElements(face_arr, NULL);
 
     Rect face_area(face_Array[0], face_Array[1], face_Array[2],face_Array[3]);
-    cv::rectangle(img_result, face_area, Scalar(255,0,0), 15, 8, 0);
+    cv::rectangle(img_result, face_area, Scalar(255,0,0), 5, 8, 0);
 
     return returnValue;
 }extern "C"
@@ -451,8 +451,8 @@ Java_com_example_detection_TestDetection_getHSVfromImg(JNIEnv *env, jobject thiz
     int yPoint = faceArray[1] + faceArray[3]/2;
 
     Point eye_center( xPoint, yPoint );
-    int radius = cvRound( 30 );
-    circle( matInput, eye_center, radius, Scalar( 255, 0, 0 ), 15, 8, 0 );
+    int radius = cvRound( 5 );
+    circle( matInput, eye_center, radius, Scalar( 255, 0, 0 ), 5, 8, 0 );
 
     int arr[3]={0,0,0};
 

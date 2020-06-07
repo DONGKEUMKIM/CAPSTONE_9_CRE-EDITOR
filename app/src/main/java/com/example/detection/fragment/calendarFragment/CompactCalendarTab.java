@@ -1,5 +1,6 @@
 package com.example.detection.fragment.calendarFragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.detection.MainActivity;
 import com.example.detection.R;
+import com.example.detection.TestDetection;
 import com.example.detection.db.SQLiteManager;
 import com.example.detection.db.ScheduleData;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -77,6 +79,11 @@ public class CompactCalendarTab extends Fragment {
         //loadEvents();
         //loadEventsForYear(2017);
 
+        //공부를 시작하기 위해 넘겨줘야할 인텐트값 -> 공부 완료후 DB에 접근하여 이행여부 수정 위해
+        //String seletedID;   //선택된 스케줄의의 ID값
+        //String selectedSN;  //선택된 과목 이름
+        //int selectedDT;     //선택된 공부 시간
+
         for(int i=2000;i<2050;i++){
             loadEventsForYear(i);
         }
@@ -85,6 +92,28 @@ public class CompactCalendarTab extends Fragment {
         bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                //디택션 화면으로 이동
+                //인텐트값 전달
+                //과목이름 , 공부시간
+
+                //아이템으로 부터 ID, SN, DT 값 셋팅
+                String subjectsceduleData = bookingsListView.getItemAtPosition(i).toString();
+                String[] word = subjectsceduleData.split("at");
+
+                String selectedSN = word[0];       //과목정보 셋팅
+
+
+                word[1].split("for");
+
+                int selectedDT = Integer.parseInt(word[0]);       //공부시간 셋팅
+
+                Intent intent = new Intent(getContext(), TestDetection.class);
+                //intent.putExtra("ID", seletedID);
+                intent.putExtra("SN", selectedSN);
+                intent.putExtra("DT", selectedDT);
+                
+                startActivity(intent);
                 //TODO
                 //On Schedule List Item Click Listener
                 //Code the Detection Activity with result

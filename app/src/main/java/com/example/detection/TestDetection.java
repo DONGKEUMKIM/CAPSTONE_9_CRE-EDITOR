@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.detection.db.SQLiteManager;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -49,6 +51,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 import static android.Manifest.permission.CAMERA;
@@ -73,6 +76,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private static final String FACERECT = "얼굴 바운더리";
     private static final String LSTATE = "낮은졸음감지 상태";
     private static final String HSV = "HSV";
+    private static final String FRAME = "FRAME";
+
 
 
     int frameCount = 0;
@@ -107,14 +112,28 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private final static int LOW_NOTACT = 5;
     int StateOfDetectingLowDowsiness= REST;
 
+    private boolean islowcountupThreadRun = false;
+    private boolean ishighcountupThreadRun = false;
+
     int settingcount = 15;
 
-    int cameraviewcount = 120;                       //60초 단위 촬영을 위한 카운트
+    //과목 공부 시간  - 시간 단위
+    //시간 -> 초 로 바꿀 필요
+    //일단은 테스트로 분단위
+    int subjectduringtime = 4;
+
+    int cameraviewcount = 15;                       //60초 단위 촬영을 위한 카운트
 
     int high_detectingCount = 0;                            //높은졸음이 감지됐을때 시작되는 카운트
     int low_detectingCount = 0;                             //낮은졸음이 감지됐을때 시작되는 카운트
 
     int hsv_array[];
+
+    //메인으로부터 넘겨 받을 정보
+    private String subjectID;   //선택된 스케줄의의 ID값
+    private String subjectSN;  //선택된 과목 이름
+    private int subjectDT;     //선택된 공부 시간
+
 
     //countdownThread  mcountdownthread;
     //settingcountdownThread msettingcountdownthread;
@@ -135,6 +154,9 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     TextView settingtextView;
     TextView settingcountView;
 
+    TextView subjectnameView;
+    TextView duringtimeView;
+
     ImageView backgroundImageView;
 
     Button backBtn;
@@ -149,6 +171,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     //머신러닝 모델 파일 및 인터프리터
     Interpreter tf_lite;
+
+    //프레임수
+    int frameCounter = 0;
+
+
     /*
     native 함수
      */
@@ -310,6 +337,25 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         settingtextView = (TextView)findViewById(R.id.SETTING);
         settingcountView = (TextView)findViewById(R.id.setting_count);
 
+        subjectnameView = (TextView)findViewById(R.id.subject_name);
+        duringtimeView = (TextView)findViewById(R.id.duringtime);
+
+        /**
+        * 과목 ID, 과목 이름, 과목 공부시간 셋팅
+        */
+        //subjectID = getIntent().getExtras().getString("");
+        subjectSN = getIntent().getExtras().getString("SN");
+        subjectduringtime = getIntent().getExtras().getInt("DT");
+
+        //일단은 테스트용
+        subjectnameView.setText("캡스톤프로젝트");
+
+        subjectduringtime = 4;
+        duringtimeView.setText(String.valueOf(subjectduringtime));
+
+
+
+
         backBtn = (Button)findViewById(R.id.backbtn);
 
         backgroundImageView = (ImageView)(findViewById(R.id.backgroundimg));
@@ -327,7 +373,15 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //만약 알람이 울리고 있을 경우
+                //알람 종료
+                registerReceiver(alarmReceiver, intentFilter);
+                Intent sendIntent = new Intent(ALARMEND);
+                sendBroadcast(sendIntent);
+
                 Intent intent = new Intent(getApplication(),MainActivity.class);
+                intent.putExtra("backfromDetection", 1);
                 startActivity(intent);
                 TestDetection.this.finish();
             }
@@ -360,35 +414,80 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 super.handleMessage(msg);
                 countdownView.setText(msg.arg1+"");
 
-                if(msg.arg1 == 0 &&cameraActivitystate == CAMERA_ACTIVITING)
+                if(msg.arg1 == 0)
                 {
-                    StateOfDetectingHighDowsiness = REST;
-                    StateOfDetectingLowDowsiness = REST;
+                    //60초 카운트가 지났을 때
+                    //휴식구간 or 감지구간 선택
 
-                    highcountView.setVisibility(View.INVISIBLE);
-                    lowcountView.setVisibility(View.INVISIBLE);
-                    opencloseView.setVisibility(View.INVISIBLE);
-                    settingtextView.setVisibility(View.INVISIBLE);
-                    settingcountView.setVisibility(View.INVISIBLE);
+                    if(subjectduringtime == 0)
+                    {
+                        //druingtime 이 다 지났을 때 학습종료
+                        //학습 이행 여부 변경 및 인텐트값 전달
+                        //학습 이행이 잘 됐을 때 1 전달
+                        //학습 이행이 잘 안됐을대 2 전달
+                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        intent.putExtra("backfromDetection", 1);
+                        startActivity(intent);
+                        finish();
 
-                    settingtextView = (TextView)findViewById(R.id.SETTING);
-                    settingcountView = (TextView)findViewById(R.id.setting_count);
+                        return;
 
-                    cameraActivitystate = CAMERA_STOPPED;
-                    mOpenCvCameraView.disableView();
-                }
-                else if(msg.arg1 == 0 && cameraActivitystate == CAMERA_STOPPED)
-                {
-                    highcountView.setVisibility(View.VISIBLE);
-                    lowcountView.setVisibility(View.VISIBLE);
-                    opencloseView.setVisibility(View.VISIBLE);
+                    }
+                    subjectduringtime--;
+                    duringtimeView.setText(String.valueOf(subjectduringtime));
 
-                    StateOfDetectingHighDowsiness = HIGH_COUNTING;
-                    StateOfDetectingLowDowsiness = LOW_COUNTING;
+                    Random rnd = new Random();
+                    int randomValue = rnd.nextInt(3);   //0~2 까지의 난수 생성
 
-                    cameraActivitystate = CAMERA_ACTIVITING;
-                    onResume();
-                    //onCameraViewStarted(mOpenCvCameraView.getWidth() , mOpenCvCameraView.getHeight());
+                    System.out.println("난수발생 " + String.valueOf(randomValue));
+
+                    //난수가 0 ,1 일 때 휴식구간으로 셋팅    2/3 확률
+                    if (randomValue == 0 || randomValue == 1)
+                    {
+                        StateOfDetectingHighDowsiness = REST;
+                        StateOfDetectingLowDowsiness = REST;
+
+                        highcountView.setVisibility(View.INVISIBLE);
+                        lowcountView.setVisibility(View.INVISIBLE);
+                        opencloseView.setVisibility(View.INVISIBLE);
+
+                        if(cameraActivitystate == CAMERA_ACTIVITING)
+                        {
+                            //감지구간에서 넘어왔을 때
+                            cameraActivitystate = CAMERA_STOPPED;
+                            mOpenCvCameraView.disableView();
+                        }
+                        else
+                        {
+                            cameraviewcount = 15;
+
+                            countdownThread  mcountdownthread = new countdownThread();
+                            mcountdownthread.start();
+                        }
+                    }
+                    else
+                    {
+                        highcountView.setVisibility(View.VISIBLE);
+                        lowcountView.setVisibility(View.VISIBLE);
+                        opencloseView.setVisibility(View.VISIBLE);
+
+                        StateOfDetectingHighDowsiness = HIGH_COUNTING;
+                        StateOfDetectingLowDowsiness = LOW_COUNTING;
+
+                        if(cameraActivitystate == CAMERA_STOPPED)
+                        {
+                            //휴식구간에서 넘어왔을 때
+                            cameraActivitystate = CAMERA_ACTIVITING;
+                            onResume();
+                        }
+                        else
+                        {
+                            cameraviewcount = 15;
+
+                            countdownThread  mcountdownthread = new countdownThread();
+                            mcountdownthread.start();
+                        }
+                    }
                 }
             }
         };
@@ -401,21 +500,33 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                 if(msg.arg1 == 0 && StateOfSetting == SETTING_ON)
                 {
+
+                    settingcountView.setVisibility(View.INVISIBLE);
+                    settingtextView.setVisibility(View.INVISIBLE);
+
                     StateOfSetting = SETTING_OFF;
                     settingtextView.setText("셋팅 완료");
 
-                    StateOfDetectingHighDowsiness = HIGH_COUNTING;
-                    StateOfDetectingLowDowsiness = LOW_COUNTING;
+                    //셋팅이 끝났을 때
+                    //                    //휴식구간부터 시작
+                    StateOfDetectingHighDowsiness = REST;
+                    StateOfDetectingLowDowsiness = REST;
+
+                    highcountView.setVisibility(View.INVISIBLE);
+                    lowcountView.setVisibility(View.INVISIBLE);
+                    opencloseView.setVisibility(View.INVISIBLE);
 
 
-                    countdownThread  mcountdownthread = new countdownThread();
-                    mcountdownthread.start();
+                    cameraActivitystate = CAMERA_STOPPED;
+                    mOpenCvCameraView.disableView();
                 }
             }
         };
 
         /////////////////////////////////모델 로드//////////////////////////////////////
         loadModel("open_close.tflite");
+
+        mOpenCvCameraView.setMaxFrameSize(1024 , 576);
     }
 
     @Override
@@ -424,6 +535,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+
     }
     @Override
     public void onResume()
@@ -450,6 +562,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     @Override
     public void onCameraViewStarted(int width, int height) {
         //카메라 촬영이 시작되었을때
+        System.out.println("카메라 다시 시작");
         if(backgroundImageView != null)
         {
             //카메라 촬영 시작시
@@ -457,7 +570,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.face);
         }
 
-        cameraviewcount = 120;
+        cameraviewcount = 15;
 
         if(StateOfSetting == SETTING_ON)
         {
@@ -475,7 +588,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             //60초 카운트 시작
             countdownThread  mcountdownthread = new countdownThread();
             mcountdownthread.start();
-
         }
     }
 
@@ -483,6 +595,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     public void onCameraViewStopped() {
         //카메라 촬영이 정지되었을때
         //60초 카운트 시작
+        System.out.println("카메라 정지");
 
         if(backgroundImageView != null)
         {
@@ -491,12 +604,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.breakimg);
         }
 
-        cameraviewcount = 120;
+        cameraviewcount = 15;
 
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
     }
-
 
 
     @Override
@@ -504,242 +616,258 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
         matInput = inputFrame.rgba();
         Core.flip(matInput, matInput,1);
-        try{
-            getWriteLock();
-            //matInput 과 같은 matResult , matGray생성
 
-            if(matResult == null)
-                matResult = new Mat(matInput.rows(),matInput.cols(),matInput.type());
+        Log.d("FRAME", String.valueOf(frameCounter));
 
-            //LandmarkDetection(matInput.getNativeObjAddr(), matResult.getNativeObjAddr());
+        //if(frameCounter % 10 == 0)
+        //{
+            try{
+                getWriteLock();
+                //matInput 과 같은 matResult , matGray생성
 
-            if(StateOfSetting == SETTING_ON)
-            {
-                //셋팅 상태일때
-                //1. 검출이 잘 되는 자세를 찾는다
-                //2. 얼굴 색의 기준 HSV를 찾는다
+                if(matResult == null)
+                    matResult = new Mat(matInput.rows(),matInput.cols(),matInput.type());
 
-                int value = detectEyeAndFaceRect(cascadeClassifier_face,cascadeClassifier_eye,cascadeClassifier_righteye,
-                        matInput.getNativeObjAddr(),
-                        matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray);
+                //LandmarkDetection(matInput.getNativeObjAddr(), matResult.getNativeObjAddr());
 
-                if(value == 1)
+                if(StateOfSetting == SETTING_ON)
                 {
-                    //얼굴이 검출 됐을 때
-                    //HSV 값을 추출
-                    System.out.println(String.valueOf(value));
-                    getHSVfromImg(matResult.getNativeObjAddr(), faceArray, hsv_array);
+                    //셋팅 상태일때
+                    //1. 검출이 잘 되는 자세를 찾는다
+                    //2. 얼굴 색의 기준 HSV를 찾는다
+
+                    int value = detectEyeAndFaceRect(cascadeClassifier_face,cascadeClassifier_eye,cascadeClassifier_righteye,
+                            matInput.getNativeObjAddr(),
+                            matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray);
+
+                    if(value == 1)
+                    {
+                        //얼굴이 검출 됐을 때
+                        //HSV 값을 추출
+                        System.out.println(String.valueOf(value));
+                        getHSVfromImg(matResult.getNativeObjAddr(), faceArray, hsv_array);
+                        Log.d("HSV", String.valueOf(hsv_array[0]) + " " + String.valueOf(hsv_array[1]) + " " + String.valueOf(hsv_array[2]));
+                    }
+
+                    Log.d("FACERECT", String.valueOf(faceArray[0]) + " " + String.valueOf(faceArray[1]) + " " +
+                            String.valueOf(faceArray[2]) + " " + String.valueOf(faceArray[3])
+                            + " " + String.valueOf(matResult.cols())+ " " + String.valueOf(matResult.rows()));
+
+                    //얼굴 부분 색상 검출 및 프레임 바이너리화
+                    if(matBinary == null)
+                        matBinary = new Mat(matResult.rows(),matResult.cols(),matResult.type());
+
+                    makeFaceMaskImage(matResult.getNativeObjAddr(), matBinary.getNativeObjAddr(), faceArray, hsv_array);
+
+                }
+                else if(StateOfSetting == SETTING_OFF)
+                {
+
                     Log.d("HSV", String.valueOf(hsv_array[0]) + " " + String.valueOf(hsv_array[1]) + " " + String.valueOf(hsv_array[2]));
-                }
 
-                Log.d("FACERECT", String.valueOf(faceArray[0]) + " " + String.valueOf(faceArray[1]) + " " +
-                        String.valueOf(faceArray[2]) + " " + String.valueOf(faceArray[3])
-                        + " " + String.valueOf(matResult.cols())+ " " + String.valueOf(matResult.rows()));
+                    //셋팅 상태가 아닐때
+                    //기존의 검출 방법 시행
 
-                //얼굴 부분 색상 검출 및 프레임 바이너리화
-                if(matBinary == null)
-                    matBinary = new Mat(matResult.rows(),matResult.cols(),matResult.type());
+                    //얼굴 및 눈 검출
+                    detectEyeAndFaceRect(cascadeClassifier_face,cascadeClassifier_eye,cascadeClassifier_righteye,
+                            matInput.getNativeObjAddr(),
+                            matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray);
 
-                makeFaceMaskImage(matResult.getNativeObjAddr(), matBinary.getNativeObjAddr(), faceArray, hsv_array);
-
-            }
-            else if(StateOfSetting == SETTING_OFF)
-            {
-
-                Log.d("HSV", String.valueOf(hsv_array[0]) + " " + String.valueOf(hsv_array[1]) + " " + String.valueOf(hsv_array[2]));
-
-                //셋팅 상태가 아닐때
-                //기존의 검출 방법 시행
-
-                //얼굴 및 눈 검출
-                detectEyeAndFaceRect(cascadeClassifier_face,cascadeClassifier_eye,cascadeClassifier_righteye,
-                        matInput.getNativeObjAddr(),
-                        matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray);
-
-                Bitmap bmp = null;
-                try {
-                    //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
-                    //Imgproc.cvtColor(eyeROI, eyeROI, Imgproc.COLOR_GRAY2RGBA, 4);
-                    bmp = Bitmap.createBitmap(eyeROI.cols(), eyeROI.rows(), Bitmap.Config.ARGB_8888);
-                    Utils.matToBitmap(eyeROI, bmp);
-                }
-                catch (CvException e){Log.d("Exception",e.getMessage());}
+                    Bitmap bmp = null;
+                    try {
+                        //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
+                        //Imgproc.cvtColor(eyeROI, eyeROI, Imgproc.COLOR_GRAY2RGBA, 4);
+                        bmp = Bitmap.createBitmap(eyeROI.cols(), eyeROI.rows(), Bitmap.Config.ARGB_8888);
+                        Utils.matToBitmap(eyeROI, bmp);
+                    }
+                    catch (CvException e){Log.d("Exception",e.getMessage());}
 
 
-                if(bmp != null)
-                {
-                    Bitmap resizedBmp = Bitmap.createScaledBitmap(bmp, 64, 64, true);
-                    /////////////////////////bitmap을 input배열로 변환/////////////////////////
-                    /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
-                    int batchNum = 0;
-                    int width = resizedBmp.getWidth();
-                    int height = resizedBmp.getHeight();
-                    float[][][][] input = new float[1][width][height][3];
-                    for (int x = 0; x < width; x++) {
-                        for (int y = 0; y < height; y++) {
-                            int pixel = resizedBmp.getPixel(x, y);
-                            // Normalize channel values to [-1.0, 1.0]. This requirement varies by
-                            // model. For example, some models might require values to be normalized
-                            // to the range [0.0, 1.0] instead.
-                            input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
-                            input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
-                            input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
+                    if(bmp != null)
+                    {
+                        Bitmap resizedBmp = Bitmap.createScaledBitmap(bmp, 64, 64, true);
+                        /////////////////////////bitmap을 input배열로 변환/////////////////////////
+                        /////////////////////////////// 64X64  이미지가 몇X몇인지 64를 해당 값으로 바꿔줘야 함////////
+                        int batchNum = 0;
+                        int width = resizedBmp.getWidth();
+                        int height = resizedBmp.getHeight();
+                        float[][][][] input = new float[1][width][height][3];
+                        for (int x = 0; x < width; x++) {
+                            for (int y = 0; y < height; y++) {
+                                int pixel = resizedBmp.getPixel(x, y);
+                                // Normalize channel values to [-1.0, 1.0]. This requirement varies by
+                                // model. For example, some models might require values to be normalized
+                                // to the range [0.0, 1.0] instead.
+                                input[batchNum][x][y][0] = (Color.red(pixel)) - 127 / 128.0f;
+                                input[batchNum][x][y][1] = (Color.green(pixel)) - 127 / 128.0f;
+                                input[batchNum][x][y][2] = (Color.blue(pixel)) - 127 / 128.0f;
+                            }
+                        }
+
+
+                        float[][] output = new float[1][1];
+                        tf_lite.run(input, output);
+
+                        opencloseView.setText("what?");
+                        /////////////////output 값에 따라 결정/////////////////////////////////
+                        if(output[0][0]>=0.5){
+                            opencloseView.setText(output[0][0]+"open");
+                            openOrClose = true;
+                        }
+                        else {
+                            opencloseView.setText(output[0][0]+"close");
+                            openOrClose = false;
+                        }
+
+                    }
+
+                    /////////////////////////////큰 졸음 판별 단계////////////////////////////////////////////
+                    //얼굴 부분 색상 검출 및 프레임 바이너리화
+                    if(matBinary == null)
+                        matBinary = new Mat(matResult.rows(),matResult.cols(),matResult.type());
+
+                    makeFaceMaskImage(matResult.getNativeObjAddr(), matBinary.getNativeObjAddr(), faceArray, hsv_array);
+                    //프레임버퍼에 프레임 저장
+                    frameBuffer.Enqueue(matBinary);
+                    //픽셀카운팅 및 졸음 판별
+                    CountingThread countingThread = new CountingThread();
+                    countingThread.start();
+
+                    if(StateOfDetectingHighDowsiness == HIGH_DETECTREADY)
+                    {
+                        StateOfDetectingHighDowsiness = HIGH_DETECTING;
+                        StateOfDetectingLowDowsiness = LOW_NOTACT;
+                        if(ishighcountupThreadRun == false)
+                        {
+                            ishighcountupThreadRun = true;
+                            DetectHighdrowsinessThread  detectThread = new DetectHighdrowsinessThread();
+                            detectThread.start();
+                        }
+
+                        System.out.println("높은 졸음 디텍트스레드가 시작되었습니다.");
+                        //카운트다운 스레드 시작 (10초)
+                        //10초 카운트 스레드 종료 후 알람 이벤트 발생
+
+                        //단 카운팅 스레드에서 다시 얼굴을 감지 했을시
+                        //중간에 종료 할 수 있어야함
+
+                        //이벤트 발생중에도 다시 얼굴을 감지 했을시
+                        //중간에 종료
+                    }
+                    else if(StateOfDetectingHighDowsiness == HIGH_DETECTING)
+                    {
+
+                        if(high_detectingCount == 10)
+                        {
+                            System.out.println("방송 송출");
+                            StateOfDetectingHighDowsiness = HIGH_WAKE_UP;
+                            //알람 리시버에게 알람수행을 위한 메시지 송신
+
+                            registerReceiver(alarmReceiver, intentFilter);
+                            Intent sendIntent = new Intent(ALARMSTART);
+                            sendBroadcast(sendIntent);
+                            //intentFilter.addAction(ALARMSTART);
+                            //registerReceiver(alarmReceiver,intentFilter);
+
+                            //send
+                            //높은 졸음 알람 발생!!
+                            //Log.d("CONFIRMALARM", "알람이 울리고 있습니다.");
+                        }
+                    }
+
+                    /////////////////////////////낮은 졸음 판별 단계////////////////////////////////////////////
+                    //eyeROI (검출된 눈 바운더리 이미지)
+                    //학습된 모델로 감은눈인지 뜬 눈인지 실시간 판별
+                    //판별후 나온 결과를 boolean 값으로 리턴 (뜬 눈 = true , 감은 눈 = false)
+                    //주석 지울것
+                    if(openOrClose == false && StateOfDetectingLowDowsiness == LOW_COUNTING)
+                    {
+                        //눈 상태가 감은 눈일 경우
+                        //상태 변경 COUNTING -> DETECTREADY
+                        StateOfDetectingLowDowsiness = LOW_DETECTREADY;
+                    }
+
+                    if(StateOfDetectingLowDowsiness == LOW_DETECTREADY)
+                    {
+                        //상태변경 DETECTREADY -> DETECTING
+                        StateOfDetectingLowDowsiness = LOW_DETECTING;
+
+                        //눈이 감긴걸로 판별이 되면
+                        //카운트를 증가 시켜주는 스레드가 시작 (10초 동안 지속)
+                        if(islowcountupThreadRun == false)
+                        {
+                            islowcountupThreadRun = true;
+                            DetectLowdrowsinessThread  deteclowThread = new DetectLowdrowsinessThread();
+                            deteclowThread.start();
+                        }
+
+                        System.out.println("낮은 졸음 디텍트스레드가 시작되었습니다.");
+                        //카운트다운 스레드 시작 (10초)
+                        //10초 카운트 스레드 종료 후 알람 이벤트 발생
+                    }
+                    else if(StateOfDetectingLowDowsiness == LOW_DETECTING)
+                    {
+                        //낮은졸음 카운트가 올라가고 있을때
+                        //다시 뜬 눈으로 감지 될 경우
+                        if(openOrClose == true)
+                        {
+                            //상태 변경 DETECTING -> COUNTING
+                            low_detectingCount = 0;
+                            lowcountView.setText("0");
+                            StateOfDetectingLowDowsiness = LOW_COUNTING;
+                        }
+
+                        if(low_detectingCount == 10)
+                        {
+                            System.out.println("방송 송출");
+                            StateOfDetectingLowDowsiness = LOW_WAKE_UP;
+                            //알람 리시버에게 알람수행을 위한 메시지 송신
+
+                            registerReceiver(alarmReceiver, intentFilter);
+                            Intent sendIntent = new Intent(ALARMSTART);
+                            sendBroadcast(sendIntent);
+                            //intentFilter.addAction(ALARMSTART);
+                            //registerReceiver(alarmReceiver,intentFilter);
+
+                            //send
+                            //낮은 졸음 알람 발생!!
+                            //Log.d("CONFIRMALARM", "알람이 울리고 있습니다.");
+                        }
+                    }
+                    else if(StateOfDetectingLowDowsiness == LOW_WAKE_UP)
+                    {
+                        //낮은 졸음 알람이 실행 중일 때
+                        //다시 뜬 눈으로 검출 됐을 경우 원래 상태로 복귀
+
+                        //리시버에게 알람을 종료하라는 메시지 송신
+                        if(openOrClose == true)
+                        {
+
+                            StateOfDetectingLowDowsiness = LOW_COUNTING;
+                            low_detectingCount = 0;
+                            lowcountView.setText("0");
+                            registerReceiver(alarmReceiver, intentFilter);
+                            Intent sendIntent = new Intent(ALARMEND);
+                            sendBroadcast(sendIntent);
                         }
                     }
 
 
-                    float[][] output = new float[1][1];
-                    tf_lite.run(input, output);
-
-                    opencloseView.setText("what?");
-                    /////////////////output 값에 따라 결정/////////////////////////////////
-                    if(output[0][0]>=0.5){
-                        opencloseView.setText(output[0][0]+"open");
-                        openOrClose = true;
-                    }
-                    else {
-                        opencloseView.setText(output[0][0]+"close");
-                        openOrClose = false;
-                    }
-
+                    Log.d("HSTATE", String.valueOf(StateOfDetectingHighDowsiness));
+                    Log.d("LSTATE", String.valueOf(StateOfDetectingLowDowsiness));
                 }
-
-                /////////////////////////////큰 졸음 판별 단계////////////////////////////////////////////
-                //얼굴 부분 색상 검출 및 프레임 바이너리화
-                if(matBinary == null)
-                    matBinary = new Mat(matResult.rows(),matResult.cols(),matResult.type());
-
-                makeFaceMaskImage(matResult.getNativeObjAddr(), matBinary.getNativeObjAddr(), faceArray, hsv_array);
-                //프레임버퍼에 프레임 저장
-                frameBuffer.Enqueue(matBinary);
-                //픽셀카운팅 및 졸음 판별
-                CountingThread countingThread = new CountingThread();
-                countingThread.start();
-
-                if(StateOfDetectingHighDowsiness == HIGH_DETECTREADY)
-                {
-                    StateOfDetectingHighDowsiness = HIGH_DETECTING;
-                    StateOfDetectingLowDowsiness = LOW_NOTACT;
-                    DetectHighdrowsinessThread  detectThread = new DetectHighdrowsinessThread();
-                    detectThread.start();
-                    System.out.println("높은 졸음 디텍트스레드가 시작되었습니다.");
-                    //카운트다운 스레드 시작 (10초)
-                    //10초 카운트 스레드 종료 후 알람 이벤트 발생
-
-                    //단 카운팅 스레드에서 다시 얼굴을 감지 했을시
-                    //중간에 종료 할 수 있어야함
-
-                    //이벤트 발생중에도 다시 얼굴을 감지 했을시
-                    //중간에 종료
-                }
-                else if(StateOfDetectingHighDowsiness == HIGH_DETECTING)
-                {
-
-                    if(high_detectingCount == 10)
-                    {
-                        System.out.println("방송 송출");
-                        StateOfDetectingHighDowsiness = HIGH_WAKE_UP;
-                        //알람 리시버에게 알람수행을 위한 메시지 송신
-
-                        registerReceiver(alarmReceiver, intentFilter);
-                        Intent sendIntent = new Intent(ALARMSTART);
-                        sendBroadcast(sendIntent);
-                        //intentFilter.addAction(ALARMSTART);
-                        //registerReceiver(alarmReceiver,intentFilter);
-
-                        //send
-                        //높은 졸음 알람 발생!!
-                        //Log.d("CONFIRMALARM", "알람이 울리고 있습니다.");
-                    }
-                }
-
-                /////////////////////////////낮은 졸음 판별 단계////////////////////////////////////////////
-                //eyeROI (검출된 눈 바운더리 이미지)
-                //학습된 모델로 감은눈인지 뜬 눈인지 실시간 판별
-                //판별후 나온 결과를 boolean 값으로 리턴 (뜬 눈 = true , 감은 눈 = false)
-                //주석 지울것
-                if(openOrClose == false && StateOfDetectingLowDowsiness == LOW_COUNTING)
-                {
-                    //눈 상태가 감은 눈일 경우
-                    //상태 변경 COUNTING -> DETECTREADY
-                    StateOfDetectingLowDowsiness = LOW_DETECTREADY;
-                }
-
-                if(StateOfDetectingLowDowsiness == LOW_DETECTREADY)
-                {
-                    //상태변경 DETECTREADY -> DETECTING
-                    StateOfDetectingLowDowsiness = LOW_DETECTING;
-
-                    //눈이 감긴걸로 판별이 되면
-                    //카운트를 증가 시켜주는 스레드가 시작 (10초 동안 지속)
-                    DetectLowdrowsinessThread  deteclowThread = new DetectLowdrowsinessThread();
-                    deteclowThread.start();
-                    System.out.println("낮은 졸음 디텍트스레드가 시작되었습니다.");
-                    //카운트다운 스레드 시작 (10초)
-                    //10초 카운트 스레드 종료 후 알람 이벤트 발생
-                }
-                else if(StateOfDetectingLowDowsiness == LOW_DETECTING)
-                {
-                    //낮은졸음 카운트가 올라가고 있을때
-                    //다시 뜬 눈으로 감지 될 경우
-                    if(openOrClose == true)
-                    {
-                        //상태 변경 DETECTING -> COUNTING
-                        low_detectingCount = 0;
-                        lowcountView.setText("0");
-                        StateOfDetectingLowDowsiness = LOW_COUNTING;
-                    }
-
-                    if(low_detectingCount == 10)
-                    {
-                        System.out.println("방송 송출");
-                        StateOfDetectingLowDowsiness = LOW_WAKE_UP;
-                        //알람 리시버에게 알람수행을 위한 메시지 송신
-
-                        registerReceiver(alarmReceiver, intentFilter);
-                        Intent sendIntent = new Intent(ALARMSTART);
-                        sendBroadcast(sendIntent);
-                        //intentFilter.addAction(ALARMSTART);
-                        //registerReceiver(alarmReceiver,intentFilter);
-
-                        //send
-                        //낮은 졸음 알람 발생!!
-                        //Log.d("CONFIRMALARM", "알람이 울리고 있습니다.");
-                    }
-                }
-                else if(StateOfDetectingLowDowsiness == LOW_WAKE_UP)
-                {
-                    //낮은 졸음 알람이 실행 중일 때
-                    //다시 뜬 눈으로 검출 됐을 경우 원래 상태로 복귀
-
-                    //리시버에게 알람을 종료하라는 메시지 송신
-                    if(openOrClose == true)
-                    {
-
-                        StateOfDetectingLowDowsiness = LOW_COUNTING;
-                        low_detectingCount = 0;
-                        lowcountView.setText("0");
-                        registerReceiver(alarmReceiver, intentFilter);
-                        Intent sendIntent = new Intent(ALARMEND);
-                        sendBroadcast(sendIntent);
-                    }
-                }
-
-
-                Log.d("HSTATE", String.valueOf(StateOfDetectingHighDowsiness));
-                Log.d("LSTATE", String.valueOf(StateOfDetectingLowDowsiness));
+            } catch(InterruptedException e){
+                e.printStackTrace();
             }
-        } catch(InterruptedException e){
-            e.printStackTrace();
-        }
-        releaseWriteLock();
-//        return matResult;
-        if(StateOfSetting == SETTING_ON)
-        {
-            return matBinary;
-        }
-        else
-           return matResult;
+            releaseWriteLock();
+
+            if(StateOfSetting == SETTING_ON)
+            {
+                return matBinary;
+            }
+            else
+                return matResult;
+
     }
 
 
@@ -897,12 +1025,12 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         //검출된 얼굴의 픽셀값이 전체 픽셀의 1/5 이하일때
         //높은 졸음 판별 시작
         if(StateOfDetectingHighDowsiness == HIGH_COUNTING
-                && sumofWhitePixels < countofPixels / 10)
+                && sumofWhitePixels < countofPixels / 2)
         {
             StateOfDetectingHighDowsiness = HIGH_DETECTREADY;
         }
         else if(StateOfDetectingHighDowsiness == HIGH_WAKE_UP
-                && sumofWhitePixels > countofPixels / 10)
+                && sumofWhitePixels > countofPixels / 2)
         {
             //높은 졸음 감지중
             //다시 얼굴이 검출 됐을 경우 원래 상태로 복귀
@@ -980,7 +1108,12 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     e.printStackTrace();
                 }
             }
+            ishighcountupThreadRun = false;
             System.out.println("높은 졸음 디텍트스레드가 종료되었습니다.");
+
+            //스레드가 종료되면 무조건 카운트를 0으로
+            high_detectingCount = 0;
+            highcountView.setText("0");
 
         }
     }
@@ -1005,7 +1138,12 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     e.printStackTrace();
                 }
             }
+            islowcountupThreadRun = false;
             System.out.println("낮은졸음 디텍트스레드가 종료되었습니다.");
+
+            //스레드가 종료되면 무조건 카운트를 0 으로
+            low_detectingCount = 0;
+            lowcountView.setText("0");
         }
     }
 
@@ -1052,6 +1190,29 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             System.out.println("셋팅카운트 스레드가 종료되었습니다.");
         }
     }
+
+    /*public class subjectduringtimecountdown extends Thread{
+
+        public boolean isrun = true;
+
+        public void run(){
+            while(cameraviewcount > 0 && isrun){
+                Message message = mcountHandler.obtainMessage();
+                cameraviewcount--;
+                if(cameraviewcount == 0)
+                    isrun = false;
+                message.arg1 = cameraviewcount;
+                mcountHandler.sendMessage(message);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println("카운트다운 스레드가 종료되었습니다.");
+        }
+    }
+    */
 
     public class AlarmReceiver extends BroadcastReceiver{
 

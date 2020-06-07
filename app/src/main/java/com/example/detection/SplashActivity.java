@@ -26,7 +26,9 @@ public class SplashActivity extends Activity {
 
         try {
             Thread.sleep(3000); //milli-sec
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            intent.putExtra("backfromDetection", 0);
+            startActivity(intent);
             SplashActivity.this.finish();
         } catch (Exception e) {
 

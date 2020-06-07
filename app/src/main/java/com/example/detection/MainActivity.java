@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     String[] goodSayingArray;
     String[] badSayingArray;
 
+    int backfromDetection = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         speaking_layout = findViewById(R.id.rela_layout);
         speakingtextView = (TextView) findViewById(R.id.speaking_Text);
         animTransRight = AnimationUtils.loadAnimation(this, R.anim.anim_translate_right);
+
+        Intent intent = getIntent();
+        backfromDetection = intent.getExtras().getInt("backfromDetection");
     }
     private Handler imgVisibleCountHandler = new Handler();
     private Runnable imgVisibleCountRunnable = new Runnable() {
@@ -175,9 +179,26 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     protected void onResume() {
         super.onResume();
         speaking_layout.setVisibility(View.VISIBLE);
-        speakingtextView.setText(SetSpeakingtextView(1));
-        imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
+
+        if(backfromDetection == 0)
+        {
+            //명언
+            speakingtextView.setText(SetSpeakingtextView(1));
+
+        }
+        else if (backfromDetection == 1)
+        {
+            //좋은말
+            speakingtextView.setText(SetSpeakingtextView(2));
+            backfromDetection = 0;
+        }
+        else if (backfromDetection == 2)
+        {
+            speakingtextView.setText(SetSpeakingtextView(3));
+            backfromDetection = 0;
+        }
         ImgCnt = 4;
+        imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
     }
 
     private void createMenuList() {
@@ -308,6 +329,8 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         if (ContentFragment.Watch.equals(slideMenuItem.getName())) {
             Intent intent = new Intent(getApplicationContext(), TestDetection.class);
             startActivity(intent);
+
+            finish();
         }
         if (ContentFragment.Scores.equals(slideMenuItem.getName())) {
             LimitAppsActivity.currentTime = System.currentTimeMillis();
