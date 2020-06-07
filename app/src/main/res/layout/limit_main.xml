@@ -4,23 +4,216 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".LimitAppsActivity"
     android:orientation="vertical"
     android:weightSum="100">
 
-    <ListView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/list_view"
-        android:layout_weight="90">
-    </ListView>
+        android:layout_height="0dp"
+        android:layout_weight="70"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        android:layout_margin="5dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="45"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="전체 목록"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:gravity="center">
+            </TextView>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="설정"
-        android:id="@+id/button"
-        android:layout_gravity="right">
-    </Button>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/list_view"
+                android:layout_weight="45">
+            </ListView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:orientation="vertical"
+            android:weightSum="100">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="40">
+            </TextView>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10"
+                android:id="@+id/image_view1">
+            </ImageView>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10"
+                android:id="@+id/image_view2">
+            </ImageView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="40"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="제한 목록"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:gravity="center">
+            </TextView>
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/list_view2"
+                android:layout_weight="45">
+            </ListView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:padding="4dp"
+        android:background="#000000">
+    </TextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:padding="4dp"
+        android:background="#000000">
+    </TextView>
+
+    <EditText
+        android:id="@+id/edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:layout_weight="9"
+        android:hint="검 색"></EditText>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        android:layout_margin="15dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="15">
+        </TextView>
+        <NumberPicker
+            android:id="@+id/hour_picker"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="20" />
+
+        <TextView
+            android:id="@+id/text_hour"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="15"
+            android:text="Hour"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10">
+        </TextView>
+        <NumberPicker
+            android:id="@+id/minute_picker"
+            android:layout_width="0dp"
+            android:layout_weight="20"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/text_minute"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="15"
+            android:text="Minute"
+            android:gravity="center"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:padding="4dp"
+        android:background="#000000">
+    </TextView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="전체추가"
+            android:id="@+id/add_all_button"
+            android:layout_weight="33"
+            android:layout_margin="3dp">
+        </Button>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:background="#000000"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="전체삭제"
+            android:id="@+id/remove_all_button"
+            android:layout_weight="33"
+            android:layout_margin="3dp">
+        </Button>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:background="#000000"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="잠금시작"
+            android:id="@+id/start_button"
+            android:layout_weight="33"
+            android:layout_margin="3dp">
+        </Button>
+    </LinearLayout>
+
 
 </LinearLayout>
