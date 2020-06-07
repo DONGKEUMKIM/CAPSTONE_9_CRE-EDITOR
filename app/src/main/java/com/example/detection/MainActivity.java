@@ -310,8 +310,17 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
             startActivity(intent);
         }
         if (ContentFragment.Scores.equals(slideMenuItem.getName())) {
-            Intent intent = new Intent(getApplicationContext(), LimitAppsActivity.class);
-            startActivity(intent);
+            LimitAppsActivity.currentTime = System.currentTimeMillis();
+            if(LimitAppsActivity.currentTime - LimitAppsActivity.startTime >= LimitAppsActivity.duringTime) {
+                Intent intent = new Intent(getApplicationContext(), LimitAppsActivity.class);
+                startActivity(intent);
+            }
+            else{
+                long l = LimitAppsActivity.duringTime - (LimitAppsActivity.currentTime - LimitAppsActivity.startTime);
+                l /=60000;
+                Toast myToast = Toast.makeText(getApplicationContext(),"잠금기능 사용중 입니다("+(l+1)+"분 남음)", Toast.LENGTH_SHORT);
+                myToast.show();
+            }
         }
         if (ContentFragment.Timeline.equals(slideMenuItem.getName())) {
             transaction.replace(R.id.frameLayout, timeline_frag).commitAllowingStateLoss();

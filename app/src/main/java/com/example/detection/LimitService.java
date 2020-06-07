@@ -12,12 +12,14 @@ public class LimitService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {        // 켜진 앱이 제한앱이면 gotoHome
+        LimitAppsActivity.currentTime = System.currentTimeMillis();
         for(int i=0;i<LimitAppsActivity.listViewItemListCustom.size();i++){
             if(event.getPackageName().equals(LimitAppsActivity.listViewItemListCustom.get(i).getAppPackageName())) {
-                LimitAppsActivity.currentTime = System.currentTimeMillis();
                 if(LimitAppsActivity.currentTime - LimitAppsActivity.startTime <= LimitAppsActivity.duringTime){
+                    long l = LimitAppsActivity.duringTime - (LimitAppsActivity.currentTime - LimitAppsActivity.startTime);
+                    l /=60000;
                     gotoHome();
-                    Toast myToast = Toast.makeText(getApplicationContext(),"사용 제한 입니다.", Toast.LENGTH_SHORT);
+                    Toast myToast = Toast.makeText(getApplicationContext(),"사용 제한 앱 입니다("+(l+1)+"분 남음)", Toast.LENGTH_SHORT);
                     myToast.show();
                 }
             }
