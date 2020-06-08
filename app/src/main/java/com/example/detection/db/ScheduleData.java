@@ -9,13 +9,16 @@ public class ScheduleData implements Serializable {
     private int subject_ID;                     //과목 코드
     private String date;                        //날짜
     private int duringtime;                     //공부 시간
+    private boolean isDone;                      //이행 여부
 
-
-    public ScheduleData(String id, int subject_ID, String date, int duringtime) {
+    public ScheduleData(String id, int subject_ID, String date, int duringtime, int isdone) {
         this.id = id;
         this.subject_ID = subject_ID;
         this.date = date;
         this.duringtime = duringtime;
+
+        if(isdone == 1) this.isDone = true;
+        else this.isDone = false;
     }
 
     public String getID() {
@@ -34,6 +37,8 @@ public class ScheduleData implements Serializable {
         return this.duringtime;
     }
 
+    public int getIsDone(){if(isDone) return 1; else return 0;}
+
     public void setId(String id) {
         this.id = id;
     }
@@ -49,4 +54,6 @@ public class ScheduleData implements Serializable {
     public void setDuringtime(int duringtime) {
         this.duringtime = duringtime;
     }
+
+    public void setIsDone(boolean isDone){this.isDone = isDone;}
 }

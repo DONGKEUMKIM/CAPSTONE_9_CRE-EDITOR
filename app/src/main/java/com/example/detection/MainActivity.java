@@ -423,25 +423,27 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         startActivityForResult(intent, 2);
     }
     public void editSubject(int id){
-        SubjectData subjectData = dbManager.selectSubjectDataFormSubjectID(id);
         Intent intent = new Intent(this, SubjectDataEditPopupFragment.class);
+        SubjectData subjectData = dbManager.selectSubjectDataFormSubjectID(id);
         intent.putStringArrayListExtra("idArray", idArray);
         intent.putExtra("id", subjectData.getID());
         intent.putExtra("testtimeid", dbManager.selectTestTimeDataFormSubjectID(subjectData.getID()).getID());
         startActivityForResult(intent, 3);
     }
 
-    public void startDetectionFromSchedule(String subjectName , int duringTime){
+    public void startDetectionFromSchedule(String subjectName , String Date , int duringTime){
         //TODO
         //startDetectionFromSchedule Function
 
         String subjectname = subjectName;
+        String date = Date;
         int duringtime = duringTime;
 
         Intent intent = new Intent(getApplicationContext(), TestDetection.class);
 
         intent.putExtra("SN", subjectname);
         intent.putExtra("DT", duringtime);
+        intent.putExtra("DATE", date);
 
         startActivity(intent);
         finish();

@@ -128,13 +128,48 @@ public class CompactCalendarTab extends Fragment {
                 //string데이터로부터
                 //과목 이름 string , 공부 시간 int 값 추출 필요
                 //이 부분 코딩해주세요
-                String subjectName = "";  // = ...
-                int duringTime = 0; // = ...
 
-                //get target Id by ArrayList named idList;
-                //TODO
+                //테스트용 후에 지울걸
 
-                ((MainActivity)getActivity()).startDetectionFromSchedule(subjectName, duringTime);
+
+                String subjectName = null;
+                String scheduleDate = null;
+
+                String[] words = string.split(" ");
+                int duringTime = 0;
+
+
+                if(words[2].compareTo("at") != 0)
+                {
+                    //과목명에 띄어쓰기가 있는경우에 대한 예외처리
+                    subjectName = words[1] + " " + words[2];
+                    scheduleDate = words[4];
+                    duringTime = Integer.parseInt(words[6]);
+
+                }
+                else
+                {
+                    subjectName = words[1];
+                    scheduleDate = words[3];
+                    duringTime = Integer.parseInt(words[5]);
+                }
+
+                /*
+                //스케줄데이터의 이행여부 확인 방법 예시
+                //SQlite 커리문 and가 동작 하지 않아 객체에 직접 접근하여 확인함..
+
+                int subjectID = SQLiteManager.sqLiteManager.selectSubjectIdFromName(subjectName);
+                List<ScheduleData> Lists = SQLiteManager.sqLiteManager.selectScheduleDataFormSubjectID(subjectID);
+
+                int kkk;
+                for(int lSize = 0 ; lSize < Lists.size() ; lSize++)
+                {
+                    if(Lists.get(lSize).getDate() == scheduleDate)
+                        kkk = Lists.get(lSize).getIsDone();
+                }
+                */
+
+                ((MainActivity)getActivity()).startDetectionFromSchedule(subjectName, scheduleDate, duringTime);
             }
         });
         bookingsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
