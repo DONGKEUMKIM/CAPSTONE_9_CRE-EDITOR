@@ -111,7 +111,7 @@ public class SubjectListFragment extends Fragment {
                         break;
                     case 1:
                         // delete
-					    //delete(item);
+					    delete(item);
                         items.remove(position);
                         mAdapter.notifyDataSetChanged();
                         break;
@@ -163,17 +163,20 @@ public class SubjectListFragment extends Fragment {
         //TODO
         List<SubjectData> subjectData = ((MainActivity)getActivity()).getSubjectDataArray();
         for(int i=0;i<subjectData.size();i++){
-            items.add(new SubjectListViewComponent(subjectData.get(i).getName(),Integer.toString(subjectData.get(i).getPriority()),((MainActivity)getActivity()).getTestTimeData(subjectData.get(i).getID()).getDate()));
+            items.add(new SubjectListViewComponent(subjectData.get(i).getName(),Integer.toString(subjectData.get(i).getPriority()),((MainActivity)getActivity()).getTestTimeData(subjectData.get(i).getID()).getDate(),subjectData.get(i).getID()));
         }
         //mAdapter.notifyDataSetChanged();
     }
 
     private void delete(SubjectListViewComponent item) {
+        SQLiteManager.sqLiteManager.deleteSubjectData(item.getId());
+        SQLiteManager.sqLiteManager.deleteTestTimeData(item.getId());
         //TODO
     }
 
     private void open(SubjectListViewComponent item) {
         //TODO
+        ((MainActivity)getActivity()).editSubject(item.getId());
 
     }
     class AppAdapter extends BaseSwipListAdapter {

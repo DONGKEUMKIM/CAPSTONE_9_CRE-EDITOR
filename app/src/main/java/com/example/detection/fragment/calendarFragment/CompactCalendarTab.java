@@ -31,6 +31,7 @@ import com.github.sundeepk.compactcalendarview.domain.Event;
 
 import org.qap.ctimelineview.TimelineRow;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +55,7 @@ public class CompactCalendarTab extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mainTabView = inflater.inflate(R.layout.fragment_calendar, container, false);
         final List<String> mutableBookings = new ArrayList<>();
+        final List<String> idList = new ArrayList<>();
 
         final ListView bookingsListView = mainTabView.findViewById(R.id.bookings_listview);
         final Button showPreviousMonthBut = mainTabView.findViewById(R.id.prev_button);
@@ -88,7 +90,6 @@ public class CompactCalendarTab extends Fragment {
             loadEventsForYear(i);
         }
         compactCalendarView.invalidate();
-
         bookingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -130,7 +131,19 @@ public class CompactCalendarTab extends Fragment {
                 String subjectName = "";  // = ...
                 int duringTime = 0; // = ...
 
+                //get target Id by ArrayList named idList;
+                //TODO
+
                 ((MainActivity)getActivity()).startDetectionFromSchedule(subjectName, duringTime);
+            }
+        });
+        bookingsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                ((MainActivity)getActivity()).editSchedule(idList.get(i));
+
+                return false;
             }
         });
 
@@ -162,8 +175,10 @@ public class CompactCalendarTab extends Fragment {
                 if (bookingsFromMap != null) {
                     Log.d(TAG, bookingsFromMap.toString());
                     mutableBookings.clear();
+                    idList.clear();
                     for (Event booking : bookingsFromMap) {
-                        mutableBookings.add((String) booking.getData());
+                        mutableBookings.add(((String) booking.getData()).split(":")[0]);
+                        idList.add(((String) booking.getData()).split(":")[1]);
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -360,7 +375,7 @@ public class CompactCalendarTab extends Fragment {
         for (int i = 0; i < currentCalender.getActualMaximum(Calendar.DATE); i++) {
             currentCalender.setTime(firstDayOfMonth);
             if (month > -1) {
-                currentCalender.set(Calendar.MONTH, month);
+                currentCalender.set(Calendar.MONTH, month-1);
             }
             if (year > -1) {
                 currentCalender.set(Calendar.ERA, GregorianCalendar.AD);
@@ -387,7 +402,7 @@ public class CompactCalendarTab extends Fragment {
         List<Event> eventArray = new ArrayList<Event>();
         for(int i=0;i<scheduleData.size();i++){
             if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[2])==day){
-                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() +" for "+ scheduleData.get(i).getDuringtime()+" Hours"));
+                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() +" for "+ scheduleData.get(i).getDuringtime()+" Hours" + ":" + scheduleData.get(i).getID()  ) );
             }
         }
         return eventArray;

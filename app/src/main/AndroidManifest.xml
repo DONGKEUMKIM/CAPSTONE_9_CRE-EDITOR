@@ -64,6 +64,15 @@
         <activity android:name=".fragment.popupFragment.ScheduleDataPopupFragment"
             android:screenOrientation="fullSensor"
             android:theme="@style/popupTheme"/>
+        <activity android:name=".fragment.popupFragment.ScheduleDataEditPopupFragment"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/popupTheme"/>
+        <activity android:name=".fragment.popupFragment.SubjectDataEditPopupFragment"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/popupTheme"/>
+        <activity android:name=".fragment.popupFragment.testTimeEditPopupFragment"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/popupTheme"/>
         <service android:name=".AlarmSoundService"></service>
 
         <service

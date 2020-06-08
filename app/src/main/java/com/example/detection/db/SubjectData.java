@@ -3,7 +3,7 @@ package com.example.detection.db;
 import java.io.Serializable;
 
 //////////////////////////////////과목 정보/////////////////////////////////////
-public class SubjectData implements Serializable {
+public class SubjectData implements Serializable, Comparable<SubjectData> {
     private static final long serialVersionUID = 2;
     private int id;                         //id (과목코드)
     private String name;                    //과목 이름
@@ -41,4 +41,13 @@ public class SubjectData implements Serializable {
         this.priority = priority;
     }
 
+    @Override
+    public int compareTo(SubjectData subjectData) {
+        if(this.priority < subjectData.getPriority()){
+            return -1;
+        }else if( this.priority<subjectData.getPriority()){
+            return 1;
+        }
+        return 0;
+    }
 }

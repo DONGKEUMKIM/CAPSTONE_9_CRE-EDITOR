@@ -80,8 +80,8 @@ public class SubjectListComponentAdapter extends ArrayAdapter implements View.On
         }
     }
 
-    public void add(String subjectName, String priority, String testTime) {
-        SubjectListViewComponent item = new SubjectListViewComponent(subjectName, priority, testTime);
+    public void add(String subjectName, String priority, String testTime, int id) {
+        SubjectListViewComponent item = new SubjectListViewComponent(subjectName, priority, testTime,id);
         listViewComponents.add(item);
     }
 }

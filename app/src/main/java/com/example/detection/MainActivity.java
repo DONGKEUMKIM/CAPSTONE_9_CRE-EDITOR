@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -37,10 +39,13 @@ import com.example.detection.db.SubjectData;
 import com.example.detection.db.TestTimeData;
 import com.example.detection.fragment.ContentFragment;
 import com.example.detection.fragment.calendarFragment.CompactCalendarTab;
+import com.example.detection.fragment.popupFragment.ScheduleDataEditPopupFragment;
 import com.example.detection.fragment.popupFragment.ScheduleDataPopupFragment;
+import com.example.detection.fragment.popupFragment.SubjectDataEditPopupFragment;
 import com.example.detection.fragment.popupFragment.SubjectDataPopupFragment;
 import com.example.detection.fragment.subjectListFragment.SubjectListFragment;
 import com.example.detection.fragment.timeLineFragment.TimelineFragment;
+import com.example.detection.scheduleAutoCreate.ScheduleAutoCreate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private ActionBarDrawerToggle drawerToggle;
     private List<SlideMenuItem> list = new ArrayList<>();
     private ViewAnimator viewAnimator;
-    private int res = R.drawable.content_welcome;
+    private int res = R.drawable.content_dashboard;
     private LinearLayout linearLayout;
 
     private int fragment_main = R.layout.fragment_main;
@@ -90,13 +95,14 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     String[] badSayingArray;
 
     int backfromDetection = 0;
-
+    ScheduleAutoCreate sac = new ScheduleAutoCreate();
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_welcome);
+        ContentFragment contentFragment = ContentFragment.newInstance(R.drawable.content_dashboard);
         calendar_frag = new CompactCalendarTab();
         timeline_frag = new TimelineFragment();
         subject_frag = new SubjectListFragment();
@@ -151,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         Intent intent = getIntent();
         backfromDetection = intent.getExtras().getInt("backfromDetection");
+        transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.frameLayout, calendar_frag).commitAllowingStateLoss();
+        sac.init();
     }
     private Handler imgVisibleCountHandler = new Handler();
     private Runnable imgVisibleCountRunnable = new Runnable() {
@@ -397,6 +406,13 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         intent.putExtra("scheduleid",dbManager.generateRandomID());
         startActivityForResult(intent, 1);
     }
+    public void editSchedule(String id){
+        ScheduleData scheduleData = dbManager.selectScheduleDataFormScheduleId(id);
+        Intent intent = new Intent(this, ScheduleDataEditPopupFragment.class);
+        intent.putStringArrayListExtra("idArray", idArray);
+        intent.putExtra("scheduleid",scheduleData.getID());
+        startActivityForResult(intent, 4);
+    }
 
     public void addNewSubject() {
         Intent intent = new Intent(this, SubjectDataPopupFragment.class);
@@ -406,6 +422,15 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         intent.putExtra("testtimeid", dbManager.generateRandomID());
         startActivityForResult(intent, 2);
     }
+    public void editSubject(int id){
+        SubjectData subjectData = dbManager.selectSubjectDataFormSubjectID(id);
+        Intent intent = new Intent(this, SubjectDataEditPopupFragment.class);
+        intent.putStringArrayListExtra("idArray", idArray);
+        intent.putExtra("id", subjectData.getID());
+        intent.putExtra("testtimeid", dbManager.selectTestTimeDataFormSubjectID(subjectData.getID()).getID());
+        startActivityForResult(intent, 3);
+    }
+
     public void startDetectionFromSchedule(String subjectName , int duringTime){
         //TODO
         //startDetectionFromSchedule Function
@@ -424,12 +449,13 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
 
     //MainActivity Control Function
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        //result code 1 = cancel button clicked
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 1://result code 1 : getSchedule Data from popup
+            case 1://request code 1 : getSchedule Data from popup
                 if (resultCode == 1)
                     return;
                 else {
@@ -439,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                     refresh();
                     break;
                 }
-            case 2://result code 2 : getSubject, testTime Data from popup
+            case 2://request code 2 : getSubject, testTime Data from popup
                 if (resultCode == 1)
                     return;
                 else {
@@ -448,9 +474,39 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
                     TestTimeData testTimeData = (TestTimeData) data.getExtras().getSerializable("testtime");
                     dbManager.insertSubjectData(addSubData);
                     dbManager.insertTestTimeData(testTimeData);
+                    //sac.addNewAutoSchedule(addSubData);
                     refresh();
                     break;
                 }
+            case 3://result code 3 : edit subject, testtime Data from popup
+                if(resultCode == 1)
+                    return;
+                else{
+                    SubjectData addSubData = (SubjectData) data.getExtras().getSerializable("subject");
+                    TestTimeData testTimeData = (TestTimeData) data.getExtras().getSerializable("testtime");
+                    dbManager.updateSubjectData(addSubData);
+                    dbManager.updateTestTimeData(testTimeData);
+                    //sac.addNewAutoSchedule(addSubData);
+                    refresh();
+                    break;
+                }
+            case 4://result code 4 : update schedule data from popup
+                if (resultCode == 1)
+                    return;
+                else if(resultCode == 4){
+                    //System.out.println("okClicked");
+                    ScheduleData addScheduleData = (ScheduleData) data.getExtras().getSerializable("schedule");
+                    dbManager.updateScheduleData(addScheduleData);
+                    refresh();
+                    break;
+                }
+                else if(resultCode == 5){
+                    ScheduleData addScheduleData = (ScheduleData) data.getExtras().getSerializable("schedule");
+                    dbManager.deleteScheduleData(addScheduleData.getID());
+                    refresh();
+                    break;
+                }
+
         }
     }
     public void refresh(){

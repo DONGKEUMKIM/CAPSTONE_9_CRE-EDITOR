@@ -24,11 +24,11 @@ import com.example.detection.db.SQLiteManager;
 import com.example.detection.db.ScheduleData;
 
 import org.qap.ctimelineview.TimelineRow;
-import org.qap.ctimelineview.TimelineViewAdapter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +57,7 @@ public class TimelineFragment extends Fragment {
             //add the new row to the list
             //timelineRowsList.add(createRandomTimelineRow(i));
         }
-
+        timelineRowsList.clear();
         SQLiteManager dbManager = SQLiteManager.sqLiteManager;
         listScheduleData = new ArrayList<ScheduleData>();
         listScheduleData = dbManager.selectscheduleAll();
@@ -166,8 +166,13 @@ public class TimelineFragment extends Fragment {
         TimelineRow myRow = new TimelineRow(id);
         ScheduleData sch = listScheduleData.get(id);
         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String[] schdatesplit = sch.getDate().split("/");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Integer.parseInt(schdatesplit[0]),Integer.parseInt(schdatesplit[1])-1,Integer.parseInt(schdatesplit[2]),0,0,0);
+        cal.set(Calendar.MILLISECOND,0);
+        Date date = cal.getTime();
         //to set the row Date (optional)
-        myRow.setDate(transFormat.parse(sch.getDate()));
+        myRow.setDate(date);
         //to set the row Title (optional)
         myRow.setTitle(((MainActivity) Objects.requireNonNull(getActivity())).getSubjectData(sch.getSubject_ID()).getName());
         //to set the row Description (optional)
@@ -257,6 +262,13 @@ public class TimelineFragment extends Fragment {
             e.printStackTrace();
         }
         return endDate;
+    }
+    public Date getDate(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date startDate = new Date();
+        Date endDate=date;
+        return endDate;
+
     }
 
 }
