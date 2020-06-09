@@ -28,6 +28,7 @@ import com.example.detection.db.SQLiteManager;
 import com.example.detection.db.ScheduleData;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.qap.ctimelineview.TimelineRow;
 
@@ -50,7 +51,7 @@ public class CompactCalendarTab extends Fragment {
     private boolean shouldShow = false;
     private CompactCalendarView compactCalendarView;
     private ActionBar toolbar;
-
+    private FloatingActionButton calednarFloatingActionButton;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mainTabView = inflater.inflate(R.layout.fragment_calendar, container, false);
@@ -66,6 +67,7 @@ public class CompactCalendarTab extends Fragment {
         final Button removeAllEventsBut = mainTabView.findViewById(R.id.remove_all_events);
         final Button addNewScheduleBut = mainTabView.findViewById(R.id.add_schedule_calendar);
         final CalendarArrayAdapter adapter = new CalendarArrayAdapter(getContext(), R.layout.calendar_list_view_component, mutableBookings);
+        calednarFloatingActionButton = mainTabView.findViewById(R.id.calendar_floatingActionButton);
         bookingsListView.setAdapter(adapter);
         compactCalendarView = mainTabView.findViewById(R.id.compactcalendar_view);
 
@@ -237,6 +239,12 @@ public class CompactCalendarTab extends Fragment {
             @Override
             public void onClick(View v) {
                 compactCalendarView.scrollRight();
+            }
+        });
+        calednarFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addNewSchedule();
             }
         });
         addNewScheduleBut.setOnClickListener(new View.OnClickListener() {

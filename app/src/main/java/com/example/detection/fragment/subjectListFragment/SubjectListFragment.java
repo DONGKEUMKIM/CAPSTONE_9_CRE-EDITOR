@@ -23,6 +23,7 @@ import com.example.detection.MainActivity;
 import com.example.detection.R;
 import com.example.detection.db.SQLiteManager;
 import com.example.detection.db.SubjectData;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class SubjectListFragment extends Fragment {
     private AppAdapter mAdapter;
     ArrayList<SubjectListViewComponent> items;
     SQLiteManager dbManager;
-
+    private FloatingActionButton subjectFloatingActionButton;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class SubjectListFragment extends Fragment {
         mListView = v.findViewById(R.id.subject_listView);
         items = new ArrayList<SubjectListViewComponent>();
         addItems();
+        subjectFloatingActionButton = v.findViewById(R.id.subjectfloatingActionButton);
         mAdapter = new AppAdapter();
         mListView.setAdapter(mAdapter);
         mListView.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
@@ -90,7 +92,12 @@ public class SubjectListFragment extends Fragment {
                 menu.addMenuItem(deleteItem);
             }
         };
-
+        subjectFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).addNewSubject();
+            }
+        });
         addNewSubjectBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
