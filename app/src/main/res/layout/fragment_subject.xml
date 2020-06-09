@@ -26,12 +26,15 @@
                 >
 
 
+
             </com.baoyz.swipemenulistview.SwipeMenuListView>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end">
+                android:gravity="end"
+                android:id="@+id/content_parent"
+                >
 
                 <Button
                     android:layout_width="140dp"
@@ -40,7 +43,16 @@
                     android:id="@+id/add_new_subject_subject_list" />
             </LinearLayout>
 
-
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/subjectfloatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="20dp"
+                app:srcCompat="@android:drawable/ic_menu_add" />
         </RelativeLayout>
 
     </LinearLayout>

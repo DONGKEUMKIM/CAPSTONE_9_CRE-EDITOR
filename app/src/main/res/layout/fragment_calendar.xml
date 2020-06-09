@@ -1,5 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+   <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:id="@+id/main_content">
@@ -92,7 +93,9 @@
             android:id="@+id/add_schedule_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="add new" />
+            android:text="add new"
+            android:visibility="gone"
+            />
     </LinearLayout>
 
     <ListView
@@ -103,6 +106,20 @@
         android:divider="@drawable/background_transparent"
         android:dividerHeight="5dp"
         android:layout_marginStart="10dp"
-        />
+        >
 
+
+    </ListView>
+
+       <com.google.android.material.floatingactionbutton.FloatingActionButton
+           android:id="@+id/calendar_floatingActionButton"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignEnd="@id/bookings_listview"
+           android:layout_alignParentBottom="true"
+           android:layout_marginEnd="20dp"
+           android:layout_marginBottom="20dp"
+           android:clickable="true"
+           android:foreground="@android:drawable/ic_menu_add"
+           app:backgroundTint="#D32020" />
 </RelativeLayout>
