@@ -120,6 +120,6 @@
            android:layout_marginEnd="20dp"
            android:layout_marginBottom="20dp"
            android:clickable="true"
-           android:foreground="@android:drawable/ic_menu_add"
-           app:backgroundTint="#D32020" />
+           android:foreground="@drawable/ic_floating"
+           app:backgroundTint="#007E4E4E" />
 </RelativeLayout>

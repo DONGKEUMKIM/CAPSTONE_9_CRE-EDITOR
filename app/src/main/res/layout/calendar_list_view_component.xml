@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="false"
-
+            android:id="@+id/calendar_list_view_component_img"
             android:scaleType="fitStart"
             android:src="@drawable/schedule_component"
             android:contentDescription="TODO" />

@@ -19,7 +19,7 @@
                 android:id="@+id/subject_listView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="45dp"
+                android:layout_marginTop="5dp"
                 android:divider="@drawable/background_transparent"
                 android:dividerHeight="20dp"
                 android:layout_marginStart="20dp"
@@ -40,19 +40,21 @@
                     android:layout_width="140dp"
                     android:layout_height="45dp"
                     android:text="add subject"
-                    android:id="@+id/add_new_subject_subject_list" />
+                    android:id="@+id/add_new_subject_subject_list"
+                    android:visibility="gone"/>
             </LinearLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/subjectfloatingActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
+                android:layout_alignEnd="@id/subject_listView"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="20dp"
                 android:layout_marginEnd="20dp"
-                app:srcCompat="@android:drawable/ic_menu_add" />
+                android:layout_marginBottom="20dp"
+                android:clickable="true"
+                android:foreground="@drawable/ic_floating"
+                app:backgroundTint="#007E4E4E" />
         </RelativeLayout>
 
     </LinearLayout>
