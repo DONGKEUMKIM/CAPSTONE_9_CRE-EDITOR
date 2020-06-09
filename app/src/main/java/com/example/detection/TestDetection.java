@@ -361,8 +361,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
         conversionDT = convert2conversionDTfromInt(subjectDT);
 
-
-
+        subjectnameView.setText(subjectSN);
+        duringtimeView.setText("공부시간 : " + String.valueOf(subjectDT) + "시간");
 
         //일단은 테스트용
         //subjectnameView.setText("캡스톤프로젝트");
@@ -540,7 +540,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                     //카운트 다운 시작
                     if(conversionDT != null)
-                        countDown("conversionDT");
+                        countDown(conversionDT);
 
                     //셋팅이 끝났을 때
                     //                    //휴식구간부터 시작
@@ -604,8 +604,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             //이미지는 얼굴 프레임 이미지
             backgroundImageView.setImageResource(R.drawable.face);
         }
-
-        duringtimeView.setText("공부시간 : " + String.valueOf(subjectDT) + "시간");
 
         cameraviewcount = 15;
 
