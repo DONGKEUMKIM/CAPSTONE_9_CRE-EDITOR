@@ -50,7 +50,7 @@ public class ScheduleDataEditPopupFragment extends AppCompatActivity {
         okButton = (Button) findViewById(R.id.schedule_okButton);
         cancelButton = (Button) findViewById(R.id.schedule_cancel_button);
         deleteButton = (Button) findViewById(R.id.schedule_delete_button);
-        imageView = (ImageView) findViewById(R.id.add_schedule_image);
+        imageView = (ImageView) findViewById(R.id.edit_schedule_image);
         imageView.setImageResource(R.drawable.edit_schedule_background);
         numberPicker.setMaxValue(12);
         numberPicker.setMinValue(1);
