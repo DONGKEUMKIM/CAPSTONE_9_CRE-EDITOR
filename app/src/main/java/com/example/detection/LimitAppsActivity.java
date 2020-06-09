@@ -94,6 +94,7 @@ public class LimitAppsActivity extends AppCompatActivity {
                 LimitAppsActivity.startTime = System.currentTimeMillis();
                 LimitAppsActivity.duringTime = (hourPicker.getValue()*60+minutePicker.getValue())*60*1000;
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("backfromDetection", 0);
                 startActivity(intent);
                 Toast myToast = Toast.makeText(getApplicationContext(),"잠금 시작", Toast.LENGTH_SHORT);
                 myToast.show();

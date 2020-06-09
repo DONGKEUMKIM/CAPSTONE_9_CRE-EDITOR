@@ -78,7 +78,7 @@ public class ScheduleAutoCreate {
             }
             if (subjectData.getPriority() >= 14 && subjectData.getPriority() <= 20) {
                 if (count == 3) {
-                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), 2);
+                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), 2,0);
                     dbManager.insertScheduleData(insertScheduleData);
                     cal.add(Calendar.DATE,1);
                     count = 0;
@@ -86,7 +86,7 @@ public class ScheduleAutoCreate {
                 }
             } else if (subjectData.getPriority() <= 13 && subjectData.getPriority() >=7 ) {
                 if (count == 4) {
-                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), 2);
+                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), 2,0);
                     dbManager.insertScheduleData(insertScheduleData);
                     cal.add(Calendar.DATE,1);
                     count = 0;
@@ -94,7 +94,7 @@ public class ScheduleAutoCreate {
                 }
             } else {
                 if (count == 5) {
-                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DATE), 2);
+                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DATE), 2,0);
                     dbManager.insertScheduleData(insertScheduleData);
                     cal.add(Calendar.DATE,1);
                     count = 0;

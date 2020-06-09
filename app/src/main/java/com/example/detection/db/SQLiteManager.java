@@ -273,6 +273,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     /**
      * 데이터 업데이트
      **/
+    /*
     //Schedule Data Update
     public boolean updateScheduleData(ScheduleData data){
         ContentValues contentValues = new ContentValues();
@@ -287,6 +288,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         else
             return true;
     }
+
+     */
 
     // Subject 전체 조회
     public List<SubjectData> selectsubjectAll() {
@@ -438,7 +441,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             do {
                 ScheduleData scheduleData
                         = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
-                        results.getString(2), results.getInt(3)); //Date , DuringTime
+                        results.getString(2), results.getInt(3) , results.getInt(4)); //Date , DuringTime
                 dataResultList.add(scheduleData);
 
             } while (results.moveToNext());
@@ -447,7 +450,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     }
 
     public ScheduleData selectScheduleDataFormScheduleId(String id) {
-        ScheduleData dataResult = new ScheduleData("",0,"",0);
+        ScheduleData dataResult = new ScheduleData("",0,"",0, 0);
         String sql = "select * from " + SCHEDULE_TABLE_NAME + " where " + SCHEDULE_ID + " = \'" + id + "\' ;";
         Cursor results = db.rawQuery(sql, null);
 
@@ -455,7 +458,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             do {
                 ScheduleData scheduleData
                         = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
-                        results.getString(2), results.getInt(3)); //Date , DuringTime
+                        results.getString(2), results.getInt(3), results.getInt(4)); //Date , DuringTime
                 dataResult = scheduleData;
 
             } while (results.moveToNext());
