@@ -37,9 +37,9 @@ public class CalendarArrayAdapter extends ArrayAdapter<String> {
         // Populate the data into the template view using the data object
 
         ImageView imageView = (ImageView)convertView.findViewById(R.id.calendar_list_view_component_img);
-        if(strSplit[3]=="0")
+        if(strSplit[2].compareTo("0")==0)
             imageView.setImageResource(R.drawable.schedule_component);
-        else if(strSplit[3]=="1")
+        else if(strSplit[2].compareTo("1")==0)
             imageView.setImageResource(R.drawable.schedule_completed_component);
 
 
