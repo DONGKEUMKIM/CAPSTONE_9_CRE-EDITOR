@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingActivity"
+    android:orientation="vertical"
+    android:layout_margin="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="100"
+        android:orientation="vertical">
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:text="알림음 설정" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="30">
+
+            <RadioButton
+                android:text="알림음1"
+                android:id="@+id/rg_btn1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"/>
+            <RadioButton
+                android:text="알림음2"
+                android:id="@+id/rg_btn2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:text="알림음3"
+                android:id="@+id/rg_btn3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+        </RadioGroup>
+    </LinearLayout>
+
+</LinearLayout>

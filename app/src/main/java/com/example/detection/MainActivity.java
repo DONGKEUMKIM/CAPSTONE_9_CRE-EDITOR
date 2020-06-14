@@ -364,6 +364,11 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         if (ContentFragment.Subjects.equals(slideMenuItem.getName())) {
             transaction.replace(R.id.frameLayout, subject_frag).commitAllowingStateLoss();
         }
+        if (ContentFragment.Setting.equals(slideMenuItem.getName())) {
+            Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+            startActivity(intent);
+
+        }
         return replaceFragment(screenShotable, position, slideMenuItem.getName());
     }
 

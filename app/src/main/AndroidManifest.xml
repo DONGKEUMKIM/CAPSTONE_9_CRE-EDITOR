@@ -54,6 +54,12 @@
 
         </activity>
 
+        <activity android:name=".SettingActivity"
+            android:screenOrientation="fullSensor"
+            android:configChanges="orientation|screenSize">
+
+        </activity>
+
         <activity android:name=".fragment.popupFragment.testTimeInsertPopupFragment"
             android:screenOrientation="fullSensor"
             android:theme="@style/popupTheme"

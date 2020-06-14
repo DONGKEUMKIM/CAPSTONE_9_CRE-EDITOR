@@ -3,6 +3,7 @@ package com.example.detection;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -20,8 +21,18 @@ public class AlarmSoundService extends Service {
 
     @Override
     public void onCreate() {
-        mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound);
-        mMediaplayer.setLooping(true);
+        if(TestDetection.alarmType==1){
+            mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound);
+            mMediaplayer.setLooping(true);
+        }
+        if(TestDetection.alarmType==2){
+            mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound2);
+            mMediaplayer.setLooping(true);
+        }
+        if(TestDetection.alarmType==3){
+            mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound3);
+            mMediaplayer.setLooping(true);
+        }
     }
 
     @Override
