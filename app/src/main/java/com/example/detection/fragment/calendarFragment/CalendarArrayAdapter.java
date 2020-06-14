@@ -30,17 +30,18 @@ public class CalendarArrayAdapter extends ArrayAdapter<String> {
 
         // Get the data item for this position
         String str = getItem(position);
-        String[] strSplit =str.split(":");
+//        String[] strSplit =str.split(":");
         // Lookup view for data population
         TextView text = (TextView) convertView.findViewById(R.id.calendar_list_view_component_text);
-        text.setText(strSplit[0]);
-        // Populate the data into the template view using the data object
+        text.setText(str);
+//        text.setText(strSplit[0]);
+//         Populate the data into the template view using the data object
 
-        ImageView imageView = (ImageView)convertView.findViewById(R.id.calendar_list_view_component_img);
-        if(strSplit[2].compareTo("0")==0)
-            imageView.setImageResource(R.drawable.schedule_component);
-        else if(strSplit[2].compareTo("1")==0)
-            imageView.setImageResource(R.drawable.schedule_completed_component);
+//        ImageView imageView = (ImageView)convertView.findViewById(R.id.calendar_list_view_component_img);
+//        if(strSplit[3].equals("0"))
+//            imageView.setImageResource(R.drawable.schedule_component);
+//        else if(strSplit[3].equals("1"))
+//            imageView.setImageResource(R.drawable.schedule_completed_component);
 
 
         return convertView;
