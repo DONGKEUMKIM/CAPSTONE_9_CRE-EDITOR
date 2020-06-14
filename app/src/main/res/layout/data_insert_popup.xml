@@ -85,7 +85,7 @@
                 android:layout_width="180dp"
                 android:layout_height="30dp"
                 android:scrollbarSize="10dp"
-                app:sl_maxValue="20"
+                app:sl_maxValue="2"
                 app:sl_minValue="0"
                 app:sl_primaryColor="#FB0909"
                 app:sl_secondaryColor="#DD663A"

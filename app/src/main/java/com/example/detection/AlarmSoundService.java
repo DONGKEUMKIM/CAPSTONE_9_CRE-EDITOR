@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 public class AlarmSoundService extends Service {
-
+    int isMute = 0;
     MediaPlayer mMediaplayer;
 
     @Nullable
@@ -26,9 +26,12 @@ public class AlarmSoundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        isMute=intent.getExtras().getInt("isMute");
         Toast.makeText(this, "알람이 울립니다.", Toast.LENGTH_SHORT).show();
         mMediaplayer.start();
+        if(isMute == 1){
+            mMediaplayer.setVolume(0,0);
+        }
 
         return START_NOT_STICKY;
     }

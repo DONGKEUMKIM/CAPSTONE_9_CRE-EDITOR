@@ -48,6 +48,7 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
         cancelButton = (Button) findViewById(R.id.input_data_cancel_button);
         testTimeSetButton = (Button) findViewById(R.id.testTimeSet);
         seekBar = (Slider) findViewById(R.id.input_data_priority);
+        seekBar.setPosition(0,false);
         subjectData = new SubjectData(0, "", 0);
         testTimeData = new TestTimeData("", 0, "", 0);
         priortyText = (TextView) findViewById(R.id.input_data_priority_text);
@@ -80,7 +81,16 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
         seekBar.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
             @Override
             public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
-                priortyText.setText(Integer.toString(newValue));
+                if(newValue == 0){
+                    priortyText.setText("Not Important");
+                }
+                if(newValue == 1){
+                    priortyText.setText("Normal");
+                }
+                if(newValue == 2){
+                    priortyText.setText("Important");
+                }
+                //priortyText.setText(Integer.toString(newValue));
                 subjectData.setPriority(newValue);
             }
         });

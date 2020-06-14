@@ -27,14 +27,16 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class ScheduleAutoCreate {
     private static final String TAG = "MainActivity";
     SQLiteManager dbManager = SQLiteManager.sqLiteManager;
     private final String datePattern = "yyyy/MM/dd";
     private final SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
-
-
+    private final int[] getRandomTimeImportant ={3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1};
+    private final int[] getRandomTimeNormal ={2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1};
+    private final int[] getRandomTimeNotImportant ={1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,1,2,1,2,1,2,1,1,1,1,1,1};
     public ScheduleAutoCreate(){
     }
 
@@ -42,10 +44,13 @@ public class ScheduleAutoCreate {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void init(){
         //test
-        dbManager.deleteScheduleTableALL();
+        //dbManager.deleteScheduleTableALL();
         List<SubjectData> subjectData = dbManager.selectsubjectAll();
         Collections.sort(subjectData);
         for(int i=0;i<subjectData.size();i++) {
+            if(subjectData.get(i).getAutoCreated()==1){
+                continue;
+            }
             addNewAutoSchedule(subjectData.get(i));
         }
     }//init end
@@ -62,7 +67,7 @@ public class ScheduleAutoCreate {
         LocalDate date1 = LocalDate.of(Integer.parseInt(testTime[0]),Integer.parseInt(testTime[1]),Integer.parseInt(testTime[2]));
         LocalDate date2 = LocalDate.of(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH)+1,cal.get(Calendar.DAY_OF_MONTH));
         int pe = (int) (date1.toEpochDay() - date2.toEpochDay());
-
+        Random random = new Random();
         //Period pe = Period.between(date2,date1);
         Log.d(TAG,"PERIOD : "+pe);
         if(pe<=0){
@@ -73,31 +78,34 @@ public class ScheduleAutoCreate {
             if (dbManager.selectScheduleDataByDate(cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH)).size() >= 3) {
                 continue;
             }
-            if (dbManager.selectScheduleDataFormSubjectID(subjectData.getID()).size() >= 20) {
+            if (dbManager.selectScheduleDataFormSubjectID(subjectData.getID()).size() >= 30) {
                 continue;
             }
-            if (subjectData.getPriority() >= 14 && subjectData.getPriority() <= 20) {
+            if (subjectData.getPriority() == 2) {
                 if (count == 3) {
-                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), 2,0);
+                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), getRandomTimeImportant[random.nextInt(40)],0);
                     dbManager.insertScheduleData(insertScheduleData);
                     cal.add(Calendar.DATE,1);
                     count = 0;
+                    subjectData.setAutoCreated(1);
                     continue;
                 }
-            } else if (subjectData.getPriority() <= 13 && subjectData.getPriority() >=7 ) {
+            } else if (subjectData.getPriority() ==1 ) {
                 if (count == 4) {
-                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), 2,0);
+                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DAY_OF_MONTH), getRandomTimeNormal[random.nextInt(40)],0);
                     dbManager.insertScheduleData(insertScheduleData);
                     cal.add(Calendar.DATE,1);
                     count = 0;
+                    subjectData.setAutoCreated(1);
                     continue;
                 }
             } else {
                 if (count == 5) {
-                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DATE), 2,0);
+                    ScheduleData insertScheduleData = new ScheduleData(dbManager.generateRandomID(), subjectData.getID(), cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH)+1) + "/" + cal.get(Calendar.DATE), getRandomTimeNotImportant[random.nextInt(40)],0);
                     dbManager.insertScheduleData(insertScheduleData);
                     cal.add(Calendar.DATE,1);
                     count = 0;
+                    subjectData.setAutoCreated(1);
                     continue;
                 }
             }

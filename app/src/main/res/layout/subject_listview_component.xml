@@ -74,7 +74,7 @@
                     android:id="@+id/set_slc_priority"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="190dp"
+                    android:layout_marginStart="180dp"
                     android:text="12"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"

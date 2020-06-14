@@ -180,6 +180,10 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private int drawnessCounter = 0;
 
 
+    //메인으로부터 뮤트상태인지 판별
+    private int isMute = 0;
+
+
     //머신러닝 모델 파일 및 인터프리터
     Interpreter tf_lite;
 
@@ -358,6 +362,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         subjectSN = getIntent().getExtras().getString("SN");
         subjectDT = getIntent().getExtras().getInt("DT");
         scheduleDate = getIntent().getExtras().getString("DATE");
+        isMute = getIntent().getExtras().getInt("isMute");
 
 
         conversionDT = convert2conversionDTfromInt(subjectDT);
@@ -1432,6 +1437,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             {
                 System.out.println("방송을 받았습니다.");
                 Intent mServiceintent = new Intent (context, AlarmSoundService.class);
+                intent.putExtra("isMute",isMute);
                 //알람 시작 방송을 받았을때
                 context.startService(mServiceintent);
             }

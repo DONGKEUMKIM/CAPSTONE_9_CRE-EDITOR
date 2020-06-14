@@ -8,9 +8,16 @@ public class SubjectData implements Serializable, Comparable<SubjectData> {
     private int id;                         //id (과목코드)
     private String name;                    //과목 이름
     private int priority;                   //우선 순위
-
+    private int autoCreated;
 
     public SubjectData(int id, String name, int priority) {
+
+        this.id = id;
+        this.name = name;
+        this.priority = priority;
+        this.autoCreated=0;
+    }
+    public SubjectData(int id, String name, int priority, int autoCreated) {
 
         this.id = id;
         this.name = name;
@@ -39,6 +46,14 @@ public class SubjectData implements Serializable, Comparable<SubjectData> {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public int getAutoCreated() {
+        return autoCreated;
+    }
+
+    public void setAutoCreated(int autoCreated) {
+        this.autoCreated = autoCreated;
     }
 
     @Override

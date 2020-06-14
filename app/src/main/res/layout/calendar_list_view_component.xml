@@ -17,25 +17,48 @@
             android:scaleType="fitStart"
             android:src="@drawable/schedule_component"
             android:contentDescription="TODO" />
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:orientation="horizontal"
-            android:layout_margin="10dp">
+            android:layout_margin="5dp"
+            android:id="@+id/calendar_relativeLayout"
+            >
             <TextView
-                android:id="@+id/calendar_list_view_component_text"
+                android:id="@+id/calendar_list_view_component_text_subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Subject Name"
                 android:textColor="#000000"
-                android:textSize="15sp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="7dp"
+                android:textSize="12sp"
+                android:layout_marginStart="200dp"
+                android:layout_marginTop="15dp"
+                />
+            <TextView
+                android:id="@+id/calendar_list_view_component_text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2020/11/11"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:layout_marginStart="35dp"
+                android:layout_marginTop="30dp"
+                />
+            <TextView
+                android:id="@+id/calendar_list_view_component_text_duringtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:layout_marginStart="250dp"
+                android:layout_marginTop="30dp"
+                android:layout_alignBottom="@+id/calendar_list_view_component_text_date"
                 />
 
 
 
 
-        </LinearLayout>
+        </RelativeLayout>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

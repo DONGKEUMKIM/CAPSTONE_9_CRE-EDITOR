@@ -178,17 +178,26 @@ public class TimelineFragment extends Fragment {
         //to set the row Description (optional)
         myRow.setDescription(String.valueOf(sch.getDuringtime()));
         //to set the row bitmap image (optional)
-        myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.ic_check_circle_black_24dp));
+        if(sch.getIsDone()==0) {
+            myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.ic_incomplete));
+        }else{
+            myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.ic_complete));
+        }
         //to set row Below Line Color (optional)
-        myRow.setBellowLineColor(getRandomColor());
+        if(sch.getIsDone()==0) {
+            myRow.setBellowLineColor(Color.argb(255,255,0,0));
+        }else{
+            myRow.setBellowLineColor(Color.argb(255,0,255,0));
+        }
+        //myRow.setBellowLineColor(getRandomColor());
         //to set row Below Line Size in dp (optional)
-        myRow.setBellowLineSize(getRandomNumber(2, 25));
+        myRow.setBellowLineSize(sch.getDuringtime()*3);
         //to set row Image Size in dp (optional)
-        myRow.setImageSize(getRandomNumber(25, 40));
+        myRow.setImageSize(30);
         //to set background color of the row image (optional)
-        myRow.setBackgroundColor(getRandomColor());
+        //myRow.setBackgroundColor(getRandomColor());
         //to set the Background Size of the row image in dp (optional)
-        myRow.setBackgroundSize(sch.getDuringtime() * 3);
+        //myRow.setBackgroundSize(sch.getDuringtime() * 3);
         //to set row Date text color (optional)
         //myRow.setDateColor(getRandomColor());
         //to set row Title text color (optional)

@@ -33,7 +33,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
     public static final String SUBJECT_ID = "ID";
     public static final String SUBJECT_NAME = "NAME";
     public static final String SUBJECT_PRIORITY = "PRIORITY";
-
+    public static final String SUBJECT_AUTOCREATED = "AUTOCREATED";
     //TestTime table
     public static final String TESTTIME_TABLE_NAME = "TESTTIME";
     public static final String TESTTIME_ID = "ID";
@@ -83,7 +83,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.execSQL("create table if not exists " + SUBJECT_TABLE_NAME + " ("
                 + SUBJECT_ID + " INTEGER PRIMARY KEY, "
                 + SUBJECT_NAME + " TEXT, "
-                + SUBJECT_PRIORITY + " INTEGER"
+                + SUBJECT_PRIORITY + " INTEGER, "
+                + SUBJECT_AUTOCREATED + " INTEGER"
                 + ")");
 
         db.execSQL("create table if not exists " + TESTTIME_TABLE_NAME + " ("
@@ -213,6 +214,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         contentValues.put(SUBJECT_ID, data.getID());
         contentValues.put(SUBJECT_NAME, data.getName());
         contentValues.put(SUBJECT_PRIORITY, data.getPriority());
+        contentValues.put(SUBJECT_AUTOCREATED,data.getAutoCreated());
         long result = db.insert(SUBJECT_TABLE_NAME, null, contentValues);
 
         if (result == -1)
@@ -301,7 +303,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
             do {
                 SubjectData subjectData
                         = new SubjectData(results.getInt(0), results.getString(1), // ID, Name
-                        results.getInt(2)); //Priority
+                        results.getInt(2),results.getInt(3)); //Priority // AutoCreated
                 dataResultList.add(subjectData);
             } while (results.moveToNext());
         }
@@ -331,7 +333,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         if (results.moveToFirst()) {
             SubjectData subjectData
                     = new SubjectData(results.getInt(0), results.getString(1), // ID, Name
-                    results.getInt(2));     // Priority
+                    results.getInt(2), results.getInt(3));     // Priority
             dataResult = subjectData;
         }
         return dataResult;
@@ -345,7 +347,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         if (results.moveToFirst()) {
             SubjectData subjectData
                     = new SubjectData(results.getInt(0), results.getString(1), // ID, Name
-                    results.getInt(2));     // Priority
+                    results.getInt(2),results.getInt(3));     // Priority
             dataResult = subjectData;
         }
         return dataResult;
@@ -468,7 +470,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
 
     public void updateSubjectData(SubjectData subjectData){
-        String sql = "update "+SUBJECT_TABLE_NAME+" set "+SUBJECT_NAME+" = "+subjectData.getName()+", "+SUBJECT_PRIORITY+"= "+String.valueOf(subjectData.getPriority())+" where "+ SUBJECT_ID +" = "+subjectData.getID();
+        String sql = "update "+SUBJECT_TABLE_NAME+" set "+SUBJECT_NAME+" = "+subjectData.getName()+", "+SUBJECT_PRIORITY+"= "+String.valueOf(subjectData.getPriority())+", "+SUBJECT_AUTOCREATED+"= "+subjectData.getAutoCreated()+" where "+ SUBJECT_ID +" = "+subjectData.getID();
         db.execSQL(sql);
 
     }

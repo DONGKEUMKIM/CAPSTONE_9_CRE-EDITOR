@@ -144,10 +144,12 @@ public class CompactCalendarTab extends Fragment {
                 String scheduleDate = null;
 
 
-                String[] words = string.split(" ");
+                String[] words = string.split(":");
                 int duringTime = 0;
-
-
+                subjectName = words[0];
+                scheduleDate = words[1];
+                duringTime = Integer.parseInt(words[2]);
+                /*
                 if(words[2].compareTo("at") != 0)
                 {
                     //과목명에 띄어쓰기가 있는경우에 대한 예외처리
@@ -162,7 +164,7 @@ public class CompactCalendarTab extends Fragment {
                     scheduleDate = words[3];
                     duringTime = Integer.parseInt(words[5]);
                 }
-
+                */
                 /*
                 //스케줄데이터의 이행여부 확인 방법 예시
                 //SQlite 커리문 and가 동작 하지 않아 객체에 직접 접근하여 확인함..
@@ -225,7 +227,7 @@ public class CompactCalendarTab extends Fragment {
                     idList.clear();
                     for (Event booking : bookingsFromMap) {
                         mutableBookings.add(((String) booking.getData()));
-                        idList.add(((String) booking.getData()).split(":")[1]);
+                        idList.add(((String) booking.getData()).split(":")[3]);
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -455,7 +457,7 @@ public class CompactCalendarTab extends Fragment {
         List<Event> eventArray = new ArrayList<Event>();
         for(int i=0;i<scheduleData.size();i++){
             if(Integer.parseInt(scheduleData.get(i).getDate().split("/")[2])==day){
-                eventArray.add( new Event(Color.argb(255, 169, 68, 65), timeInMillis,"Study "+getSubjectName(scheduleData.get(i).getSubject_ID())+ " at " + scheduleData.get(i).getDate() +" for "+ scheduleData.get(i).getDuringtime()+" Hours" + ":" + scheduleData.get(i).getID()+":"+scheduleData.get(i).getIsDone()  ) );
+                eventArray.add( new Event(Color.argb(255, 255, 255, 255), timeInMillis,getSubjectName(scheduleData.get(i).getSubject_ID())+ ":" + scheduleData.get(i).getDate() +":"+ scheduleData.get(i).getDuringtime()+":" + scheduleData.get(i).getID()+":"+scheduleData.get(i).getIsDone()  ) );
             }
         }
         return eventArray;

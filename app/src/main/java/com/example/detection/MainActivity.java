@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
     private TextView speakingtextView;                              //스피킹 텍스트뷰
 
     Animation animTransRight;
-
+    private int isMute = 0;
 
     Handler imgCntHandler = null;
     private int ImgCnt = 4;
@@ -147,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         //액티비티 활성화 -> 스피킹레이아웃 5초간 활성화 -> 오른쪽으로 사라지는 애니메이션 동작
         //스레드 동작 필요
 
+
+
         wiseSayingArray = getResources().getStringArray(R.array.WISESAING);
         goodSayingArray = getResources().getStringArray(R.array.GOODSAING);
         badSayingArray = getResources().getStringArray(R.array.BANDSAING);
@@ -208,7 +211,12 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         }
         ImgCnt = 4;
         imgVisibleCountHandler.postDelayed(imgVisibleCountRunnable, 1000);
+
+
+
+
     }
+
 
     private void createMenuList() {
         SlideMenuItem menuItem0 = new SlideMenuItem(ContentFragment.CLOSE, R.drawable.close_icon);
@@ -286,12 +294,21 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         return true;
     }
 
-    @Override
+    @Override //todo
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         if (item.getItemId() == R.id.action_settings) {
+
+            if(this.isMute==0) {
+                this.isMute = 1;//1 is Yes, So Muted 0 is No, So Unmuted
+                item.setTitle("Unmute");
+            }
+            else {
+                this.isMute = 0;
+                item.setTitle("Mute");
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -337,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         }
         if (ContentFragment.Watch.equals(slideMenuItem.getName())) {
             Intent intent = new Intent(getApplicationContext(), TestDetection.class);
+            intent.putExtra("isMute",isMute);
             startActivity(intent);
 
             finish();
@@ -446,6 +464,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         intent.putExtra("SN", subjectname);
         intent.putExtra("DT", duringtime);
         intent.putExtra("DATE", date);
+        intent.putExtra("isMute",isMute);
 
         startActivity(intent);
         finish();
@@ -513,10 +532,12 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
 
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void refresh(){
         transaction = fragmentManager.beginTransaction();
         Fragment currentFrag = fragmentManager.findFragmentById(R.id.frameLayout);
         transaction.detach(currentFrag).attach(currentFrag).commitAllowingStateLoss();
+        sac.init();
     }
 
     public String SetSpeakingtextView(int num) {

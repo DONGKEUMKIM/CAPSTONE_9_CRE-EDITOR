@@ -91,7 +91,16 @@ public class SubjectDataEditPopupFragment extends AppCompatActivity {
         seekBar.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
             @Override
             public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
-                priortyText.setText(Integer.toString(newValue));
+                if(newValue == 0){
+                    priortyText.setText("Not Important");
+                }
+                if(newValue == 1){
+                    priortyText.setText("Normal");
+                }
+                if(newValue == 2){
+                    priortyText.setText("Important");
+                }
+                //priortyText.setText(Integer.toString(newValue));
                 subjectData.setPriority(newValue);
             }
         });
