@@ -147,6 +147,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     //countdownThread  mcountdownthread;
     //settingcountdownThread msettingcountdownthread;
 
+    //알람음 설정
+    public static int alarmType = 1;
     //알람을 위한 브로드캐스트 리시버
     IntentFilter intentFilter;
     AlarmReceiver alarmReceiver;
