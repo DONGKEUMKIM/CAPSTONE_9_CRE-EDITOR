@@ -24,6 +24,7 @@ import com.example.detection.db.TestTimeData;
 import com.rey.material.widget.Slider;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class SubjectDataPopupFragment extends AppCompatActivity {
 
@@ -50,7 +51,7 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
         seekBar = (Slider) findViewById(R.id.input_data_priority);
         seekBar.setPosition(0,false);
         subjectData = new SubjectData(0, "", 0);
-        testTimeData = new TestTimeData("", 0, "", 0);
+        testTimeData = new TestTimeData("", 0, "", 1);
         priortyText = (TextView) findViewById(R.id.input_data_priority_text);
         subjectName = (EditText) findViewById(R.id.insert_data_name);
         intent = getIntent();
@@ -59,6 +60,9 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
         subjectData.setID(id);
         testTimeData.setId(testTimeID);
         testTimeData.setSubject_ID(id);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH,1);
+        testTimeData.setdate(cal.get(Calendar.YEAR) + "/"+(cal.get(Calendar.MONTH)+1)+"/"+cal.get(Calendar.DAY_OF_MONTH));
 
 
         subjectName.addTextChangedListener(new TextWatcher() {
@@ -82,13 +86,13 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
             @Override
             public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
                 if(newValue == 0){
-                    priortyText.setText("Not Important");
+                    priortyText.setText("Low");
                 }
                 if(newValue == 1){
                     priortyText.setText("Normal");
                 }
                 if(newValue == 2){
-                    priortyText.setText("Important");
+                    priortyText.setText("High");
                 }
                 //priortyText.setText(Integer.toString(newValue));
                 subjectData.setPriority(newValue);
@@ -142,6 +146,9 @@ public class SubjectDataPopupFragment extends AppCompatActivity {
     }
 
     private void okButtonClicked() {
+        if(subjectData.getName().compareTo("")==0){
+            subjectData.setName("Subject "+subjectData.getID());
+        }
         intent.putExtra("subject", subjectData);
         intent.putExtra("testtime", testTimeData);
         setResult(2, intent);

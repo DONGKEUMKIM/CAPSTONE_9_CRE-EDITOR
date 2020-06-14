@@ -92,13 +92,13 @@ public class SubjectDataEditPopupFragment extends AppCompatActivity {
             @Override
             public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
                 if(newValue == 0){
-                    priortyText.setText("Not Important");
+                    priortyText.setText("Low");
                 }
                 if(newValue == 1){
                     priortyText.setText("Normal");
                 }
                 if(newValue == 2){
-                    priortyText.setText("Important");
+                    priortyText.setText("High");
                 }
                 //priortyText.setText(Integer.toString(newValue));
                 subjectData.setPriority(newValue);

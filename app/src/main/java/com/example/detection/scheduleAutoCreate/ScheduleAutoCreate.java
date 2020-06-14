@@ -48,11 +48,16 @@ public class ScheduleAutoCreate {
         List<SubjectData> subjectData = dbManager.selectsubjectAll();
         Collections.sort(subjectData);
         for(int i=0;i<subjectData.size();i++) {
+            //Log.d(TAG, "Autocreated : "+subjectData.get(i).getAutoCreated());
             if(subjectData.get(i).getAutoCreated()==1){
+                Log.d(TAG,subjectData.get(i).getName()+"is already Autocreated");
                 continue;
             }
             addNewAutoSchedule(subjectData.get(i));
+            //subjectData.get(i).setAutoCreated(0);
+            //dbManager.updateSubjectData(subjectData.get(i));
         }
+
     }//init end
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -88,6 +93,7 @@ public class ScheduleAutoCreate {
                     cal.add(Calendar.DATE,1);
                     count = 0;
                     subjectData.setAutoCreated(1);
+                    dbManager.updateSubjectData(subjectData);
                     continue;
                 }
             } else if (subjectData.getPriority() ==1 ) {
@@ -97,6 +103,7 @@ public class ScheduleAutoCreate {
                     cal.add(Calendar.DATE,1);
                     count = 0;
                     subjectData.setAutoCreated(1);
+                    dbManager.updateSubjectData(subjectData);
                     continue;
                 }
             } else {
@@ -106,6 +113,7 @@ public class ScheduleAutoCreate {
                     cal.add(Calendar.DATE,1);
                     count = 0;
                     subjectData.setAutoCreated(1);
+                    dbManager.updateSubjectData(subjectData);
                     continue;
                 }
             }

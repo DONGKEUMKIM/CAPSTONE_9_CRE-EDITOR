@@ -17,11 +17,14 @@ public class SubjectData implements Serializable, Comparable<SubjectData> {
         this.priority = priority;
         this.autoCreated=0;
     }
+
+
     public SubjectData(int id, String name, int priority, int autoCreated) {
 
         this.id = id;
         this.name = name;
         this.priority = priority;
+        this.autoCreated = autoCreated;
     }
 
     public int getID() {

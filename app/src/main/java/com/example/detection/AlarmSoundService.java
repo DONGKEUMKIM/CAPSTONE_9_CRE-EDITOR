@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 public class AlarmSoundService extends Service {
-    int isMute = 0;
     MediaPlayer mMediaplayer;
 
     @Nullable
@@ -32,17 +31,17 @@ public class AlarmSoundService extends Service {
         if(TestDetection.alarmType==3){
             mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound3);
             mMediaplayer.setLooping(true);
+        }if(TestDetection.alarmType==4){
+            mMediaplayer = MediaPlayer.create(this, R.raw.alarmsound);
+            mMediaplayer.setLooping(true);
+            mMediaplayer.setVolume(0,0);
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        isMute=intent.getExtras().getInt("isMute");
         Toast.makeText(this, "알람이 울립니다.", Toast.LENGTH_SHORT).show();
         mMediaplayer.start();
-        if(isMute == 1){
-            mMediaplayer.setVolume(0,0);
-        }
 
         return START_NOT_STICKY;
     }

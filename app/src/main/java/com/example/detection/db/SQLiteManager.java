@@ -327,7 +327,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     //Subject의 이름으로 부터 해당 SubjectData 조회
     public SubjectData selectSubjectDataFormSubjectname(String subjectname) {
-        SubjectData dataResult = new SubjectData(0, "", 0);
+        SubjectData dataResult = new SubjectData(0, "", 0,0);
         String sql = "select * from " + SUBJECT_TABLE_NAME + " where " + SUBJECT_NAME + " = \'" + subjectname + "\' ;";
         Cursor results = db.rawQuery(sql, null);
         if (results.moveToFirst()) {
@@ -468,9 +468,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
         return dataResult;
     }
 
-
+/*
     public void updateSubjectData(SubjectData subjectData){
-        String sql = "update "+SUBJECT_TABLE_NAME+" set "+SUBJECT_NAME+" = "+subjectData.getName()+", "+SUBJECT_PRIORITY+"= "+String.valueOf(subjectData.getPriority())+", "+SUBJECT_AUTOCREATED+"= "+subjectData.getAutoCreated()+" where "+ SUBJECT_ID +" = "+subjectData.getID();
+        String sql = "update "+SUBJECT_TABLE_NAME+" set "+SUBJECT_NAME+" = \""+subjectData.getName()+"\", "+SUBJECT_PRIORITY+"= "+String.valueOf(subjectData.getPriority())+", "+SUBJECT_AUTOCREATED+"= "+subjectData.getAutoCreated()+" where "+ SUBJECT_ID +" = "+subjectData.getID();
         db.execSQL(sql);
 
     }
@@ -478,6 +478,8 @@ public class SQLiteManager extends SQLiteOpenHelper {
         String sql = "update "+TESTTIME_TABLE_NAME+" set "+TESTTIME_DATE+" = "+testTimeData.getDate()+", "+TESTTIME_DURINGTIME+"= "+testTimeData.getDuringtime()+" where "+ SUBJECT_ID +" = "+testTimeData.getSubject_ID();
         db.execSQL(sql);
     }
+
+ */
     /*
     public void updateScheduleData(ScheduleData scheduleData){
         String sql = "update "+SCHEDULE_TABLE_NAME+" set "+SCHEDULE_DATE+" = "+scheduleData.getDate()+", "+SCHEDULE_DURINGTIME+"= "+scheduleData.getDuringtime()+", "+SCHEDULE_SUBJECT_ID+" = " + scheduleData.getSubject_ID() +"" +
@@ -485,6 +487,33 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.execSQL(sql);
     }
     */
+
+    public boolean updateSubjectData(SubjectData data){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(SUBJECT_ID, data.getID());
+        contentValues.put(SUBJECT_NAME, data.getName());
+        contentValues.put(SUBJECT_PRIORITY, data.getPriority());
+        contentValues.put(SUBJECT_AUTOCREATED, data.getAutoCreated());
+        long result = db.update(SUBJECT_TABLE_NAME,contentValues,SUBJECT_ID+ " = " +  data.getID() ,null);
+        if(result == -1)
+            return false;
+        else
+            return true;
+    }
+
+
+    public boolean updateTestTimeData(TestTimeData data){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TESTTIME_ID, data.getID());
+        contentValues.put(TESTTIME_DATE, data.getDate());
+        contentValues.put(TESTTIME_SUBJECT_ID, data.getSubject_ID());
+        contentValues.put(TESTTIME_DURINGTIME, data.getDuringtime());
+        long result = db.update(TESTTIME_TABLE_NAME,contentValues,TESTTIME_SUBJECT_ID + " = " + data.getSubject_ID(),null);
+        if(result == -1)
+            return false;
+        else
+            return true;
+    }
 
     public boolean updateScheduleData(ScheduleData data){
         ContentValues contentValues = new ContentValues();
@@ -509,7 +538,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         db.execSQL(sql);
     }
     public void deleteScheduleData(String id){
-        String sql = "delete from "+SUBJECT_TABLE_NAME+" where "+SCHEDULE_ID+" = "+id;
+        String sql = "delete from "+SCHEDULE_TABLE_NAME+" where "+SCHEDULE_ID+" = \'"+id+"\'";
         db.execSQL(sql);
     }
 

@@ -27,7 +27,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="70dp"
             android:background="@drawable/background_transparent"
             android:gravity="center"
             android:minHeight="?attr/actionBarSize"
@@ -37,7 +37,7 @@
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="80dp">
+            android:layout_marginTop="65dp">
 
 
         </FrameLayout>

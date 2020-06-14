@@ -1,10 +1,12 @@
 package com.example.detection.fragment.subjectListFragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.detection.R;
@@ -45,6 +47,7 @@ public class SubjectListComponentAdapter extends ArrayAdapter implements View.On
         return i;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final int pos = position;
@@ -58,13 +61,20 @@ public class SubjectListComponentAdapter extends ArrayAdapter implements View.On
 
 
         TextView setSubjectName = (TextView) convertView.findViewById(R.id.set_slc_subjectName);
-        TextView setPriority = (TextView) convertView.findViewById(R.id.set_slc_priority);
+        ImageView setPriority = (ImageView) convertView.findViewById(R.id.set_slc_priority);
         TextView setTestTime = (TextView) convertView.findViewById(R.id.set_slc_testTime);
 
         SubjectListViewComponent listViewItem = (SubjectListViewComponent) getItem(position);
 
         setSubjectName.setText(listViewItem.getSubjectName());
-        setPriority.setText(listViewItem.getPriority());
+        if(Integer.parseInt(listViewItem.getPriority())==0){
+            setPriority.setImageResource(R.drawable.priority_0);
+        }else if(Integer.parseInt(listViewItem.getPriority())==1){
+            setPriority.setImageResource(R.drawable.priority_1);
+        }else{
+            setPriority.setImageResource(R.drawable.priority_2);
+        }
+        //setPriority.setText(listViewItem.getPriority());
         setTestTime.setText(listViewItem.getTestDate());
 
 

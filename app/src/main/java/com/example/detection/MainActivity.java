@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         }
         return super.onOptionsItemSelected(item);
     }
-
+*/
     private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String contentName) {
         if (contentName.equals("Watch")) {
             //this.res = R.drawable.content_dashboard;
@@ -542,6 +542,7 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         transaction = fragmentManager.beginTransaction();
         Fragment currentFrag = fragmentManager.findFragmentById(R.id.frameLayout);
         transaction.detach(currentFrag).attach(currentFrag).commitAllowingStateLoss();
+        speaking_layout.setVisibility(View.INVISIBLE);
         sac.init();
     }
 

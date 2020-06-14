@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -32,8 +33,9 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.schedule_edit_popup);
         setContentView(R.layout.setting_main);
-
         alarmReceiver = new AlarmReceiver();
         intentFilter = new IntentFilter();
         mAlarmsoundservice = new AlarmSoundService();
@@ -83,6 +85,16 @@ public class SettingActivity extends AppCompatActivity {
             sendBroadcast(sendIntent1);
             TestDetection.alarmType = 3;
             Toast myToast = Toast.makeText(getApplicationContext(),"알람3으로 설정", Toast.LENGTH_SHORT);
+            myToast.show();
+            registerReceiver(alarmReceiver, intentFilter);
+            Intent sendIntent = new Intent(ALARMSTART);
+            sendBroadcast(sendIntent);
+        }else if(i==R.id.rg_btn4){
+            registerReceiver(alarmReceiver, intentFilter);
+            Intent sendIntent1 = new Intent(ALARMEND);
+            sendBroadcast(sendIntent1);
+            TestDetection.alarmType = 4;
+            Toast myToast = Toast.makeText(getApplicationContext(),"무음으로 설정", Toast.LENGTH_SHORT);
             myToast.show();
             registerReceiver(alarmReceiver, intentFilter);
             Intent sendIntent = new Intent(ALARMSTART);
