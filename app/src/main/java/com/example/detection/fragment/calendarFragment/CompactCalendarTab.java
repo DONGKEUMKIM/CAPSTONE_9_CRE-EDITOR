@@ -134,8 +134,15 @@ public class CompactCalendarTab extends Fragment {
                 //테스트용 후에 지울걸
 
 
+                //idList 스케줄의 idList
+                //포지션값 i 로 아이템을 참조 했을 대 그 스케줄의 id string을 참조 할 수 있음
+                //이걸로  과목명과 스케줄날짜 를 받아오도록 변경 할것!
+                //
+
+                String scheduleID = idList.get(i);
                 String subjectName = null;
                 String scheduleDate = null;
+
 
                 String[] words = string.split(" ");
                 int duringTime = 0;
@@ -171,7 +178,10 @@ public class CompactCalendarTab extends Fragment {
                 }
                 */
 
-                ((MainActivity)getActivity()).startDetectionFromSchedule(subjectName, scheduleDate, duringTime);
+                ((MainActivity)getActivity()).startDetectionFromSchedule(scheduleID, subjectName, scheduleDate, duringTime);
+
+                ScheduleData scheduledata = SQLiteManager.sqLiteManager.selectScheduleDataFormID(scheduleID);
+                System.out.println("이행여부 " + String.valueOf(scheduledata.getIsDone()));
             }
         });
         bookingsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

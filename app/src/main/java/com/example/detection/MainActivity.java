@@ -431,16 +431,18 @@ public class MainActivity extends AppCompatActivity implements ViewAnimator.View
         startActivityForResult(intent, 3);
     }
 
-    public void startDetectionFromSchedule(String subjectName , String Date , int duringTime){
+    public void startDetectionFromSchedule(String scheduleID,String subjectName , String Date , int duringTime){
         //TODO
         //startDetectionFromSchedule Function
 
+        String scheduleid = scheduleID;
         String subjectname = subjectName;
         String date = Date;
         int duringtime = duringTime;
 
         Intent intent = new Intent(getApplicationContext(), TestDetection.class);
 
+        intent.putExtra("SID", scheduleid);
         intent.putExtra("SN", subjectname);
         intent.putExtra("DT", duringtime);
         intent.putExtra("DATE", date);

@@ -275,6 +275,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
      **/
     /*
     //Schedule Data Update
+    /*
     public boolean updateScheduleData(ScheduleData data){
         ContentValues contentValues = new ContentValues();
         contentValues.put(SCHEDULE_ID, data.getID());
@@ -288,8 +289,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
         else
             return true;
     }
-
-     */
+    */
 
     // Subject 전체 조회
     public List<SubjectData> selectsubjectAll() {
@@ -476,10 +476,28 @@ public class SQLiteManager extends SQLiteOpenHelper {
         String sql = "update "+TESTTIME_TABLE_NAME+" set "+TESTTIME_DATE+" = "+testTimeData.getDate()+", "+TESTTIME_DURINGTIME+"= "+testTimeData.getDuringtime()+" where "+ SUBJECT_ID +" = "+testTimeData.getSubject_ID();
         db.execSQL(sql);
     }
+    /*
     public void updateScheduleData(ScheduleData scheduleData){
-        String sql = "update "+SCHEDULE_TABLE_NAME+" set "+SCHEDULE_DATE+" = "+scheduleData.getDate()+", "+SCHEDULE_DURINGTIME+"= "+scheduleData.getDuringtime()+", "+SCHEDULE_SUBJECT_ID+" = " + scheduleData.getSubject_ID() +" where "+ SCHEDULE_ID +" = "+scheduleData.getID();
+        String sql = "update "+SCHEDULE_TABLE_NAME+" set "+SCHEDULE_DATE+" = "+scheduleData.getDate()+", "+SCHEDULE_DURINGTIME+"= "+scheduleData.getDuringtime()+", "+SCHEDULE_SUBJECT_ID+" = " + scheduleData.getSubject_ID() +"" +
+                ","+SCHEDULE_ISDONE+" = "+scheduleData.getIsDone()+" where "+ SCHEDULE_ID +" = "+scheduleData.getID();
         db.execSQL(sql);
     }
+    */
+
+    public boolean updateScheduleData(ScheduleData data){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(SCHEDULE_ID, data.getID());
+        contentValues.put(SCHEDULE_SUBJECT_ID, data.getSubject_ID());
+        contentValues.put(SCHEDULE_DATE, data.getDate());
+        contentValues.put(SCHEDULE_DURINGTIME, data.getDuringtime());
+        contentValues.put(SCHEDULE_ISDONE, data.getIsDone());
+        long result = db.update(SCHEDULE_TABLE_NAME,contentValues,SCHEDULE_ID + " = " + "\'" + data.getID() + "\'",null);
+        if(result == -1)
+            return false;
+        else
+            return true;
+    }
+
     public void deleteSubjectData(int subjectId){
         String sql = "delete from "+SUBJECT_TABLE_NAME+" where "+SUBJECT_ID+" = "+subjectId;
         db.execSQL(sql);
@@ -537,6 +555,20 @@ public class SQLiteManager extends SQLiteOpenHelper {
             } while (results.moveToNext());
         }
         return dataResultList;
+    }
+
+    //스케줄의 ID로 부터 해당 ScheduleData 조회
+    public ScheduleData selectScheduleDataFormID(String scheduleID ) {
+        ScheduleData dataResult = new ScheduleData("", 0, "", 0 , 0);
+        String sql = "select * from " + SCHEDULE_TABLE_NAME + " where " + SCHEDULE_ID + " = \'" + scheduleID + "\' ;";
+        Cursor results = db.rawQuery(sql, null);
+        if (results.moveToFirst()) {
+            ScheduleData scheduleData
+                    = new ScheduleData(results.getString(0), results.getInt(1), // ID, SubjectID
+                    results.getString(2), results.getInt(3), results.getInt(4)); //Date , DuringTime , isDone
+            dataResult = scheduleData;
+        }
+        return dataResult;
     }
 
 }

@@ -126,7 +126,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     //일단은 테스트로 분단위
     int subjectduringtime = 4;
 
-    int cameraviewcount = 15;                       //60초 단위 촬영을 위한 카운트
+    int cameraviewcount = 60;                       //60초 단위 촬영을 위한 카운트
 
     int high_detectingCount = 0;                            //높은졸음이 감지됐을때 시작되는 카운트
     int low_detectingCount = 0;                             //낮은졸음이 감지됐을때 시작되는 카운트
@@ -136,10 +136,10 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     //CountDownTimer duringTimecdTimer;
 
     //메인으로부터 넘겨 받을 정보
-    //private String subjectID;   //선택된 스케줄의의 ID값
-    private String subjectSN;  //선택된 과목 이름
-    private String scheduleDate;
-    private int subjectDT;     //선택된 공부 시간
+    private String scheduleID;     //선택된 스케줄의의 ID값
+    private String subjectSN;       //선택된 과목 이름
+    private String scheduleDate;    //선택된 날짜
+    private int subjectDT;          //선택된 공부 시간
 
     private String conversionDT;
 
@@ -354,10 +354,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         /**
         * 과목 ID, 과목 이름, 과목 공부시간 셋팅
         */
-        //subjectID = getIntent().getExtras().getString("");
+        scheduleID = getIntent().getExtras().getString("SID");
         subjectSN = getIntent().getExtras().getString("SN");
         subjectDT = getIntent().getExtras().getInt("DT");
         scheduleDate = getIntent().getExtras().getString("DATE");
+
 
         conversionDT = convert2conversionDTfromInt(subjectDT);
 
@@ -404,16 +405,48 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             @Override
             public void onClick(View v) {
 
+                //뒤로가기는 일종의 치트키 개념
+                //데모를 진행 할 때 전체 학습 시간 동안 보여 줄 수가 없기 때문에
+                //이 버튼을 이용하여 빠져 나가야 한다
+                //이 버튼을 눌렀을 때 마치 학습 시간이 다 된것 과 같이 작동 하도록 한다.
+                //첫번째 방법 -> 현재 돌고 있는 모든 스레드를 종료 시키고 메인 액티비티로 이동
+                //두번째 방법 -> 남은 학습 시간을 1초로 변경
+
                 //만약 알람이 울리고 있을 경우
                 //알람 종료
+
+                //모든 스레드를 종료 시켜주는 조건
+                allthreadisrunning = false;
+
+                ScheduleData data = SQLiteManager.sqLiteManager.selectScheduleDataFormID(scheduleID);
+
+                //이행여부를 1로 바꿔서 DB업데이트
+                SQLiteManager.sqLiteManager.updateScheduleData(new ScheduleData(data.getID(), data.getSubject_ID(), data.getDate(), data.getDuringtime() , 1));
+
+                ScheduleData data2 = SQLiteManager.sqLiteManager.selectScheduleDataFormID(scheduleID);
+
+                int kkk = data2.getIsDone();
+                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+
+                if(drawnessCounter < 3)
+                {
+                    //졸음 횟수가 3회 미만 일때
+                    //칭찬메세지
+                    intent.putExtra("backfromDetection", 1);
+                }
+                else
+                {
+                    intent.putExtra("backfromDetection", 2);
+                }
+
+                //알람이 울리고 있는 경우 알람 종료
                 registerReceiver(alarmReceiver, intentFilter);
                 Intent sendIntent = new Intent(ALARMEND);
                 sendBroadcast(sendIntent);
 
-                Intent intent = new Intent(getApplication(),MainActivity.class);
-                intent.putExtra("backfromDetection", 1);
+
                 startActivity(intent);
-                TestDetection.this.finish();
+                finish();
             }
         });
 
@@ -490,7 +523,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                         }
                         else
                         {
-                            cameraviewcount = 15;
+                            cameraviewcount = 10;
 
                             countdownThread  mcountdownthread = new countdownThread();
                             mcountdownthread.start();
@@ -513,7 +546,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                         }
                         else
                         {
-                            cameraviewcount = 15;
+                            cameraviewcount = 60;
 
                             countdownThread  mcountdownthread = new countdownThread();
                             mcountdownthread.start();
@@ -605,7 +638,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.face);
         }
 
-        cameraviewcount = 15;
+        cameraviewcount = 60;
 
         if(StateOfSetting == SETTING_ON)
         {
@@ -639,7 +672,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             backgroundImageView.setImageResource(R.drawable.breakimg);
         }
 
-        cameraviewcount = 15;
+        cameraviewcount = 10;
 
         countdownThread  mcountdownthread = new countdownThread();
         mcountdownthread.start();
@@ -945,6 +978,8 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         String getMin = time.substring(2, 4);
         String getSecond = time.substring(4, 6);
 
+        System.out.println(time);
+
         // "00"이 아니고, 첫번째 자리가 0 이면 제거
         if (getHour.substring(0, 1) == "0") {
             getHour = getHour.substring(1, 2);
@@ -969,11 +1004,14 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
             public void onTick(long millisUntilFinished) {
 
                 // 시간단위
+                long getHour = millisUntilFinished - millisUntilFinished / (60 * 60 * 60 * 1000);
                 String hour = String.valueOf(millisUntilFinished / (60 * 60 * 1000));
 
+                String min = String.valueOf((getHour % (60 * 60 * 1000) )/ (60 * 1000) );   //나머지
                 // 분단위
+
                 long getMin = millisUntilFinished - (millisUntilFinished / (60 * 60 * 1000)) ;
-                String min = String.valueOf(getMin / (60 * 1000)); // 몫
+                //String min = String.valueOf(getMin / (60 * 1000)); // 몫
 
                 // 초단위
                 String second = String.valueOf((getMin % (60 * 1000)) / 1000); // 나머지
@@ -1009,11 +1047,11 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                 //allthreadisrunning 변수를 false로 셋팅
                 allthreadisrunning = false;
 
+
+                /*
                 int subjectID = SQLiteManager.sqLiteManager.selectSubjectIdFromName(subjectSN);
 
                 List<ScheduleData> Lists = SQLiteManager.sqLiteManager.selectScheduleDataFormSubjectID(subjectID);
-
-                ScheduleData data = null;
 
                 for(int lSize = 0 ; lSize < Lists.size() ; lSize++)
                 {
@@ -1022,11 +1060,15 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                         data = Lists.get(lSize);
                     }
                 }
+                */
+
+                ScheduleData data = SQLiteManager.sqLiteManager.selectScheduleDataFormID(scheduleID);
 
                 //이행여부를 1로 바꿔서 DB업데이트
                 SQLiteManager.sqLiteManager.updateScheduleData(new ScheduleData(data.getID(), data.getSubject_ID(), data.getDate(), data.getDuringtime() , 1));
 
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+
                 if(drawnessCounter < 3)
                 {
                     //졸음 횟수가 3회 미만 일때
@@ -1095,6 +1137,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     public String convert2conversionDTfromInt(int duringtime)
     {
         String str = null;
+
         if(duringtime > 10)
         {
             str = String.valueOf(duringtime) + "0000";
@@ -1103,6 +1146,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
         {
             str = "0" + String.valueOf(duringtime) + "0000";
         }
+
 
         return str;
     }
