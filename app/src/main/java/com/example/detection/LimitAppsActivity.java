@@ -233,13 +233,23 @@ public class LimitAppsActivity extends AppCompatActivity {
         List<ResolveInfo> AppInfos = packageManager.queryIntentActivities(intent, 0);
         for (ResolveInfo info : AppInfos) {
             ActivityInfo ai = info.activityInfo;
-            listViewItemList.add(new LimitListViewItem());
-            int temp = listViewItemList.size()-1;
+            if(ai.packageName.contains("com.sec")){ }
+            else if(ai.packageName.contains("com.android")){ }
+            else if(ai.packageName.contains("com.example")){ }
+            else if(ai.packageName.contains("com.ddangyc")){ }
+            else if(ai.packageName.contains("com.google.android")){ }
+            else if(ai.packageName.contains("com.samsung")){ }
+            else if(ai.packageName.contains("com.microsoft")){ }
+            else if(ai.packageName.contains("com.kt")){ }
+            else {
+                listViewItemList.add(new LimitListViewItem());
+                int temp = listViewItemList.size() - 1;
 
-            listViewItemList.get(temp).setAppIconDrawable(ai.loadIcon(packageManager));
-            listViewItemList.get(temp).setAppName(ai.loadLabel(packageManager).toString());
-            listViewItemList.get(temp).setAppPackageName(ai.packageName);
-            listViewItemList.get(temp).setSearched(true);
+                listViewItemList.get(temp).setAppIconDrawable(ai.loadIcon(packageManager));
+                listViewItemList.get(temp).setAppName(ai.loadLabel(packageManager).toString());
+                listViewItemList.get(temp).setAppPackageName(ai.packageName);
+                listViewItemList.get(temp).setSearched(true);
+            }
         }
     }
 

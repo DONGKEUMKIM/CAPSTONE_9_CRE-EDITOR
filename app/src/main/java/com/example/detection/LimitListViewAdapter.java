@@ -47,8 +47,8 @@ public class LimitListViewAdapter extends BaseAdapter {
 
         // 아이템 내 각 위젯에 데이터 반영
         iconImageView.setImageDrawable(listViewItem.getAppIconDrawable());
-//        titleTextView.setText(listViewItem.getAppName());
-        titleTextView.setText(listViewItem.getAppPackageName());
+        titleTextView.setText(listViewItem.getAppName());
+//        titleTextView.setText(listViewItem.getAppPackageName());
 
         return convertView;
     }
