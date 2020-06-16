@@ -90,7 +90,6 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
     private Mat matBinary;
     private Mat eyeROI;                             //눈이미지
     private int[] faceArray;                        //얼굴 바운더리를 int배열형태로 저장
-    private int[] eyeArray;                         //눈 바운더리를 int배열형태로 저장
     private boolean openOrClose;                        // 눈 뜨고있으면 true 감으면 false
     private MatCirCularQueue frameBuffer;                   //프레임을 담을 버퍼큐
 
@@ -204,7 +203,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
     public native int detectEyeAndFaceRect(long cascadeClassifier_face,
                                             long cascadeClassifier_eye, long cascadeClassifier_righteye,
-                                            long matAddrInput, long matAddrResult, long eyeROI , int[] faceArray , int[] eyeArray);
+                                            long matAddrInput, long matAddrResult, long eyeROI , int[] faceArray);
 
 
     public native int getHSVfromImg(long matAddrInput, int[] faceArray , int []array);
@@ -711,7 +710,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
 
                     int value = detectEyeAndFaceRect(cascadeClassifier_face,cascadeClassifier_eye,cascadeClassifier_righteye,
                             matInput.getNativeObjAddr(),
-                            matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray, eyeArray);
+                            matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray);
 
                     if(value == 1)
                     {
@@ -744,7 +743,7 @@ public class TestDetection extends AppCompatActivity implements CameraBridgeView
                     //얼굴 및 눈 검출
                     detectEyeAndFaceRect(cascadeClassifier_face,cascadeClassifier_eye,cascadeClassifier_righteye,
                             matInput.getNativeObjAddr(),
-                            matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray , eyeArray);
+                            matResult.getNativeObjAddr(), eyeROI.getNativeObjAddr(), faceArray);
 
                     Bitmap bmp = null;
                     try {
