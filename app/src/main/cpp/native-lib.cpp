@@ -134,8 +134,7 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
                                                               jlong cascade_classifier_righteye,
                                                               jlong mat_addr_input,
                                                               jlong mat_addr_result, jlong eye_roi,
-                                                              jintArray faceArray,
-                                                              jintArray eyeArray) {
+                                                              jintArray faceArray) {
 
     int returnValue = 0;                    // 얼굴이 검출되면 1 , 검출되지 않으면 0
 
@@ -145,8 +144,6 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
     Mat &eye_ROI = *(Mat *)eye_roi;
 
     jintArray face_arr = (jintArray )env->NewGlobalRef((jobject) faceArray);
-
-    jintArray eye_arr = (jintArray )env->NewGlobalRef((jobject) eyeArray);
 
     img_result = img_input.clone();
     std::vector<Rect> faces;
@@ -224,16 +221,6 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
         {
             Rect righteye_area(real_facesize_x+ righteyes[0].x,real_facesize_y + righteyes[0].y, righteyes[0].width, righteyes[0].width);
 
-            int eyearr[4]={0,0,0,0};
-
-            eyearr[0] = real_facesize_x+ righteyes[0].x;
-            eyearr[1] = real_facesize_y + righteyes[0].y;
-            eyearr[2] = real_facesize_width;
-            eyearr[3] = real_facesize_width;
-
-            //jintArray ret = env->NewIntArray(4);
-            env->SetIntArrayRegion(eye_arr,0,4,eyearr);
-
             if((real_facesize_y + righteyes[0].y) < ySizeforCompare)
             {
                 cv::rectangle(img_result, righteye_area, Scalar(255,0,0), 5, 8, 0);
@@ -278,19 +265,6 @@ Java_com_example_detection_TestDetection_detectEyeAndFaceRect(JNIEnv *env, jobje
 
     Rect face_area(face_Array[0], face_Array[1], face_Array[2],face_Array[3]);
     cv::rectangle(img_result, face_area, Scalar(255,0,0), 5, 8, 0);
-
-    jint *eye_Array = env->GetIntArrayElements(eye_arr, NULL);
-    Rect eye_area(eye_Array[0], eye_Array[1], eye_Array[2],eye_Array[3]);
-
-    int ySizeforCompare = face_Array[1] + face_Array[2]/3;
-
-    if(eye_Array[1] < ySizeforCompare)
-    {
-        cv::rectangle(img_result, eye_area, Scalar(255,0,0), 5, 8, 0);
-    }
-    eye_ROI = img_gray(eye_area);
-
-    cv::rectangle(img_result, eye_area, Scalar(255,0,0), 5, 8, 0);
 
     return returnValue;
 }extern "C"
